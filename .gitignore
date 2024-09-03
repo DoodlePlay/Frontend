@@ -1,0 +1,43 @@
+# Node.js 기본 무시 파일
+
+# node_modules/ 디렉토리
+node_modules/
+
+# 빌드 출력물
+dist/
+.build/
+.next/
+out/
+
+# 로그 파일들
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 환경 변수 파일 (보안 관련 파일)
+.env
+.env.local
+.env.*.local
+
+# OS 또는 편집기 관련 파일들
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# IDE 및 편집기
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ESLint 및 TypeScript 설정 파일 캐시
+.eslintcache
