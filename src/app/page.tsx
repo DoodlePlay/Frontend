@@ -1,7 +1,5 @@
-import ProfilePage from "./profile/page";
-
 const HomePage = () => {
-  return <ProfilePage />;
+  return <div>Profile Setting Page</div>;
 };
 
 export default HomePage;
