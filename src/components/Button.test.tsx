@@ -16,7 +16,7 @@ describe('버튼 렌더링', () => {
     const onClick = vi.fn(); // 모의 함수 생성
     render(<Button text="Click button" onClick={onClick} />);
 
-    //const button = screen.getByText("Click button");
+    const button = screen.getByText('Click button');
 
     // 클릭 이벤트 시뮬레이션
     fireEvent.click(button);
