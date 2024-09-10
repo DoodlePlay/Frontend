@@ -7,12 +7,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      spacing: {
-        '5px': '5px',
-      },
-      borderRadius: {
-        '5px': '5px',
-      },
       colors: {
         primary: {
           50: '#fffee7',
