@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const Header = () => {
   const pathname = usePathname();
-  const showHeader = pathname === '/' || pathname === '/rooms';
+  const showHeader = pathname === '/' || pathname === '/room';
 
   if (!showHeader) return null;
 
