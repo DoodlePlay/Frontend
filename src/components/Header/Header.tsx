@@ -1,19 +1,24 @@
-"use client"; //Header의 조건부 렌더링을 위해서 Client component로 분리
+'use client'; //Header의 조건부 렌더링을 위해서 Client component로 분리
 
-import { usePathname } from "next/navigation";
+import React from 'react';
+import { usePathname } from 'next/navigation';
 
 const Header = () => {
   const pathname = usePathname();
-  const showHeader = pathname === "/" || pathname === "/rooms";
+  const showHeader = pathname === '/' || pathname === '/rooms';
 
   if (!showHeader) return null;
 
   return (
-    <div className="relative flex items-center justify-center text-center mt-20 cursor-default">
+    <div
+      className="relative flex items-center justify-center text-center mt-20 cursor-default"
+      style={{ fontFamily: 'Cherry Bomb One' }}
+    >
       <div
         className="text-7xl text-white"
         style={{
-          WebkitTextStroke: "7px white",
+          WebkitTextStroke: '9px white',
+          textShadow: '0px 10px 4px rgba(0, 0, 0, 0.4)',
         }}
       >
         Doodle Play
