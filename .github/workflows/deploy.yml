@@ -6,7 +6,7 @@ on:
       - 'master'
 
 jobs:
-  test: # 테스트 작업 추가
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -31,10 +31,28 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Send Discord Notification for Test Success
+        if: success()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{"content": "✅ 테스트 성공: 모든 테스트가 성공적으로 완료되었습니다."}' \
+               $DISCORD_WEBHOOK_URL
+
+      - name: Send Discord Notification for Test Failure
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{"content": "❌ 테스트 실패: 일부 테스트가 실패했습니다."}' \
+               $DISCORD_WEBHOOK_URL
+
   build:
     runs-on: ubuntu-latest
     container: pandoc/latex
-    needs: test # 'test' 작업이 성공해야만 이 작업이 실행됨
+    needs: test
     steps:
       - uses: actions/checkout@v4
 
@@ -56,6 +74,24 @@ jobs:
           user-email: ${{ secrets.EMAIL }}
           commit-message: ${{ github.event.commits[0].message }}
           target-branch: 'master'
+
+      - name: Send Discord Notification for Build Success
+        if: success()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{"content": "✅ 빌드 성공: Vercel로의 배포가 성공적으로 완료되었습니다."}' \
+               $DISCORD_WEBHOOK_URL
+
+      - name: Send Discord Notification for Build Failure
+        if: failure()
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{"content": "❌ 빌드 실패: Vercel로의 배포가 실패했습니다."}' \
+               $DISCORD_WEBHOOK_URL
 
       - name: Test get variable exported by push-to-another-repository
         run: echo $DESTINATION_CLONED_DIRECTORY
