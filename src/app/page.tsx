@@ -6,10 +6,10 @@ const HomePage = () => {
     <div className="text-black">
       Profile Setting Page
       <NamePlate title="test" score={200} drawing />
-      <SpeechBubble isSelected={false} title="Toxic Cover">
+      <SpeechBubble selectAvatar={false} title="Toxic Cover">
         군데군데 독극물을 뿌린다.
       </SpeechBubble>
-      <SpeechBubble isSelected />
+      <SpeechBubble selectAvatar />
     </div>
   );
 };
