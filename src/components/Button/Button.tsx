@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 
 type ButtonColor = 'primary' | 'secondary' | 'neutral';
@@ -5,6 +7,7 @@ type ButtonColor = 'primary' | 'secondary' | 'neutral';
 interface ButtonProps {
   text: string;
   color: ButtonColor;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const buttonStyles: Record<ButtonColor, string> = {
@@ -21,14 +24,18 @@ const textStrokeStyles: Record<ButtonColor, React.CSSProperties> = {
 
 const Button: React.FC<
   ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ text, color }) => {
+> = ({ text, color, onClick }) => {
   const baseStyle =
-    'text-3xl font-cherry w-full px-5 py-1 rounded-[10px] border-4 border-black drop-shadow-button';
+    'text-[34px] leading-9 font-cherry w-full px-5 pb-1.5 rounded-[10px] border-4 border-black drop-shadow-button';
   const colorStyle = buttonStyles[color];
   const strokeStyle = textStrokeStyles[color];
 
   return (
-    <button className={`${baseStyle} ${colorStyle}`} style={strokeStyle}>
+    <button
+      className={`${baseStyle} ${colorStyle}`}
+      style={strokeStyle}
+      onClick={onClick}
+    >
       {text}
     </button>
   );
