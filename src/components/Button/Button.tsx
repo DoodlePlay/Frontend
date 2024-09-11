@@ -27,8 +27,17 @@ const Button: React.FC<
 > = ({ text, color, onClick }) => {
   const baseStyle =
     'text-[34px] leading-9 font-cherry w-full px-5 pb-1.5 rounded-[10px] border-4 border-black drop-shadow-button';
-  const colorStyle = buttonStyles[color];
-  const strokeStyle = textStrokeStyles[color];
+
+  const validatedColor: ButtonColor = [
+    'primary',
+    'secondary',
+    'neutral',
+  ].includes(color)
+    ? (color as ButtonColor)
+    : 'primary';
+
+  const colorStyle = buttonStyles[validatedColor];
+  const strokeStyle = textStrokeStyles[validatedColor];
 
   return (
     <button
