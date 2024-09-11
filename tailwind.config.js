@@ -55,6 +55,7 @@ module.exports = {
       },
       dropShadow: {
         button: '0 4px 4px rgba(0, 0, 0, 0.4)',
+        modal: '0 4px 2px rgba(0, 0, 0, 0.5)',
       },
     },
   },
