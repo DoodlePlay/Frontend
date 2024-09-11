@@ -24,7 +24,7 @@ describe('아바타 컴포넌트', () => {
   });
 
   it('속성에 따라 크기와 배경색상이 변경된다.', () => {
-    render(<Avatar src="/images/avatars/man-1.svg" size="w-[175px] h-[175px]" backgroundColor="bg-primary-default" />);
+    render(<Avatar src="/images/avatars/man-1.svg" size="medium" />);
     const avatarDiv = screen.getByAltText('Avatar').parentElement;
     expect(avatarDiv).toHaveClass('w-[175px] h-[175px]');
     expect(avatarDiv).toHaveClass('bg-primary-default');

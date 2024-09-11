@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useState } from 'react';
+
 import ToggleButton from './ToggleButton';
 
 const Settings = () => {

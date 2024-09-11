@@ -1,10 +1,6 @@
 // tailwind.config.js
 module.exports = {
-  content: [
-    './src/**/*.{js,jsx,ts,tsx}',
-    './pages/**/*.{js,jsx,ts,tsx}',
-    './components/**/*.{js,jsx,ts,tsx}',
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './pages/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -50,6 +46,9 @@ module.exports = {
         disabled: '#dddddd',
         fuschia: '#EF5DA8',
       },
+    },
+    fontFamily: {
+      cherry: ['"Cherry Bomb One"'],
     },
   },
   plugins: [],
