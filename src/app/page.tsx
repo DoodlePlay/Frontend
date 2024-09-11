@@ -1,5 +1,5 @@
-import NamePlate from '../components/NamePlate';
-import SpeechBubble from '../components/SpeechBubble';
+import NamePlate from '../components/NamePlate/NamePlate';
+import SpeechBubble from '../components/SpeechBubble/SpeechBubble';
 
 const HomePage = () => {
   return (
