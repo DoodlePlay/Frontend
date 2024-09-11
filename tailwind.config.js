@@ -47,9 +47,6 @@ module.exports = {
         fuschia: '#EF5DA8',
       },
     },
-    fontFamily: {
-      cherry: ['"Cherry Bomb One"'],
-    },
   },
   plugins: [],
 };
