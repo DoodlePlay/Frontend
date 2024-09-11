@@ -14,7 +14,7 @@ const buttonStyles: Record<ButtonColor, string> = {
 };
 
 const textStrokeStyles: Record<ButtonColor, React.CSSProperties> = {
-  primary: { WebkitTextStroke: '2px white' },
+  primary: { WebkitTextStroke: '1px white' },
   secondary: { WebkitTextStroke: '2px #ffc700' },
   neutral: { WebkitTextStroke: '2px white' },
 };
