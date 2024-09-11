@@ -55,7 +55,9 @@ describe('버튼 컴포넌트', () => {
   });
 
   it('color prop이 유효하지 않으면 기본값 "primary"가 적용된다.', () => {
-    render(<Button text="TEST" color="invalidColor" onClick={() => {}} />);
+    render(
+      <Button text="TEST" color={'invalidColor' as any} onClick={() => {}} />
+    );
 
     const buttonElement = screen.getByText('TEST');
 
