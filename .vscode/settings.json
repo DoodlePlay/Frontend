@@ -22,5 +22,5 @@
   "prettier.requireConfig": false,
   "typescript.preferences.quoteStyle": "single",
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "cSpell.words": ["fuschia", "tailwindcss", "zustand"]
+  "cSpell.words": ["fuschia", "tailwindcss", "tseslint", "zustand"]
 }
