@@ -19,7 +19,8 @@ const Nickname = () => {
         <input
           type="text"
           placeholder="입력하세요"
-          className="w-[200px] h-[50px] ml-[10px] pl-[10px] rounded-[10px] border-[3px] border-black drop-shadow-button focus:outline-none"
+          className="w-[200px] h-[50px] ml-[10px] pl-[10px] rounded-[10px] border-[3px] border-black drop-shadow-button focus:outline-none text-xl font-bold  placeholder:font-medium"
+          spellCheck="false"
         />
       </div>
       <Button text="Play" color="primary" onClick={() => {}} />
