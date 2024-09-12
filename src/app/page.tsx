@@ -1,25 +1,19 @@
-'use client';
-
-import Button from '../components/Button/Button';
-import Modal from '../components/Modal/Modal';
+import Avatar from '../components/Avatar/Avatar';
+import Settings from '../components/Settings/Settings';
 
 const HomePage = () => {
-  const onClickButton = () => {
-    console.log('Button Click!');
-  };
-
   return (
-    <div className="text-black">
-      Profile Setting Page
-      <div className="flex flex-col gap-4 w-2/5">
-        <Button text="Play" color="primary" onClick={onClickButton} />
-        <Button text="EXIT" color="secondary" onClick={onClickButton} />
-        <Button text="No" color="neutral" onClick={onClickButton} />
+    <>
+      <div className="text-black">Profile Setting Page</div>
+      <div className="flex justify-center w-screen mt-20">
+        <Avatar src="/images/avatars/man-1.svg" size="large" />
       </div>
-      <Modal isOpen title="비밀번호 입력" onClose={() => {}}>
-        <p>비밀방에 입장하려면 비밀번호를 입력하세요.</p>
-      </Modal>
-    </div>
+      <div className="flex justify-center w-screen mt-20">
+        <div className="bg-white">
+          <Settings />
+        </div>
+      </div>
+    </>
   );
 };
 

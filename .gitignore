@@ -31,7 +31,7 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # IDE 및 편집기
-.vscode/
+
 .idea/
 *.suo
 *.ntvs*
