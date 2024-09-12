@@ -10,7 +10,7 @@ const Header = () => {
   if (!showHeader) return null;
 
   return (
-    <div className="flex justify-center mt-[80px] cursor-default">
+    <div className="flex justify-center pt-[80px] cursor-default">
       <img src="/images/Logo.svg" alt="로고" className="block" />
     </div>
   );
