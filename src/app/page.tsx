@@ -1,17 +1,19 @@
-import NamePlate from '../components/NamePlate';
-import SpeechBubble from '../components/SpeechBubble';
+import Avatar from '../components/Avatar/Avatar';
+import Settings from '../components/Settings/Settings';
 
 const HomePage = () => {
   return (
-    <div className="text-black">
-      Profile Setting Page
-      <NamePlate title="test" score={200} isDrawingActive />
-      <NamePlate title="선풍기" />
-      <SpeechBubble isAvatarSelected={false} title="Toxic Cover">
-        군데군데 독극물을 뿌린다.
-      </SpeechBubble>
-      <SpeechBubble isAvatarSelected />
-    </div>
+    <>
+      <div className="text-black">Profile Setting Page</div>
+      <div className="flex justify-center w-screen mt-20">
+        <Avatar src="/images/avatars/man-1.svg" size="large" />
+      </div>
+      <div className="flex justify-center w-screen mt-20">
+        <div className="bg-white">
+          <Settings />
+        </div>
+      </div>
+    </>
   );
 };
 
