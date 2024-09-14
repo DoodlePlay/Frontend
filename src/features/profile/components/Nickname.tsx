@@ -55,7 +55,7 @@ const Nickname = () => {
   };
 
   return (
-    <div className="relative  flex flex-col w-1/2 items-center pt-[38px] px-[78px] space-y-[40px]">
+    <div className="relative  flex flex-col items-center pt-[38px] px-[78px] space-y-[40px]">
       <h1 className="font-bold text-[32px] mb-[13px]">닉네임 설정</h1>
       <button
         className="absolute top-[85px] right-[160px] z-10"
@@ -63,7 +63,11 @@ const Nickname = () => {
           setIsOpen(!isOpen);
         }}
       >
-        <img src="/images/EditButton.svg" alt="Edit Character" />
+        <img
+          src="/images/EditButton.svg"
+          alt="Edit Character"
+          className="hover:scale-105 transition-transform duration-100"
+        />
       </button>
       <Avatar
         src={Avatars[clickedAvatarIndex].src}
@@ -93,6 +97,7 @@ const Nickname = () => {
           <div className="grid grid-cols-4 w-[520px] h-[350px] p-2 gap-y-10 overflow-y-scroll">
             {Avatars.map((avatar, index) => (
               <div
+                key={avatar.id}
                 className="cursor-pointer"
                 onClick={() => onAvatarClick(index)}
               >
