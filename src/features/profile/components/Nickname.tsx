@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import Avatar from '../../../components/Avatar/Avatar';
 import Button from '../../../components/Button/Button';
@@ -32,6 +33,8 @@ const Avatars = [
 const Nickname = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [clickedAvatarIndex, setClickedAvatarIndex] = useState(0);
+  const [nickname, setNickname] = useState('');
+  const router = useRouter();
   const bubbleRef = useRef(null);
 
   useEffect(() => {
@@ -52,6 +55,15 @@ const Nickname = () => {
 
   const onAvatarClick = (index: number) => {
     setClickedAvatarIndex(index);
+  };
+  const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNickname(event.target.value);
+  };
+  const onPlayClick = () => {
+    if (nickname.trim() !== '') {
+      sessionStorage.setItem('nickname', nickname);
+      router.push('/room');
+    }
   };
 
   return (
@@ -84,9 +96,10 @@ const Nickname = () => {
           placeholder="입력하세요"
           className="w-[200px] h-[50px] ml-[10px] pl-[10px] rounded-[10px] border-[3px] border-black drop-shadow-button focus:outline-none text-xl font-bold  placeholder:font-medium"
           spellCheck="false"
+          onChange={onNicknameChange}
         />
       </div>
-      <Button text="Play" color="primary" onClick={() => {}} />
+      <Button text="Play" color="primary" onClick={onPlayClick} />
       <div
         ref={bubbleRef}
         className={`absolute top-[125px] left-[45px] z-20 ${
