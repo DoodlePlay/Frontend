@@ -27,8 +27,8 @@ const Avatar = ({
 }: AvatarProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-
   const { isFlipped } = useFlipStore();
+
   useEffect(() => {
     if (isVideoOn && videoRef.current) {
       navigator.mediaDevices
@@ -68,7 +68,7 @@ const Avatar = ({
         <img
           src={src}
           alt="Avatar"
-          className="w-full h-full object-cover scale-110 translate-y-3"
+          className="w-full h-full object-cover scale-110 translate-y-[9px]"
         />
       )}
     </div>
