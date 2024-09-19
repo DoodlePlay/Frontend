@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Avatar from '../../../components/Avatar/Avatar';
 import Button from '../../../components/Button/Button';
 import SpeechBubble from '../../../components/SpeechBubble';
+import useAvatarStore from '../store/avatarStore';
 
 const Avatars = [
   { id: 1, src: '/images/avatars/man-1.svg' },
@@ -32,7 +33,7 @@ const Avatars = [
 
 const Nickname = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [clickedAvatarIndex, setClickedAvatarIndex] = useState(0);
+  const { clickedAvatarIndex, onAvatarClick } = useAvatarStore();
   const [nickname, setNickname] = useState('');
   const router = useRouter();
   const bubbleRef = useRef(null);
@@ -53,9 +54,6 @@ const Nickname = () => {
     };
   }, [isOpen, clickedAvatarIndex]);
 
-  const onAvatarClick = (index: number) => {
-    setClickedAvatarIndex(index);
-  };
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(event.target.value);
   };
