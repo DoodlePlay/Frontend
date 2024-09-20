@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
 
 import ToggleButton from './ToggleButton';
 import useVideoStore from '../../features/profile/store/videoStore';
@@ -10,8 +9,23 @@ import useSoundStore from '../../features/profile/store/soundStore';
 
 const Settings = () => {
   const { isVideoOn, toggleVideo } = useVideoStore();
-  const { isSoundOn, toggleSound } = useSoundStore();
-  const { isFlipped, toggleFlip } = useFlipStore();
+  const { isSoundOn, toggleSound, setSoundState } = useSoundStore();
+  const { isFlipped, toggleFlip, setFlipState } = useFlipStore();
+
+  //서버사이드 렌더링이 아닌 클라이언트사이드 렌더링 때 local storage에서 데이터를 가져온다
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const soundState = localStorage.getItem('sound-storage');
+      const flipState = localStorage.getItem('flip-storage');
+
+      if (soundState !== null) {
+        setSoundState(JSON.parse(soundState)); // local storage에서 효과음 상태 가져오기
+      }
+      if (flipState !== null) {
+        setFlipState(JSON.parse(flipState)); // local storage에서 좌우반전 상태 가져오기
+      }
+    }
+  }, []);
   return (
     <div className="flex flex-col justify-between">
       <div className="flex items-center mb-[10px]">
