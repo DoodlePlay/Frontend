@@ -53,19 +53,22 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
   selectedSize,
   setSelectedSize,
 }) => {
-  const sizes: SizeOption[] = ['small', 'medium', 'large'];
-  const sizeClasses = (size: SizeOption) =>
-    `flex cursor-pointer rounded-full ${
-      selectedSize === size ? 'bg-secondary-default' : 'bg-black'
-    }`;
+  const sizes: { option: SizeOption; sizePx: number }[] = [
+    { option: 'small', sizePx: 12 },
+    { option: 'medium', sizePx: 16 },
+    { option: 'large', sizePx: 20 },
+  ];
 
   return (
     <div className="flex w-full flex-row flex-wrap gap-x-[10px] gap-y-[20px] justify-between items-center">
-      {sizes.map((size, index) => (
+      {sizes.map(({ option, sizePx }) => (
         <div
-          key={size}
-          className={`w-${index + 3} h-${index + 3} ${sizeClasses(size)}`}
-          onClick={() => setSelectedSize(size)}
+          key={option}
+          className={`flex cursor-pointer rounded-full ${
+            selectedSize === option ? 'bg-secondary-default' : 'bg-black'
+          }`}
+          style={{ width: `${sizePx}px`, height: `${sizePx}px` }}
+          onClick={() => setSelectedSize(option)}
         />
       ))}
     </div>
