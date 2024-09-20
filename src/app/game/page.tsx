@@ -1,4 +1,3 @@
-import NamePlate from '../../components/NamePlate/NamePlate';
 import Toolbar from '../../features/drawing/components/Toolbar';
 
 const GamePage = () => {
