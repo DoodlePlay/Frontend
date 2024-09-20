@@ -64,7 +64,7 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
       {sizes.map((size, index) => (
         <div
           key={size}
-          className={`${sizeClasses(size)} w-${index + 3} h-${index + 3}`}
+          className={`w-${index + 3} h-${index + 3} ${sizeClasses(size)}`}
           onClick={() => setSelectedSize(size)}
         />
       ))}
