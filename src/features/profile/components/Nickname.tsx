@@ -7,6 +7,7 @@ import Avatar from '../../../components/Avatar/Avatar';
 import Button from '../../../components/Button/Button';
 import SpeechBubble from '../../../components/SpeechBubble';
 import useAvatarStore from '../store/avatarStore';
+import useNicknameStore from '../store/nicknameStore';
 
 const Avatars = [
   { id: 1, src: '/images/avatars/man-1.svg' },
@@ -34,7 +35,7 @@ const Avatars = [
 const Nickname = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { clickedAvatarIndex, onAvatarClick } = useAvatarStore();
-  const [nickname, setNickname] = useState('');
+  const { nickname, setNickname } = useNicknameStore();
   const router = useRouter();
   const bubbleRef = useRef(null);
 
@@ -54,13 +55,19 @@ const Nickname = () => {
     };
   }, [isOpen, clickedAvatarIndex]);
 
+  const isCorrectNickname = (nickname: string) => {
+    const trimmedNickname = nickname.trim();
+    return /^[\uAC00-\uD7A3]{2,6}$/.test(trimmedNickname); // 2~6자의 한글로만 이루어졌는지 확인
+  };
+
   const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(event.target.value);
   };
   const onPlayClick = () => {
-    if (nickname.trim() !== '') {
-      sessionStorage.setItem('nickname', nickname);
+    if (isCorrectNickname(nickname)) {
       router.push('/room');
+    } else {
+      alert('닉네임을 2~6자의 한글로 입력해주세요.');
     }
   };
 
@@ -91,7 +98,7 @@ const Nickname = () => {
         </span>
         <input
           type="text"
-          placeholder="입력하세요"
+          placeholder="2~6자로 입력하세요"
           className="w-[200px] h-[50px] ml-[10px] pl-[10px] rounded-[10px] border-[3px] border-black drop-shadow-button focus:outline-none text-xl font-bold  placeholder:font-medium"
           spellCheck="false"
           onChange={onNicknameChange}
