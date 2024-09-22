@@ -1,6 +1,10 @@
 // tailwind.config.js
 module.exports = {
-  content: ['./src/**/*.{js,jsx,ts,tsx}', './pages/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}',
+    './pages/**/*.{js,jsx,ts,tsx}',
+    './components/**/*.{js,jsx,ts,tsx}',
+  ],
   theme: {
     extend: {
       colors: {
@@ -56,6 +60,10 @@ module.exports = {
       boxShadow: {
         board: '0 4px 10px 2px rgba(0, 0, 0, 0.5)',
         border: '0 0 25px rgba(0, 0, 0, 0.65)',
+      },
+      screens: {
+        tall: { raw: '(min-height: 1000px)' },
+        short: { raw: '(max-height: 999px)' },
       },
     },
   },
