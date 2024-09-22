@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import ToggleButton from './ToggleButton';
 import useVideoStore from '../../features/profile/store/videoStore';
