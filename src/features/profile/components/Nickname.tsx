@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 
 import Avatar from '../../../components/Avatar/Avatar';
 import Button from '../../../components/Button/Button';
@@ -31,10 +32,13 @@ const Avatars = [
   { id: 20, src: '/images/avatars/woman-8.svg' },
 ];
 
+interface FormData {
+  nickname: string;
+}
+
 const Nickname = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { nickname, setNickname, clickedAvatarIndex, onAvatarClick } =
-    useUserInfoStore();
+  const { setNickname, clickedAvatarIndex, onAvatarClick } = useUserInfoStore();
   const router = useRouter();
   const bubbleRef = useRef(null);
 
@@ -52,32 +56,35 @@ const Nickname = () => {
     return () => {
       document.removeEventListener('mousedown', onClickOutside);
     };
-  }, [isOpen, clickedAvatarIndex]);
+  }, [isOpen]);
 
-  const isCorrectNickname = (nickname: string) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    mode: 'onSubmit',
+  });
+
+  const validateNickname = (nickname: string) => {
     const trimmedNickname = nickname.trim();
-    return /^[\uAC00-\uD7A3]{2,6}$/.test(trimmedNickname); // 2~6자의 한글로만 이루어졌는지 확인
+    return (
+      /^[\uAC00-\uD7A3]{2,6}$/.test(trimmedNickname) ||
+      '한글 2 ~ 6 자로 입력해주세요.'
+    );
   };
 
-  const onNicknameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(event.target.value);
-  };
-  const onPlayClick = () => {
-    if (isCorrectNickname(nickname)) {
-      router.push('/room');
-    } else {
-      alert('닉네임을 2~6자의 한글로 입력해주세요.');
-    }
+  const onSubmit = (data: FormData) => {
+    setNickname(data.nickname);
+    router.push('/room');
   };
 
   return (
-    <div className="relative  flex flex-col items-center pt-[38px] px-[78px] space-y-[40px]">
+    <div className="relative flex flex-col items-center pt-[38px] px-[78px] space-y-[40px]">
       <h1 className="font-bold text-[32px] mb-[13px]">닉네임 설정</h1>
       <button
         className="absolute top-[85px] right-[160px] z-10"
-        onClick={() => {
-          setIsOpen(!isOpen);
-        }}
+        onClick={() => setIsOpen(!isOpen)}
       >
         <img
           src="/images/EditButton.svg"
@@ -90,20 +97,41 @@ const Nickname = () => {
         isMyCharacter
         size="large"
       />
-      <div className="flex items-center">
-        <img src="/images/People.svg" alt="people icon" />
-        <span className="font-bold text-2xl ml-[10px] whitespace-nowrap">
-          닉네임 :
-        </span>
-        <input
-          type="text"
-          placeholder="2~6자로 입력하세요"
-          className="w-[200px] h-[50px] ml-[10px] pl-[10px] rounded-[10px] border-[3px] border-black drop-shadow-button focus:outline-none text-xl font-bold  placeholder:font-medium"
-          spellCheck="false"
-          onChange={onNicknameChange}
-        />
-      </div>
-      <Button text="Play" color="primary" onClick={onPlayClick} />
+      <form>
+        <div className="flex items-center">
+          <img src="/images/People.svg" alt="people icon" />
+          <label className="font-bold text-2xl ml-[10px] whitespace-nowrap">
+            닉네임 :
+          </label>
+          <input
+            id="nickname"
+            type="text"
+            placeholder="한글 2 ~ 6자"
+            className="w-[200px] h-[50px] ml-[10px] pl-[10px] rounded-[10px] border-[3px] border-black drop-shadow-button focus:outline-none text-xl font-bold placeholder:font-medium"
+            spellCheck="false"
+            {...register('nickname', {
+              required: '닉네임을 입력하세요.',
+              validate: validateNickname,
+            })}
+          />
+        </div>
+        {errors.nickname && (
+          <div className="flex justify-end">
+            <span className="absolute  text-red-500">
+              {errors.nickname.message}
+            </span>
+          </div>
+        )}
+        <div className="mt-[40px]">
+          <Button
+            type="submit"
+            text="Play"
+            color="primary"
+            onClick={handleSubmit(onSubmit)}
+            className="mt-[40px]"
+          />
+        </div>
+      </form>
       <div
         ref={bubbleRef}
         className={`absolute top-[125px] left-[45px] z-20 ${
@@ -131,4 +159,5 @@ const Nickname = () => {
     </div>
   );
 };
+
 export default Nickname;
