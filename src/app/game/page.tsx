@@ -1,3 +1,4 @@
+import TimerBar from '../../features/drawing/components/TimeBar';
 import Toolbar from '../../features/drawing/components/Toolbar';
 
 const GamePage = () => {
@@ -15,6 +16,7 @@ const GamePage = () => {
               />
             </h1>
             <Toolbar />
+            <TimerBar duration={60} />
           </div>
           <div>chat</div>
         </div>

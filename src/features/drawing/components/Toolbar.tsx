@@ -64,7 +64,7 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
       {sizes.map(({ option, sizePx }) => (
         <div
           key={option}
-          className={`flex cursor-pointer rounded-full ${
+          className={`flex cursor-pointer rounded-full duration-300 hover:bg-secondary-500 ${
             selectedSize === option ? 'bg-secondary-default' : 'bg-black'
           }`}
           style={{ width: `${sizePx}px`, height: `${sizePx}px` }}
@@ -138,7 +138,7 @@ const ToolItem: React.FC<ToolItemProps> = ({ icon, selected, onClick }) => {
   return (
     <div
       className={`max-w-1/2 p-[10px] flex items-center justify-center rounded-[5px] cursor-pointer transition-all duration-300 ${
-        selected ? 'bg-primary-300' : ''
+        selected ? 'bg-primary-300' : ' hover:bg-primary-400'
       }`}
       onClick={onClick}
     >
@@ -181,8 +181,8 @@ interface ColorItemProps {
 const ColorItem: React.FC<ColorItemProps> = ({ color, selected, onClick }) => {
   return (
     <div
-      className={`max-w-1/2 p-[10px] flex items-center justify-center rounded-[5px] cursor-pointer transition-all duration-300 ${
-        selected ? 'bg-primary-300' : ''
+      className={`max-w-1/2 p-[10px] flex items-center justify-center rounded-[5px] cursor-pointer transition-all duration-300 hover:bg-primary-400 ${
+        selected ? 'bg-primary-300' : ' hover:bg-primary-400'
       }`}
       onClick={onClick}
     >
