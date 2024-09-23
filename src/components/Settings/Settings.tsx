@@ -3,14 +3,17 @@
 import React from 'react';
 
 import ToggleButton from './ToggleButton';
-import useVideoStore from '../../features/profile/store/videoStore';
-import useFlipStore from '../../features/profile/store/flipStore';
-import useSoundStore from '../../features/profile/store/soundStore';
+import useUserInfoStore from '../../features/profile/store/userInfoStore';
 
 const Settings = () => {
-  const { isVideoOn, toggleVideo } = useVideoStore();
-  const { isSoundOn, toggleSound } = useSoundStore();
-  const { isFlipped, toggleFlip } = useFlipStore();
+  const {
+    isVideoOn,
+    toggleVideo,
+    isSoundOn,
+    toggleSound,
+    isFlipped,
+    toggleFlip,
+  } = useUserInfoStore();
 
   return (
     <div className="flex flex-col justify-between">

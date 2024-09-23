@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 
-import useFlipStore from '../../features/profile/store/flipStore';
-import useVideoStore from '../../features/profile/store/videoStore';
+import useUserInfoStore from '../../features/profile/store/userInfoStore';
 
 interface AvatarProps {
   isVideoOn?: boolean;
@@ -28,8 +27,7 @@ const Avatar = ({
 }: AvatarProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const { isFlipped } = useFlipStore();
-  const { toggleVideo } = useVideoStore();
+  const { isFlipped, toggleVideo } = useUserInfoStore();
 
   // 연결된 카메라 장치가 있는지 확인
   const checkCameraConnected = async () => {
