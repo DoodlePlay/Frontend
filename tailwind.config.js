@@ -66,7 +66,7 @@ module.exports = {
         short: { raw: '(max-height: 999px)' },
       },
       backgroundImage: {
-        'webCam-bg': "url('/images/webCamProfile.svg')",
+        webCam: "url('/images/webCamProfile.svg')",
       },
     },
   },

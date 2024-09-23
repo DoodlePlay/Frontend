@@ -94,20 +94,23 @@ const Avatar = ({
         sizeClasses[size]
       } ${isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'} `}
     >
-      <img
-        src={src}
-        alt="Avatar"
-        className="w-full h-full object-cover scale-110 translate-y-[9px]"
-      />
       {isVideoOn ? (
-        <video
-          ref={videoRef}
-          role="video"
-          className={`w-full h-full object-cover ${
-            isFlipped ? 'transform scale-x-[-1]' : ''
-          }`}
+        <div className="w-full h-full object-cover scale-110 translate-y-[9px] bg-webCam bg-cover bg-center">
+          <video
+            ref={videoRef}
+            role="video"
+            className={`w-full h-full object-cover ${
+              isFlipped ? 'transform scale-x-[-1]' : ''
+            }`}
+          />
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt="Avatar"
+          className="w-full h-full object-cover scale-110 translate-y-[9px]"
         />
-      ) : null}
+      )}
     </div>
   );
 };
