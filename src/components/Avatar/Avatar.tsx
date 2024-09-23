@@ -8,7 +8,7 @@ interface AvatarProps {
   isVideoOn?: boolean;
   isClicked?: boolean;
   isMyCharacter?: boolean;
-  size?: 'small' | 'medium' | 'large' | 'xLarge';
+  size?: 'small' | 'medium' | 'large';
   src: string;
 }
 
@@ -92,8 +92,13 @@ const Avatar = ({
     <div
       className={`overflow-hidden outline outline-3 outline-black rounded-full ${
         sizeClasses[size]
-      } ${isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'}`}
+      } ${isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'} `}
     >
+      <img
+        src={src}
+        alt="Avatar"
+        className="w-full h-full object-cover scale-110 translate-y-[9px]"
+      />
       {isVideoOn ? (
         <video
           ref={videoRef}
@@ -102,13 +107,7 @@ const Avatar = ({
             isFlipped ? 'transform scale-x-[-1]' : ''
           }`}
         />
-      ) : (
-        <img
-          src={src}
-          alt="Avatar"
-          className="w-full h-full object-cover scale-110 translate-y-[9px]"
-        />
-      )}
+      ) : null}
     </div>
   );
 };

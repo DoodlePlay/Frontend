@@ -65,6 +65,9 @@ module.exports = {
         tall: { raw: '(min-height: 1000px)' },
         short: { raw: '(max-height: 999px)' },
       },
+      backgroundImage: {
+        'webCam-bg': "url('/images/webCamProfile.svg')",
+      },
     },
   },
   plugins: [],
