@@ -89,7 +89,7 @@ const Nickname = () => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <img
-          src="/images/editButtion.svg"
+          src="/images/editButton.svg"
           alt="Edit Character"
           className="hover:scale-105 transition-transform duration-100"
         />
