@@ -9,7 +9,7 @@ import Button from '../../../components/Button/Button';
 import SpeechBubble from '../../../components/SpeechBubble';
 import useUserInfoStore from '../store/userInfoStore';
 
-const Avatars = [
+export const Avatars = [
   { id: 1, src: '/images/avatars/man-1.svg' },
   { id: 2, src: '/images/avatars/woman-2.svg' },
   { id: 3, src: '/images/avatars/man-2.svg' },

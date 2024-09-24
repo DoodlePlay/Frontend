@@ -17,7 +17,7 @@ const useUserInfoStore = create<userInfoState>(set => ({
   nickname: '',
   setNickname: newNickname => set({ nickname: newNickname }),
   clickedAvatarIndex: 0,
-  onAvatarClick: index => set(state => ({ clickedAvatarIndex: index })),
+  onAvatarClick: index => set({ clickedAvatarIndex: index }),
   isVideoOn: false,
   toggleVideo: () => set(state => ({ isVideoOn: !state.isVideoOn })),
   isSoundOn: true,
