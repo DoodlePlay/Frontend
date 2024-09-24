@@ -111,9 +111,16 @@ const Nickname = () => {
             placeholder="한글 2 ~ 6자"
             className="w-[200px] h-[50px] ml-[10px] pl-[10px] rounded-[10px] border-[3px] border-black drop-shadow-button focus:outline-none text-xl font-bold placeholder:font-medium"
             spellCheck="false"
+            maxLength={6}
             {...register('nickname', {
               required: '닉네임을 입력하세요.',
               validate: validateNickname,
+              onChange: e => {
+                const { value } = e.target;
+                if (value.length > 6) {
+                  e.target.value = value.slice(0, 6);
+                }
+              },
             })}
           />
         </div>
