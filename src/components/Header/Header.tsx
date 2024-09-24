@@ -11,7 +11,7 @@ const Header = () => {
 
   return (
     <div className="flex justify-center tall:pt-[80px] short:pt-0 cursor-default">
-      <img src="/images/Logo.svg" alt="로고" className="block" />
+      <img src="/images/logo.svg" alt="로고" className="block" />
     </div>
   );
 };

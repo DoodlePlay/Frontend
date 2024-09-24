@@ -11,26 +11,26 @@ import useUserInfoStore from '../store/userInfoStore';
 import playSound from '../../../utils/helpers/playSound';
 
 export const Avatars = [
-  { id: 1, src: '/images/avatars/man-1.svg' },
-  { id: 2, src: '/images/avatars/woman-2.svg' },
-  { id: 3, src: '/images/avatars/man-2.svg' },
-  { id: 4, src: '/images/avatars/man-3.svg' },
-  { id: 5, src: '/images/avatars/woman-5.svg' },
-  { id: 6, src: '/images/avatars/man-4.svg' },
-  { id: 7, src: '/images/avatars/woman-4.svg' },
-  { id: 8, src: '/images/avatars/man-5.svg' },
-  { id: 9, src: '/images/avatars/woman-9.svg' },
-  { id: 10, src: '/images/avatars/man-6.svg' },
-  { id: 11, src: '/images/avatars/man-7.svg' },
-  { id: 12, src: '/images/avatars/woman-3.svg' },
-  { id: 13, src: '/images/avatars/man-9.svg' },
-  { id: 14, src: '/images/avatars/man-10.svg' },
-  { id: 15, src: '/images/avatars/woman-1.svg' },
-  { id: 16, src: '/images/avatars/woman-6.svg' },
-  { id: 17, src: '/images/avatars/man-8.svg' },
-  { id: 18, src: '/images/avatars/woman-7.svg' },
-  { id: 19, src: '/images/avatars/man-11.svg' },
-  { id: 20, src: '/images/avatars/woman-8.svg' },
+  { id: 1, src: '/images/avatars/man1.svg' },
+  { id: 2, src: '/images/avatars/woman2.svg' },
+  { id: 3, src: '/images/avatars/man2.svg' },
+  { id: 4, src: '/images/avatars/man3.svg' },
+  { id: 5, src: '/images/avatars/woman5.svg' },
+  { id: 6, src: '/images/avatars/man4.svg' },
+  { id: 7, src: '/images/avatars/woman4.svg' },
+  { id: 8, src: '/images/avatars/man5.svg' },
+  { id: 9, src: '/images/avatars/woman9.svg' },
+  { id: 10, src: '/images/avatars/man6.svg' },
+  { id: 11, src: '/images/avatars/man7.svg' },
+  { id: 12, src: '/images/avatars/woman3.svg' },
+  { id: 13, src: '/images/avatars/man9.svg' },
+  { id: 14, src: '/images/avatars/man10.svg' },
+  { id: 15, src: '/images/avatars/woman1.svg' },
+  { id: 16, src: '/images/avatars/woman6.svg' },
+  { id: 17, src: '/images/avatars/man8.svg' },
+  { id: 18, src: '/images/avatars/woman7.svg' },
+  { id: 19, src: '/images/avatars/man11.svg' },
+  { id: 20, src: '/images/avatars/woman8.svg' },
 ];
 
 interface FormData {
@@ -76,7 +76,7 @@ const Nickname = () => {
   };
 
   const onSubmit = (data: FormData) => {
-    playSound('/sounds/sample-button-click.mp3');
+    playSound('/sounds/sampleButtonClick.mp3');
     setNickname(data.nickname);
     router.push('/room');
   };

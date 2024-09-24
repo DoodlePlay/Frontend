@@ -21,7 +21,7 @@ const Settings = () => {
         <img src="/images/settings/gear.svg" alt="설정" />
         <span className="text-2xl font-bold ml-1 mr-3">카메라</span>
         <img
-          src="/images/settings/cam-disabled.svg"
+          src="/images/settings/camDisabled.svg"
           alt="카메라 끄기"
           className={`${
             !isVideoOn
@@ -46,7 +46,7 @@ const Settings = () => {
         <img src="/images/settings/gear.svg" alt="이미지" />
         <span className="text-2xl font-bold ml-1 mr-3">효과음</span>
         <img
-          src="/images/settings/speaker-none.svg"
+          src="/images/settings/speakerDisabled.svg"
           alt="효과음 끄기"
           className={`${
             !isSoundOn
