@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 
 import Avatar from '../../../components/Avatar/Avatar';
 import Button from '../../../components/Button/Button';
-import SpeechBubble from '../../../components/SpeechBubble';
+import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';
 import useUserInfoStore from '../store/userInfoStore';
 import playSound from '../../../utils/helpers/playSound';
 
