@@ -24,13 +24,12 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
   const progress = (timeLeft / duration) * 100;
 
   return (
-    <div className="flex items-center">
-      <div className="mr-2">
+    <div className="flex items-center gap-x-[15px]">
+      <div className="ml-1">
         <img
           src="/images/drawing/hourglass.svg"
           alt="hourglass"
           loading="lazy"
-          className=""
           style={{ animation: `spin ${duration}s linear infinite` }}
         />
       </div>
