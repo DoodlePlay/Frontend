@@ -34,9 +34,9 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
           style={{ animation: `spin ${duration}s linear infinite` }}
         />
       </div>
-      <div className="w-full bg-gray-300 h-3 rounded-full overflow-hidden">
+      <div className="w-full bg-disabled h-3 rounded-full overflow-hidden">
         <div
-          className="bg-green-500 h-full"
+          className="bg-secondary-default h-full"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
