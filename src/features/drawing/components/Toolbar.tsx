@@ -231,7 +231,7 @@ const SquareIcon: React.FC<{ selected: boolean }> = ({ selected }) => (
     stroke={selected ? '#228B22' : '#FFE999'}
     className="w-[25px] h-[25px]"
   >
-    <rect x="2" y="2" width="25" height="25" stroke-width="3" fill="none" />
+    <rect x="2" y="2" width="25" height="25" strokeWidth="3" fill="none" />
   </svg>
 );
 
@@ -244,7 +244,7 @@ const CircleIcon: React.FC<{ selected: boolean }> = ({ selected }) => (
     className="w-[25px] h-[25px]"
   >
     {/* Circle Icon Path */}
-    <circle cx="14.5" cy="14.5" r="12.5" stroke-width="3" />
+    <circle cx="14.5" cy="14.5" r="12.5" strokeWidth="3" />
   </svg>
 );
 
@@ -272,15 +272,15 @@ const ClearIcon: React.FC<{ selected: boolean }> = ({ selected }) => (
     {/* Clear/Delete Icon Path */}
     <path
       d="M19.9001 8.27246H3.1001V26.6548H19.9001V8.27246Z"
-      stroke-width="2"
+      strokeWidth="2"
     />
-    <path d="M22 4.5957H1V8.27217H22V4.5957Z" stroke-width="2" />
-    <path d="M4.5 1.65479L18.5 1.65479" stroke-width="2" />
-    <path d="M5.37512 4.15479L5.28773 4.59793" stroke-width="2" />
-    <path d="M5.20007 8.27246V26.6548" stroke-width="2" />
-    <path d="M9.3999 8.27246V26.6548" stroke-width="2" />
-    <path d="M13.6001 8.27246V26.6548" stroke-width="2" />
-    <path d="M17.7999 8.27246V26.6548" stroke-width="2" />
+    <path d="M22 4.5957H1V8.27217H22V4.5957Z" strokeWidth="2" />
+    <path d="M4.5 1.65479L18.5 1.65479" strokeWidth="2" />
+    <path d="M5.37512 4.15479L5.28773 4.59793" strokeWidth="2" />
+    <path d="M5.20007 8.27246V26.6548" strokeWidth="2" />
+    <path d="M9.3999 8.27246V26.6548" strokeWidth="2" />
+    <path d="M13.6001 8.27246V26.6548" strokeWidth="2" />
+    <path d="M17.7999 8.27246V26.6548" strokeWidth="2" />
     <line x1="5.87512" y1="2.48804" x2="5.87512" y2="4.1547" />
     <line x1="5" y1="2.48804" x2="5" y2="4.1547" />
     <line x1="18.1249" y1="2.48804" x2="18.1249" y2="4.1547" />
