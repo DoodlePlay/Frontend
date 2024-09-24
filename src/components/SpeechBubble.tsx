@@ -2,13 +2,14 @@ import React from 'react';
 
 interface SpeechBubbleProps {
   title?: string;
-  children?: string;
+  children?: React.ReactNode;
   isAvatarSelected: boolean;
 }
 
 const SpeechBubble: React.FC<SpeechBubbleProps> = ({
   title,
   children,
+
   isAvatarSelected,
 }) => {
   return (
@@ -19,7 +20,7 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
     >
       <div className="absolute top-[-15px] left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white rounded-[4px] border-4 border-b-0 border-r-0 border-black rotate-45"></div>
       {isAvatarSelected ? (
-        <div className="flex justify-center">avatar</div>
+        <div className="flex justify-center">{children}</div>
       ) : (
         <div className="flex flex-col items-start gap-[10px]">
           <h3 className="text-base" style={{ fontFamily: 'Cherry Bomb One' }}>
