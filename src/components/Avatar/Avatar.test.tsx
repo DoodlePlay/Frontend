@@ -4,6 +4,26 @@ import { describe, it, expect } from 'vitest';
 
 import Avatar from './Avatar';
 
+beforeAll(() => {
+  // navigator.mediaDevices의 mock 설정 (Vitest의 vi 객체 사용)
+  global.navigator = {
+    mediaDevices: {
+      getUserMedia: vi.fn().mockResolvedValue({
+        getTracks: vi.fn(),
+      }),
+      enumerateDevices: vi
+        .fn()
+        .mockResolvedValue([
+          {
+            kind: 'videoinput',
+            label: 'Mock Camera',
+            deviceId: 'mock-device-id',
+          },
+        ]),
+    },
+  } as unknown as Navigator;
+});
+
 describe('아바타 컴포넌트', () => {
   it('카메라가 꺼져있으면 캐릭터 이미지가 렌더링된다.', () => {
     render(<Avatar src="/images/avatars/man-1.svg" />);
