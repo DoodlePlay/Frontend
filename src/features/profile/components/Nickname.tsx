@@ -71,7 +71,7 @@ const Nickname = () => {
     const trimmedNickname = nickname.trim();
     return (
       /^[\uAC00-\uD7A3]{2,6}$/.test(trimmedNickname) ||
-      '한글 2 ~ 6 자로 입력해주세요.'
+      '한글 2 ~ 6 자로 입력하세요.'
     );
   };
 
@@ -125,7 +125,7 @@ const Nickname = () => {
           />
         </div>
         {errors.nickname && (
-          <div className="flex justify-end">
+          <div className="pl-[158px] mt-1">
             <span className="absolute  text-red-500">
               {errors.nickname.message}
             </span>
