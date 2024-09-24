@@ -8,6 +8,7 @@ import Avatar from '../../../components/Avatar/Avatar';
 import Button from '../../../components/Button/Button';
 import SpeechBubble from '../../../components/SpeechBubble';
 import useUserInfoStore from '../store/userInfoStore';
+import playSound from '../../../utils/helpers/playSound';
 
 export const Avatars = [
   { id: 1, src: '/images/avatars/man-1.svg' },
@@ -75,6 +76,7 @@ const Nickname = () => {
   };
 
   const onSubmit = (data: FormData) => {
+    playSound('/sounds/sample-button-click.mp3');
     setNickname(data.nickname);
     router.push('/room');
   };
