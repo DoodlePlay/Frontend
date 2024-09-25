@@ -60,6 +60,7 @@ module.exports = {
         button: '0 4px 4px rgba(0, 0, 0, 0.4)',
         modal: '0 4px 2px rgba(0, 0, 0, 0.5)',
         namePlate: '0 3px 0 rgba(119, 119, 119, 1)',
+        drawing: '0 4px 10px rgba(0, 0, 0, 0.5)',
       },
       boxShadow: {
         board: '0 4px 10px 2px rgba(0, 0, 0, 0.5)',

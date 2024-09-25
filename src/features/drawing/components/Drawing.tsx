@@ -84,7 +84,6 @@ const Drawing: React.FC = () => {
           backgroundSize: comment === undefined ? '60%' : '40%',
           backgroundPosition: comment === undefined ? 'center' : 'center 30%',
           backgroundRepeat: 'no-repeat',
-          boxShadow: '0 4px 10px 2px rgba(0, 0, 0, 0.5)',
         }}
         className="flex flex-col gap-y-[20px] bg-white drop-shadow-drawing max-w-[780px] min-h-[630px] w-full h-full relative p-[20px] rounded-[10px] border-[4px] border-black"
       >
