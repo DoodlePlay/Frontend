@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';
 
 const items = [
   {
@@ -39,7 +40,7 @@ const ItemBox = () => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col items-center justify-center bg-primary-default p-4 rounded-lg border-black border-[4px] drop-shadow-drawing">
+    <div className="relative flex flex-col items-center justify-center bg-primary-default p-4 rounded-lg border-black border-[4px] drop-shadow-drawing z-20">
       <h2
         className="text-green-800 text-2xl font-bold mb-2 font-cherry"
         style={{
@@ -53,7 +54,7 @@ const ItemBox = () => {
         {items.map(item => (
           <div
             key={item.id}
-            className="relative max-w-[70px] max-h-[70px] bg-white border-[3px] border-black rounded-[5px] z-50"
+            className="relative max-w-[70px] max-h-[70px] bg-white border-[3px] border-black rounded-[5px] z-30 cursor-pointer"
             onMouseEnter={() => setHoveredItem(item.id)}
             onMouseLeave={() => setHoveredItem(null)}
           >
@@ -71,10 +72,9 @@ const ItemBox = () => {
               </div>
             )}
             {hoveredItem === item.id && (
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-[180px] p-2 bg-white border-[3px] border-black rounded-lg">
-                <div className="font-bold">{item.id}</div>
-                <div className="text-sm">{item.description}</div>
-              </div>
+              <SpeechBubble isAvatarSelected={false} title={item.id}>
+                {item.description}
+              </SpeechBubble>
             )}
           </div>
         ))}
