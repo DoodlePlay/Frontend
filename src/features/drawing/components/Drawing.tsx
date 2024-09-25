@@ -1,9 +1,11 @@
 'use client';
-import { useState } from 'react';
+
+import { useEffect, useState } from 'react';
+
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
 
-type QuizState = 'break-time' | 'time-over' | 'success' | 'idle';
+type QuizState = 'breakTime' | 'timeOver' | 'success' | 'wait' | 'choose';
 
 // 각 아이템의 초기 상태를 정의합니다.
 const initialItemsState = {
@@ -16,7 +18,8 @@ const initialItemsState = {
 
 const Drawing: React.FC = () => {
   const [items, setItems] = useState(initialItemsState);
-  const [quizState, setQuizState] = useState<QuizState>('idle'); // 초기 상태는 'idle'
+  const [quizState, setQuizState] = useState<QuizState>('wait');
+  const [comment, setComment] = useState('');
 
   //test용
   items.ToxicCover = true;
@@ -25,9 +28,9 @@ const Drawing: React.FC = () => {
   // 상황에 따른 백그라운드 이미지를 설정합니다.
   const getBackgroundImage = () => {
     switch (quizState) {
-      case 'break-time':
+      case 'breakTime':
         return '/images/drawing/break-time.png';
-      case 'time-over':
+      case 'timeOver':
         return '/images/drawing/time-over.png';
       case 'success':
         return '/images/drawing/success.png';
@@ -36,18 +39,40 @@ const Drawing: React.FC = () => {
     }
   };
 
+  // 상황에 따른 comment를 설정하는 useEffect
+  useEffect(() => {
+    switch (quizState) {
+      case 'timeOver':
+        setComment("Time's up");
+        break;
+      case 'breakTime':
+        setComment('Break Time');
+        break;
+      case 'choose':
+        setComment('Choose a word');
+        break;
+      default:
+        setComment('');
+    }
+  }, [quizState]);
+
+  //TODO: 출제자 확인 후 toolbar hidden
+
+  // 타임오버 상태로 전환
   const handleTimeUp = () => {
-    setQuizState('time-over'); // 타임오버 상태로 전환
+    setQuizState('timeOver');
     console.log('Time Over!');
   };
 
+  //TODO : 정답을 맞췄을 때 상태 전환
   const handleCorrectAnswer = () => {
-    setQuizState('success'); // 정답을 맞췄을 때 상태 전환
+    setQuizState('success');
     console.log('Correct Answer!');
   };
 
+  //TODO : 다음 퀴즈로 넘어갈 때 상태 전환
   const handleNextQuiz = () => {
-    setQuizState('break-time'); // 다음 퀴즈로 넘어갈 때 상태 전환
+    setQuizState('breakTime');
     console.log('Next Quiz - Break Time!');
   };
 
@@ -56,11 +81,12 @@ const Drawing: React.FC = () => {
       <div
         style={{
           backgroundImage: `url(${getBackgroundImage()})`,
-          backgroundSize: '40%',
-          backgroundPosition: 'center',
+          backgroundSize: comment === undefined ? '60%' : '40%',
+          backgroundPosition: comment === undefined ? 'center' : 'center 30%',
           backgroundRepeat: 'no-repeat',
+          boxShadow: '0 4px 10px 2px rgba(0, 0, 0, 0.5)',
         }}
-        className="flex flex-col gap-y-[20px] bg-white max-w-[780px] min-h-[630px] w-full h-full relative p-[20px] rounded-[10px] border-[4px] border-black"
+        className="flex flex-col gap-y-[20px] bg-white drop-shadow-drawing max-w-[780px] min-h-[630px] w-full h-full relative p-[20px] rounded-[10px] border-[4px] border-black"
       >
         <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto">
           <img
@@ -70,6 +96,9 @@ const Drawing: React.FC = () => {
             loading="lazy"
           />
         </h1>
+        <div className="absolute left-0 right-0 top-2/3 m-auto text-center font-cherry text-secondary-default text-6xl z-[1]">
+          {comment}
+        </div>
         <div className="flex justify-between">
           <Toolbar />
           <ul className="flex flex-col max-w-[70px]">

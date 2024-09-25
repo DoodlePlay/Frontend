@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 
 interface TimerBarProps {
@@ -13,7 +14,7 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
     // 타이머가 시작되면 자연스럽게 100%에서 0%로 너비가 줄어들도록 설정합니다.
     setTimeout(() => {
       setProgressWidth('0%');
-    }, 50); // 마운트 시 살짝 지연 후 시작
+    }, 50); // 살짝 지연 후 시작
 
     // duration이 끝나면 onComplete 호출
     const timer = setTimeout(() => {
