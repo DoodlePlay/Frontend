@@ -95,7 +95,7 @@ const Drawing: React.FC = () => {
             loading="lazy"
           />
         </h1>
-        <div className="absolute left-0 right-0 top-2/3 m-auto text-center font-cherry text-secondary-default text-6xl z-[1]">
+        <div className="absolute left-0 right-0 top-2/3 m-auto text-center font-cherry text-secondary-default text-6xl z-[-1]">
           {comment}
         </div>
         <div className="flex justify-between">
