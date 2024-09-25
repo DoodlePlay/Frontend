@@ -57,6 +57,17 @@ module.exports = {
         button: '0 4px 4px rgba(0, 0, 0, 0.4)',
         modal: '0 4px 2px rgba(0, 0, 0, 0.5)',
       },
+      boxShadow: {
+        board: '0 4px 10px 2px rgba(0, 0, 0, 0.5)',
+        border: '0 0 25px rgba(0, 0, 0, 0.65)',
+      },
+      screens: {
+        tall: { raw: '(min-height: 1000px)' },
+        short: { raw: '(max-height: 999px)' },
+      },
+      backgroundImage: {
+        webCam: "url('/images/webCamProfile.svg')",
+      },
     },
   },
   plugins: [],
