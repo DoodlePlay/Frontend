@@ -24,7 +24,7 @@ interface ToolbarProps {
   setSelectedTool: React.Dispatch<React.SetStateAction<ToolOption>>;
   selectedColor: ColorOption;
   setSelectedColor: React.Dispatch<React.SetStateAction<ColorOption>>;
-  selectedSize: number;
+  selectedSize: SizeOption;
   setSelectedSize: React.Dispatch<React.SetStateAction<number>>;
 }
 
