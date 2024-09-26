@@ -17,7 +17,7 @@ const SpeechBubble: React.FC<SpeechBubbleProps> = ({
       className={`mt-3.5 relative ${
         isAvatarSelected
           ? 'max-w-[520px]'
-          : 'w-[180px] left-1/2 transform -translate-x-1/2'
+          : 'w-[180px] top-1 left-1/2 transform -translate-x-1/2'
       }  bg-white p-[20px] rounded-[5px] shadow-md border-black border-4`}
     >
       <div className="absolute top-[-15px] left-1/2 transform -translate-x-1/2 w-6 h-6 bg-white rounded-[4px] border-4 border-b-0 border-r-0 border-black rotate-45"></div>

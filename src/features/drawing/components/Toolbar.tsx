@@ -15,16 +15,28 @@ const COLORS = [
 ];
 
 // 사이즈 타입 정의
-type SizeOption = 'small' | 'medium' | 'large';
+type SizeOption = 5 | 8 | 10;
 type ToolOption = 'pencil' | 'eraser' | 'square' | 'paint' | 'circle' | 'clear';
 type ColorOption = (typeof COLORS)[number]; // Colors 배열 내의 타입을 지정
 
-// 툴바 컴포넌트 정의
-const Toolbar: React.FC = () => {
-  const [selectedSize, setSelectedSize] = useState<SizeOption>('small');
-  const [selectedTool, setSelectedTool] = useState<ToolOption>('pencil');
-  const [selectedColor, setSelectedColor] = useState<ColorOption>('black');
+interface ToolbarProps {
+  selectedTool: ToolOption;
+  setSelectedTool: React.Dispatch<React.SetStateAction<ToolOption>>;
+  selectedColor: ColorOption;
+  setSelectedColor: React.Dispatch<React.SetStateAction<ColorOption>>;
+  selectedSize: number;
+  setSelectedSize: React.Dispatch<React.SetStateAction<number>>;
+}
 
+// 툴바 컴포넌트 정의
+const Toolbar: React.FC<ToolbarProps> = ({
+  selectedTool,
+  setSelectedTool,
+  selectedColor,
+  setSelectedColor,
+  selectedSize,
+  setSelectedSize,
+}) => {
   return (
     <div className="max-w-[150px] p-[20px] bg-primary-default flex flex-col gap-[20px] justify-between items-center rounded-lg shadow-lg border-[4px] border-black">
       <SizeSelector
@@ -53,21 +65,21 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
   selectedSize,
   setSelectedSize,
 }) => {
-  const sizes: { option: SizeOption; sizePx: number }[] = [
-    { option: 'small', sizePx: 12 },
-    { option: 'medium', sizePx: 16 },
-    { option: 'large', sizePx: 20 },
+  const sizes: { option: SizeOption }[] = [
+    { option: 5 },
+    { option: 8 },
+    { option: 10 },
   ];
 
   return (
     <div className="flex w-full flex-row flex-wrap gap-x-[10px] gap-y-[20px] justify-between items-center">
-      {sizes.map(({ option, sizePx }) => (
+      {sizes.map(({ option }) => (
         <div
           key={option}
           className={`flex cursor-pointer rounded-full duration-300 hover:bg-secondary-500 ${
             selectedSize === option ? 'bg-secondary-default' : 'bg-black'
           }`}
-          style={{ width: `${sizePx}px`, height: `${sizePx}px` }}
+          style={{ width: `${option * 2}px `, height: `${option * 2}px` }}
           onClick={() => setSelectedSize(option)}
         />
       ))}
@@ -96,7 +108,7 @@ const ToolSelector: React.FC<ToolSelectorProps> = ({
 
   return (
     <div className="flex w-full flex-row flex-wrap gap-x-[10px] gap-y-[20px] justify-between">
-      {tools.map((tool) => (
+      {tools.map(tool => (
         <ToolItem
           key={tool}
           icon={tool}
@@ -159,7 +171,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
 }) => {
   return (
     <div className="flex w-full flex-row flex-wrap gap-x-[10px] gap-y-[20px] justify-between">
-      {COLORS.map((color) => (
+      {COLORS.map(color => (
         <ColorItem
           key={color}
           color={color}
