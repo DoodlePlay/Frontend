@@ -1,4 +1,6 @@
+import PlayingVideoChat from './PlayingVideoChat';
+
 const VideoChat = () => {
-  return <div>VideoChat</div>;
+  return <PlayingVideoChat />;
 };
 export default VideoChat;
