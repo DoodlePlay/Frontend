@@ -25,7 +25,7 @@ const Drawing: React.FC = () => {
     'pencil' | 'eraser' | 'square' | 'paint' | 'circle' | 'clear'
   >('pencil');
   const [selectedColor, setSelectedColor] = useState<string>('black');
-  const [selectedSize, setSelectedSize] = useState<number>(5);
+  const [selectedSize, setSelectedSize] = useState<5 | 8 | 10>(5);
   const [toolbarState, setToolbarState] = useState(true);
 
   //Test 상황
@@ -123,6 +123,8 @@ const Drawing: React.FC = () => {
           shapeObject = new fabric.Rect({
             left: startX,
             top: startY,
+            originX: 'center',
+            originY: 'center',
             width: 0,
             height: 0,
             fill: selectedColor,
@@ -132,6 +134,8 @@ const Drawing: React.FC = () => {
           shapeObject = new fabric.Circle({
             left: startX,
             top: startY,
+            originX: 'center',
+            originY: 'center',
             radius: 0,
             fill: selectedColor,
             selectable: false,
