@@ -26,7 +26,7 @@ const Drawing: React.FC = () => {
   >('pencil');
   const [selectedColor, setSelectedColor] = useState<string>('black');
   const [selectedSize, setSelectedSize] = useState<5 | 8 | 10>(5);
-  const [toolbarState, setToolbarState] = useState(true);
+  const [isToolbar, setIsToolbar] = useState(true);
 
   //Test 상황
   items.ToxicCover = true;
@@ -199,9 +199,9 @@ const Drawing: React.FC = () => {
   const getBackgroundImage = () => {
     switch (quizState) {
       case 'breakTime':
-        return '/images/drawing/break-time.png';
+        return '/images/drawing/breakTime.png';
       case 'timeOver':
-        return '/images/drawing/time-over.png';
+        return '/images/drawing/timeOver.png';
       case 'success':
         return '/images/drawing/success.png';
       default:
@@ -245,10 +245,10 @@ const Drawing: React.FC = () => {
   };
 
   const handleToolbar = () => {
-    if (toolbarState === true) {
-      setToolbarState(false);
+    if (isToolbar === true) {
+      setIsToolbar(false);
     } else {
-      setToolbarState(true);
+      setIsToolbar(true);
     }
   };
 
@@ -278,7 +278,7 @@ const Drawing: React.FC = () => {
         </div>
         <div
           className={`${
-            toolbarState ? '' : '-translate-x-full -ml-[25px]'
+            isToolbar ? '' : '-translate-x-full -ml-[25px]'
           } max-w-[740px] flex justify-between absolute top-[20px] left-[20px] z-10 duration-700`}
         >
           <Toolbar
@@ -291,7 +291,7 @@ const Drawing: React.FC = () => {
           />
           <div
             className={`${
-              toolbarState ? '' : 'rotate-[900deg]'
+              isToolbar ? '' : 'rotate-[900deg]'
             }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2 ml-3 cursor-pointer duration-700`}
             onClick={handleToolbar}
           >
@@ -304,30 +304,30 @@ const Drawing: React.FC = () => {
         <ul className="flex flex-col max-w-[70px] absolute top-[20px] right-[20px] z-10">
           {items.ToxicCover && (
             <li>
-              <img src="/images/drawing/toxic-cover.png" alt="Toxic Cover" />
+              <img src="/images/drawing/toxicCover.png" alt="Toxic Cover" />
             </li>
           )}
           {items.GrowingBomb && (
             <li>
-              <img src="/images/drawing/growing-bomb.png" alt="Growing Bomb" />
+              <img src="/images/drawing/growingBomb.png" alt="Growing Bomb" />
             </li>
           )}
           {items.PhantomReverse && (
             <li>
               <img
-                src="/images/drawing/phantom-reverse.png"
+                src="/images/drawing/phantomReverse.png"
                 alt="Phantom Reverse"
               />
             </li>
           )}
           {items.LaundryFlip && (
             <li>
-              <img src="/images/drawing/laundry-flip.png" alt="Laundry Flip" />
+              <img src="/images/drawing/laundryFlip.png" alt="Laundry Flip" />
             </li>
           )}
           {items.TimeCutter && (
             <li>
-              <img src="/images/drawing/time-cutter.png" alt="Time Cutter" />
+              <img src="/images/drawing/timeCutter.png" alt="Time Cutter" />
             </li>
           )}
         </ul>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 // 색상 목록 상수 정의
 const COLORS = [
@@ -15,7 +15,7 @@ const COLORS = [
 ];
 
 // 사이즈 타입 정의
-export type SizeOption = 5 | 8 | 10;
+type SizeOption = 5 | 8 | 10;
 type ToolOption = 'pencil' | 'eraser' | 'square' | 'paint' | 'circle' | 'clear';
 type ColorOption = (typeof COLORS)[number]; // Colors 배열 내의 타입을 지정
 
