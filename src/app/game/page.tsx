@@ -4,7 +4,7 @@ import ItemBox from '../../features/drawing/components/ItemBox';
 
 const GamePage = () => {
   return (
-    <div className="flex items-center justify-center min-h-dvh overflow-hidden">
+    <div className="flex items-center justify-center min-h-dvh overflow-visible tall:mt-0 short:mt-[50px]">
       <div className="flex w-full max-w-[1240px] gap-[40px]">
         <div className="flex flex-col left w-full gap-y-[40px]">
           <Drawing />
