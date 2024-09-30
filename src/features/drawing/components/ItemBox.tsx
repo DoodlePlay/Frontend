@@ -51,7 +51,7 @@ const ItemBox = () => {
   return (
     <div className="relative flex flex-col items-center justify-center bg-primary-default p-4 rounded-lg border-black border-[4px] drop-shadow-drawing z-20">
       <h2
-        className="text-green-800 text-2xl font-bold mb-2 font-cherry"
+        className="text-secondary-default text-2xl font-bold mb-2 font-cherry"
         style={{
           textShadow:
             '2px 2px 0px white, -2px -2px 0px white,2px -2px 0px white, -2px 2px 0px white',

@@ -37,7 +37,7 @@ const Drawing: React.FC = () => {
     const canvas = new fabric.Canvas('fabric-canvas', {
       isDrawingMode: selectedTool === 'pencil',
       width: 730,
-      height: 620,
+      height: 600,
       selection: false,
     });
     canvasRef.current = canvas;
@@ -79,7 +79,7 @@ const Drawing: React.FC = () => {
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.freeDrawingBrush.width = selectedSize;
-        canvas.hoverCursor = 'default';
+        canvas.hoverCursor = 'cursor';
       } else if (selectedTool === 'eraser') {
         canvas.isDrawingMode = true;
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
