@@ -10,6 +10,7 @@ interface AvatarProps {
   isMyCharacter?: boolean;
   size?: 'small' | 'medium' | 'large';
   src: string;
+  className?: string;
 }
 
 const sizeClasses = {
@@ -24,6 +25,7 @@ const Avatar = ({
   isMyCharacter = false,
   size = 'small',
   src,
+  className = '',
 }: AvatarProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -92,7 +94,9 @@ const Avatar = ({
     <div
       className={`overflow-hidden outline outline-3 outline-black rounded-full flex-shrink-0 ${
         sizeClasses[size]
-      } ${isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'} `}
+      } ${
+        isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'
+      } ${className} `}
     >
       {isVideoOn ? (
         <div className="w-full h-full object-cover scale-110 translate-y-[9px] bg-webCam bg-cover bg-center">
@@ -108,6 +112,7 @@ const Avatar = ({
         <img
           src={src}
           alt="Avatar"
+          draggable="false"
           className="w-full h-full object-cover scale-110 translate-y-[9px]"
         />
       )}
