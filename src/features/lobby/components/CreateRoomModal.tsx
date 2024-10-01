@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 
 import Modal from '../../../components/Modal/Modal';
 import Button from '../../../components/Button/Button';
+import { createRoom } from '../api/gameRoomsApi';
 
 interface RoomFormValues {
   roomTitle: string;
@@ -38,11 +39,24 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const isPublic = watch('isPublic');
   const isItemsEnabled = watch('isItemsEnabled');
 
-  const onSubmit = (data: RoomFormValues) => {
-    // 방 만들기 로직 처리
-    console.log(data);
-    onClose();
-    reset();
+  const onSubmit = async (data: RoomFormValues) => {
+    const roomData = {
+      name: data.roomTitle,
+      maxPlayers: data.maxPlayers,
+      rounds: data.rounds,
+      topic: data.topic,
+      isItemsEnabled: data.isItemsEnabled === 'true',
+      isPublic: data.isPublic === 'true',
+      password: data.isPublic === 'false' ? data.password : null,
+    };
+
+    try {
+      const roomId = await createRoom(roomData);
+      console.log('Room created with ID:', roomId);
+      onClose();
+    } catch (error) {
+      console.error('Error creating room:', error);
+    }
   };
 
   useEffect(() => {

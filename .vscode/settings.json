@@ -13,9 +13,22 @@
   "search.exclude": {
     "**/node_modules": true
   },
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
   "prettier.requireConfig": true,
   "typescript.preferences.quoteStyle": "single",
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "cSpell.words": ["fuschia", "tailwindcss", "tseslint", "zustand"]
+  "cSpell.words": [
+    "appspot",
+    "firebaseapp",
+    "firestore",
+    "fuschia",
+    "tailwindcss",
+    "tseslint",
+    "zustand"
+  ]
 }
