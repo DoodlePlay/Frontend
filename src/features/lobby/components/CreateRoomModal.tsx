@@ -67,7 +67,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         <div className="flex items-center gap-5 h-11">
           <label className="w-14 text-lg font-bold">공개방</label>
 
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-center gap-2 cursor-pointer mr-4">
             <input
               type="radio"
               value="true"
@@ -138,7 +138,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                   ''
                 ))
               }
-              className="w-[133px] border-2 border-black py-[10px] px-5 rounded-md focus:outline-none"
+              className="w-[118px] border-2 border-black py-[10px] px-5 rounded-md focus:outline-none"
             />
           )}
         </div>
@@ -270,10 +270,11 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           type="submit"
           text="Create"
           color="primary"
+          className="h-[60px]"
           onClick={handleSubmit(onSubmit)}
         />
 
-        <div className="h-6 text-fuschia text-center font-semibold">
+        <div className=" text-fuschia text-center font-semibold">
           {errors.roomTitle && <p>{errors.roomTitle.message}</p>}
           {!errors.roomTitle && errors.password && (
             <p>{errors.password.message}</p>
