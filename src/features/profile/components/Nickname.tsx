@@ -136,7 +136,7 @@ const Nickname = () => {
           text="Play"
           color="primary"
           onClick={handleSubmit(onSubmit)}
-          className="mt-[40px]"
+          className="mt-[40px] h-[60px]"
         />
       </form>
       <div
