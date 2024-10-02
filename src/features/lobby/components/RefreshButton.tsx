@@ -28,7 +28,7 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({ onClick }) => {
   return (
     <div
       onClick={onClickRefresh}
-      className="cursor-pointer inline-block transform transition-transform duration-200 hover:scale-110"
+      className="flex items-center justify-center border-4 border-black rounded-[10px] w-[70px] h-[60px] cursor-pointer transform transition-transform duration-200 hover:scale-110"
     >
       <img
         src="/images/lobby/refresh.svg"

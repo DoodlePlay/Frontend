@@ -173,8 +173,8 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
             />
             <Button text="Enter" color="primary" onClick={onSubmitPassword} />
           </div>
-          <div className=" text-fuschia font-semibold text-center mt-2">
-            {passwordError && <p>{passwordError}</p>}
+          <div className=" text-fuschia font-semibold mt-3">
+            {passwordError && <p className="pl-[2px]">{passwordError}</p>}
           </div>
         </div>
       </Modal>
