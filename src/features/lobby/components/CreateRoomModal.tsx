@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 
 import Modal from '../../../components/Modal/Modal';
@@ -20,6 +21,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   isOpen,
   onClose,
 }) => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -61,6 +63,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       const roomId = await createRoom(roomData);
       console.log('Room created with ID:', roomId);
       onClose();
+      router.push('/game'); // 추후 roomId 붙은 라우터 수정
     } catch (error) {
       console.error('Error creating room:', error);
     }

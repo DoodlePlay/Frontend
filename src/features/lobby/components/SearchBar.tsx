@@ -1,12 +1,25 @@
 import React, { useState } from 'react';
 
-const SearchBar: React.FC = () => {
+import { getRooms } from '../api/gameRoomsApi';
+
+const SearchBar: React.FC<{ onFetchRooms: (rooms: any[]) => void }> = ({
+  onFetchRooms,
+}) => {
   const [inputValue, setInputValue] = useState('');
 
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const onKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      console.log('입력된 값:', inputValue);
-      setInputValue('');
+      try {
+        const fetchedRooms = await getRooms();
+        const filteredRooms = fetchedRooms.filter(room =>
+          room.name.includes(inputValue)
+        );
+        onFetchRooms(filteredRooms);
+      } catch (error) {
+        console.error('Error fetching rooms:', error);
+      } finally {
+        setInputValue('');
+      }
     }
   };
 
