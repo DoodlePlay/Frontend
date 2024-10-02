@@ -41,7 +41,7 @@ const ItemBox = () => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [usedItems, setUsedItems] = useState<string[]>([]); // 사용된 아이템 목록
 
-  const handleItemClick = (itemId: string) => {
+  const onItemClick = (itemId: string) => {
     if (!usedItems.includes(itemId)) {
       setUsedItems([...usedItems, itemId]); // 아이템 사용으로 처리
     }
@@ -66,7 +66,7 @@ const ItemBox = () => {
             className="relative max-w-[70px] max-h-[70px] bg-white border-[3px] border-black rounded-[5px] z-30 cursor-pointer"
             onMouseEnter={() => setHoveredItem(item.id)}
             onMouseLeave={() => setHoveredItem(null)}
-            onClick={() => handleItemClick(item.id)}
+            onClick={() => onItemClick(item.id)}
           >
             <img
               src={item.image}

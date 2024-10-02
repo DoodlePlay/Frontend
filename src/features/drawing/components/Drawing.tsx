@@ -227,24 +227,24 @@ const Drawing: React.FC = () => {
   }, [quizState]);
 
   // Todo: 타임오버 상태로 전환
-  const handleTimeUp = () => {
+  const onTimeUp = () => {
     // setQuizState('timeOver');
     console.log('Time Over!');
   };
 
   // Todo: 정답화면 상태로 전환
-  const handleSuccess = () => {
+  const onSuccess = () => {
     // setQuizState('success');
     console.log('Good!');
   };
 
   // Todo: 쉬는시간 상태로 전환
-  const handleBreakTime = () => {
+  const onBreakTime = () => {
     // setQuizState('breakTime');
     console.log('Break Time');
   };
 
-  const handleToolbar = () => {
+  const onToolbar = () => {
     if (isToolbar === true) {
       setIsToolbar(false);
     } else {
@@ -293,7 +293,7 @@ const Drawing: React.FC = () => {
             className={`${
               isToolbar ? '' : 'rotate-[900deg]'
             }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2 ml-3 cursor-pointer duration-700`}
-            onClick={handleToolbar}
+            onClick={onToolbar}
           >
             <img
               src="/images/drawing/toolbarController.svg"
@@ -332,7 +332,7 @@ const Drawing: React.FC = () => {
           )}
         </ul>
         <div className="max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          <TimeBar duration={10} onComplete={handleTimeUp} />
+          <TimeBar duration={10} onComplete={onTimeUp} />
         </div>
       </div>
     </div>

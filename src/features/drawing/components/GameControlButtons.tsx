@@ -3,12 +3,12 @@
 import Button from '../../../components/Button/Button';
 
 const GameControlButtons = () => {
-  const handleStartGame = () => {
+  const onStartGame = () => {
     console.log('Game started');
     // 게임 시작 로직을 여기에 추가합니다.
   };
 
-  const handleExitGame = () => {
+  const onExitGame = () => {
     console.log('Game exited');
     // 게임 종료 로직을 여기에 추가합니다.
   };
@@ -17,8 +17,8 @@ const GameControlButtons = () => {
 
   return (
     <div className="w-full flex gap-x-[30px]">
-      <Button text="START" color="primary" onClick={handleStartGame} />
-      <Button text="EXIT" color="secondary" onClick={handleExitGame} />
+      <Button text="START" color="primary" onClick={onStartGame} />
+      <Button text="EXIT" color="secondary" onClick={onExitGame} />
     </div>
   );
 };
