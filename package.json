@@ -12,6 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@testing-library/dom": "^10.4.0",
     "bcryptjs": "^2.4.3",
     "firebase": "^10.14.0",
     "framer-motion": "^11.9.0",
