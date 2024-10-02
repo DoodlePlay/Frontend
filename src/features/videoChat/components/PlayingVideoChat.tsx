@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import Avatar from '../../../components/Avatar/Avatar';
 import { Avatars } from '../../profile/components/Nickname';
@@ -58,12 +58,11 @@ const data = {
 };
 
 const PlayingVideoChat = () => {
-  const [sortedOrder, setSortedOrder] = useState([]);
   const { nickname } = useUserInfoStore();
   const [correctIds, setCorrectIds] = useState([]);
-  const [gameData, setGameData] = useState(data); //인원수에 따른 배치 테스트를 위한 데이터 상태관리, 추후 삭제
+  const [gameData, setGameData] = useState(data); // 인원수에 따른 배치 테스트를 위한 데이터 상태 관리, 추후 삭제
 
-  useEffect(() => {
+  const sortedOrder = useMemo(() => {
     const arr = [];
     for (let i = 0; i < gameData.order.length; i++) {
       if (gameData.order[i] === gameData.currentDrawer) {
@@ -72,7 +71,7 @@ const PlayingVideoChat = () => {
       }
       arr.push(gameData.order[i]);
     }
-    setSortedOrder(arr);
+    return arr;
   }, [gameData.turn, gameData]);
 
   //문제를 맞췄을 때 점수 효과를 위한 함수, 추후 다른 로직으로 변경
