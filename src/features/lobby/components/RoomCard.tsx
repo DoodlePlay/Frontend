@@ -8,7 +8,7 @@ interface RoomCardProps {
   topic: string;
   gameStatus: string;
   isItemsEnabled: boolean;
-  isPrivate: boolean;
+  isPublic: boolean;
 }
 
 const RoomCard: React.FC<RoomCardProps> = ({
@@ -19,13 +19,13 @@ const RoomCard: React.FC<RoomCardProps> = ({
   topic,
   gameStatus,
   isItemsEnabled,
-  isPrivate,
+  isPublic,
 }) => {
   return (
     <div className="flex flex-col p-[10px] w-[320px] h-[135px] rounded-[10px] border-[3px] border-black bg-white drop-shadow-roomCard cursor-pointer">
       <div className="flex justify-between items-center">
-        <h2 className="text-base font-bold">{name}</h2>
-        {isPrivate && (
+        <h2 className="text-base font-bold truncate">{name}</h2>
+        {isPublic && (
           <img
             src="/images/lobby/privateRoom.svg"
             alt="Private Room Icon"
