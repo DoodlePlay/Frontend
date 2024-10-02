@@ -10,12 +10,18 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({ onClick }) => {
   const onClickRefresh = async () => {
     setLoading(true);
 
+    const minimumLoadingTime = 1000;
+    const startTime = Date.now();
+
     try {
-      await onClick(); // RoomList를 새로 가져오는 함수를 호출
+      await onClick();
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false);
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = minimumLoadingTime - elapsedTime;
+
+      setTimeout(() => setLoading(false), Math.max(0, remainingTime));
     }
   };
 
