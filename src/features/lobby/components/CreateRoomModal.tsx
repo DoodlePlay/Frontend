@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import bcrypt from 'bcryptjs';
 
 import Modal from '../../../components/Modal/Modal';
 import Button from '../../../components/Button/Button';
@@ -40,6 +41,12 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const isItemsEnabled = watch('isItemsEnabled');
 
   const onSubmit = async (data: RoomFormValues) => {
+    let hashedPassword = null;
+    if (data.isPublic === 'false' && data.password) {
+      const salt = bcrypt.genSaltSync(10);
+      hashedPassword = bcrypt.hashSync(data.password, salt);
+    }
+
     const roomData = {
       name: data.roomTitle,
       maxPlayers: data.maxPlayers,
@@ -47,7 +54,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       topic: data.topic,
       isItemsEnabled: data.isItemsEnabled === 'true',
       isPublic: data.isPublic === 'true',
-      password: data.isPublic === 'false' ? data.password : null,
+      password: hashedPassword,
     };
 
     try {

@@ -27,6 +27,7 @@
     "firebaseapp",
     "firestore",
     "fuschia",
+    "Millis",
     "tailwindcss",
     "tseslint",
     "zustand"
