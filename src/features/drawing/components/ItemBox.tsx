@@ -72,6 +72,7 @@ const ItemBox = () => {
               src={item.image}
               alt={item.id}
               className="w-full h-full object-contain"
+              draggable={false}
             />
             {!item.isActive || usedItems.includes(item.id) ? (
               <div
@@ -82,7 +83,11 @@ const ItemBox = () => {
                     : 'rgba(0, 0, 0, 0.2)',
                 }}
               >
-                <img src="/images/drawing/inactiveCross.png" alt="inactive" />
+                <img
+                  src="/images/drawing/inactiveCross.png"
+                  alt="inactive"
+                  draggable={false}
+                />
               </div>
             ) : null}
             {hoveredItem === item.id && (

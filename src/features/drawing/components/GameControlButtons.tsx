@@ -17,8 +17,18 @@ const GameControlButtons = () => {
 
   return (
     <div className="w-full flex gap-x-[30px]">
-      <Button text="START" color="primary" onClick={onStartGame} />
-      <Button text="EXIT" color="secondary" onClick={onExitGame} />
+      <Button
+        text="START"
+        color="primary"
+        onClick={onStartGame}
+        className="h-[70px]"
+      />
+      <Button
+        text="EXIT"
+        color="secondary"
+        onClick={onExitGame}
+        className="h-[70px]"
+      />
     </div>
   );
 };

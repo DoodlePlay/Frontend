@@ -31,7 +31,7 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
         <img
           src="/images/drawing/hourglass.svg"
           alt="hourglass"
-          loading="lazy"
+          draggable={false}
           className="animate-spin"
           style={{ animation: `spin ${duration / 2}s linear infinite` }}
         />

@@ -79,12 +79,15 @@ const Drawing: React.FC = () => {
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.freeDrawingBrush.width = selectedSize;
-        canvas.hoverCursor = 'cursor';
+
+        canvas.freeDrawingCursor = `url("/images/drawingCursor.png"), auto`;
       } else if (selectedTool === 'eraser') {
         canvas.isDrawingMode = true;
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = '#FFFFFF';
         canvas.freeDrawingBrush.width = selectedSize * 2;
+
+        canvas.freeDrawingCursor = `url("/images/eraser.png"), auto`;
       } else if (selectedTool === 'square') {
         activateDrawingMode('square');
       } else if (selectedTool === 'circle') {
@@ -259,7 +262,7 @@ const Drawing: React.FC = () => {
           className="m-auto"
           src="/images/Logo.svg"
           alt="Logo"
-          loading="lazy"
+          draggable={false}
         />
       </h1>
       <div className="flex flex-col gap-y-[20px] bg-white drop-shadow-drawing max-w-[780px] min-h-[630px] w-full h-full relative p-[20px] rounded-[10px] border-[4px] border-black overflow-hidden">
@@ -271,6 +274,7 @@ const Drawing: React.FC = () => {
           <img
             src={getBackgroundImage()}
             className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
+            draggable={false}
           />
           <p className="text-center font-cherry text-secondary-default text-6xl">
             {comment}
@@ -298,18 +302,27 @@ const Drawing: React.FC = () => {
             <img
               src="/images/drawing/toolbarController.svg"
               alt="toolbar-controller"
+              draggable={false}
             />
           </div>
         </div>
         <ul className="flex flex-col max-w-[70px] absolute top-[20px] right-[20px] z-10">
           {items.ToxicCover && (
             <li>
-              <img src="/images/drawing/toxicCover.png" alt="Toxic Cover" />
+              <img
+                src="/images/drawing/toxicCover.png"
+                alt="Toxic Cover"
+                draggable={false}
+              />
             </li>
           )}
           {items.GrowingBomb && (
             <li>
-              <img src="/images/drawing/growingBomb.png" alt="Growing Bomb" />
+              <img
+                src="/images/drawing/growingBomb.png"
+                alt="Growing Bomb"
+                draggable={false}
+              />
             </li>
           )}
           {items.PhantomReverse && (
@@ -317,17 +330,26 @@ const Drawing: React.FC = () => {
               <img
                 src="/images/drawing/phantomReverse.png"
                 alt="Phantom Reverse"
+                draggable={false}
               />
             </li>
           )}
           {items.LaundryFlip && (
             <li>
-              <img src="/images/drawing/laundryFlip.png" alt="Laundry Flip" />
+              <img
+                src="/images/drawing/laundryFlip.png"
+                alt="Laundry Flip"
+                draggable={false}
+              />
             </li>
           )}
           {items.TimeCutter && (
             <li>
-              <img src="/images/drawing/timeCutter.png" alt="Time Cutter" />
+              <img
+                src="/images/drawing/timeCutter.png"
+                alt="Time Cutter"
+                draggable={false}
+              />
             </li>
           )}
         </ul>
