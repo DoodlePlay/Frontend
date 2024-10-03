@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
 
@@ -20,6 +20,7 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
   rooms: initialRooms,
 }) => {
   const router = useRouter();
+  const passwordInputRef = useRef<HTMLInputElement>(null);
   const [rooms, setRooms] = useState(initialRooms);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedRoomPassword, setSelectedRoomPassword] = useState<
@@ -125,6 +126,12 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
     }
   }, [isGameStatusModalOpen]);
 
+  useEffect(() => {
+    if (isPasswordModalOpen && passwordInputRef.current) {
+      passwordInputRef.current.focus();
+    }
+  }, [isPasswordModalOpen]);
+
   return (
     <div className="flex flex-col gap-10 w-[720px]">
       <div className="flex gap-5 items-center justify-between">
@@ -170,6 +177,7 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
               maxLength={4}
               value={password}
               onInput={onPasswordInput}
+              ref={passwordInputRef}
             />
             <Button text="Enter" color="primary" onClick={onSubmitPassword} />
           </div>

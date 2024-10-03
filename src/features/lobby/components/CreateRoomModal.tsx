@@ -299,10 +299,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
         />
 
         <div className=" text-fuschia text-center font-semibold">
-          {errors.roomTitle && <p>{errors.roomTitle.message}</p>}
-          {!errors.roomTitle && errors.password && (
-            <p>{errors.password.message}</p>
-          )}
+          <p>{errors.roomTitle?.message || errors.password?.message}</p>
         </div>
       </form>
     </Modal>
