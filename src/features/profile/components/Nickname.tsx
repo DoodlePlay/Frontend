@@ -131,15 +131,13 @@ const Nickname = () => {
             </span>
           </div>
         )}
-        <div className="mt-[40px]">
-          <Button
-            type="submit"
-            text="Play"
-            color="primary"
-            onClick={handleSubmit(onSubmit)}
-            className="mt-[40px]"
-          />
-        </div>
+        <Button
+          type="submit"
+          text="Play"
+          color="primary"
+          onClick={handleSubmit(onSubmit)}
+          className="mt-[40px] h-[60px]"
+        />
       </form>
       <div
         ref={bubbleRef}
