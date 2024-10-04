@@ -133,7 +133,7 @@ const PlayingVideoChat = () => {
             <div
               className={`${
                 correctIds.includes(userId)
-                  ? 'outline outline-3 outline-[#0f0] rounded-full'
+                  ? 'outline outline-3 outline-black rounded-full'
                   : ''
               }`}
             >
@@ -158,7 +158,7 @@ const PlayingVideoChat = () => {
               isDrawingActive={userId === gameData.currentDrawer}
             />
             <div
-              className={`absolute font-cherry font-bold text-[#0f0] transition-transform duration-500 ease-in-out select-none
+              className={`absolute font-cherry font-bold text-primary-400 WebkitTextStroke transition-transform duration-500 ease-in-out select-none
               ${index === 0 ? 'top-[140px] text-4xl' : 'top-[70px] text-2xl'} ${
                 correctIds.includes(userId)
                   ? 'opacity-100 visible'
