@@ -92,14 +92,14 @@ const Avatar = ({
 
   return (
     <div
-      className={`overflow-hidden outline outline-3 outline-black rounded-full flex-shrink-0 ${
+      className={`overflow-hidden outline outline-3 outline-black  rounded-full flex-shrink-0 ${
         sizeClasses[size]
       } ${
         isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'
       } ${className} `}
     >
       {isVideoOn ? (
-        <div className="w-full h-full object-cover scale-110 translate-y-[9px] bg-webCam bg-cover bg-center">
+        <div className="w-full h-full object-cover scale-[1.12] translate-y-[8px] bg-webCam bg-cover bg-center bg-white">
           <video
             ref={videoRef}
             role="video"
@@ -113,7 +113,7 @@ const Avatar = ({
           src={src}
           alt="Avatar"
           draggable="false"
-          className="w-full h-full object-cover scale-110 translate-y-[9px]"
+          className="w-full h-full object-cover scale-[1.12] translate-y-[8px]"
         />
       )}
     </div>
