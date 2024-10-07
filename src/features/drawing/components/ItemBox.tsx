@@ -7,31 +7,31 @@ import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';
 const items = [
   {
     id: 'Toxic-Cover',
-    image: '/images/drawing/toxicCover.png',
+    image: '/images/drawing/items/toxicCover.png',
     isActive: true,
     description: '군데군데 독극물을 뿌린다.',
   },
   {
     id: 'Growing-Bomb',
-    image: '/images/drawing/growingBomb.png',
+    image: '/images/drawing/items/growingBomb.png',
     isActive: true,
     description: '5초간 폭발이 발생한다.',
   },
   {
     id: 'Phantom-Reverse',
-    image: '/images/drawing/phantomReverse.png',
+    image: '/images/drawing/items/phantomReverse.png',
     isActive: true,
     description: '글자를 거꾸로 입력한다.',
   },
   {
     id: 'Laundry-Flip',
-    image: '/images/drawing/laundryFlip.png',
+    image: '/images/drawing/items/laundryFlip.png',
     isActive: true,
     description: '그림을 뒤집는다.',
   },
   {
     id: 'Time-Cutter',
-    image: '/images/drawing/timeCutter.png',
+    image: '/images/drawing/items/timeCutter.png',
     isActive: true,
     description: '시간의 반을 먹어치운다.',
   },

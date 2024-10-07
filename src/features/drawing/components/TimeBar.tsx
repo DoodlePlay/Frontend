@@ -27,7 +27,7 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
 
   return (
     <div className="flex items-center gap-x-[15px]">
-      <div className="ml-1">
+      <div className="ml-[15px]">
         <img
           src="/images/drawing/hourglass.svg"
           alt="hourglass"

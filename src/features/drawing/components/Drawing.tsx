@@ -6,21 +6,54 @@ import * as fabric from 'fabric';
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
 import NamePlate from '../../../components/NamePlate/NamePlate';
+import Settings from '../../../components/Settings/Settings';
+import Modal from '../../../components/Modal/Modal';
 
-type QuizState = 'breakTime' | 'timeOver' | 'success' | 'waiting' | 'choose';
+type QuizState =
+  | 'breakTime'
+  | 'timeOver'
+  | 'success'
+  | 'waiting'
+  | 'choosing'
+  | 'drawing';
 
-const initialItemsState = {
-  ToxicCover: false,
-  GrowingBomb: false,
-  PhantomReverse: false,
-  LaundryFlip: false,
-  TimeCutter: false,
+const initialGameState = {
+  host: '',
+  gameStatus: 'drawing' as QuizState,
+  currentDrawer: null,
+  currentWord: null,
+  totalWords: ['사자', '호랑이' /* ... 추가적인 단어들 */],
+  selectedWords: [] as string[],
+  isWordSelected: false,
+  selectionDeadline: null as number | null,
+  maxRound: 3,
+  round: 3,
+  turn: 1,
+  turnDeadline: null as number | null,
+  correctAnswerCount: 0,
+  items: {
+    ToxicCover: { user: null, status: true },
+    GrowingBomb: { user: null, status: false },
+    PhantomReverse: { user: null, status: false },
+    LaundryFlip: { user: null, status: false },
+    TimeCutter: { user: null, status: false },
+  },
+  order: [] as string[],
+  participants: {} as Record<
+    string,
+    {
+      nickname: string;
+      score: number;
+      clickedAvatarIndex: string;
+      isVideoOn: boolean;
+      isFlipped: boolean;
+    }
+  >,
 };
 
 const Drawing: React.FC = () => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
-  const [items, setItems] = useState(initialItemsState);
-  const [quizState, setQuizState] = useState<QuizState>('waiting');
+  const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
   const [selectedTool, setSelectedTool] = useState<
     'pencil' | 'eraser' | 'square' | 'paint' | 'circle' | 'clear'
@@ -29,6 +62,7 @@ const Drawing: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<5 | 8 | 10>(5);
   const [isToolbar, setIsToolbar] = useState(true);
   const [canvasSize, setCanvasSize] = useState({ width: 730, height: 600 });
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   // 캔버스 초기화
   useEffect(() => {
@@ -39,7 +73,6 @@ const Drawing: React.FC = () => {
       selection: false,
     });
     canvasRef.current = canvas;
-
     updateCanvasBrush();
 
     return () => {
@@ -62,7 +95,7 @@ const Drawing: React.FC = () => {
       }
     };
 
-    handleResize(); // 초기 실행
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -211,7 +244,7 @@ const Drawing: React.FC = () => {
 
   // 상황에 따른 이미지를 출력합니다.
   const getBackgroundImage = () => {
-    switch (quizState) {
+    switch (gameState.gameStatus) {
       case 'breakTime':
         return '/images/drawing/breakTime.png';
       case 'timeOver':
@@ -227,54 +260,24 @@ const Drawing: React.FC = () => {
 
   // 상황에 따른 comment를 설정하는 useEffect
   useEffect(() => {
-    switch (quizState) {
+    switch (gameState.gameStatus) {
       case 'timeOver':
         setComment("Time's up");
         break;
       case 'breakTime':
         setComment('Break Time');
         break;
-      case 'choose':
+      case 'choosing':
         setComment('Choose a word');
         break;
       default:
         setComment('');
     }
-  }, [quizState]);
-
-  // Todo: 타임오버 상태로 전환
-  const onTimeUp = () => {
-    // setQuizState('timeOver');
-    console.log('Time Over!');
-  };
-
-  // Todo: 정답화면 상태로 전환
-  const onSuccess = () => {
-    // setQuizState('success');
-    console.log('Good!');
-  };
-
-  // Todo: 쉬는시간 상태로 전환
-  const onBreakTime = () => {
-    // setQuizState('breakTime');
-    console.log('Break Time');
-  };
-
-  const onToolbar = () => {
-    if (isToolbar === true) {
-      setIsToolbar(false);
-    } else {
-      setIsToolbar(true);
-    }
-  };
-
-  //Test 상황
-  items.ToxicCover = true;
-  items.LaundryFlip = true;
+  }, [gameState.gameStatus]);
 
   return (
-    <div className="relative">
-      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-30">
+    <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
+      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[9]">
         <img
           className="m-auto"
           src="/images/Logo.svg"
@@ -282,38 +285,52 @@ const Drawing: React.FC = () => {
           draggable={false}
         />
       </h1>
-      <div className="flex flex-col gap-y-[20px] bg-white drop-shadow-drawing max-w-[780px] w-full h-full relative p-[20px] rounded-[10px] border-[4px] border-black overflow-hidden">
+      <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
         <canvas
           id="fabric-canvas"
           className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
         />
-        <div
-          style={{
-            background: `${
-              quizState === 'waiting'
-                ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
-                : ''
-            }`,
-          }}
-          className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
-        >
-          <img
-            src={getBackgroundImage()}
-            className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
-            draggable={false}
-          />
-          {quizState === 'waiting' ? (
-            <NamePlate title="winner" score={200}></NamePlate>
-          ) : (
-            <p className="text-center font-cherry text-secondary-default text-6xl">
-              {comment}
-            </p>
-          )}
-        </div>
+        {gameState.gameStatus === 'drawing' ? (
+          ''
+        ) : (
+          <div
+            style={{
+              background: `${
+                gameState.gameStatus === 'waiting'
+                  ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
+                  : ''
+              }`,
+            }}
+            className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
+          >
+            <img
+              src={getBackgroundImage()}
+              className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
+              draggable={false}
+            />
+
+            {gameState.gameStatus === 'waiting' ? (
+              <NamePlate title="winner" score={200} />
+            ) : (
+              <p className="text-center font-cherry text-secondary-default text-6xl">
+                {comment}
+              </p>
+            )}
+
+            {gameState.gameStatus === 'choosing' && (
+              <div className="flex space-x-4 mt-4">
+                {gameState.totalWords.map((word, index) => (
+                  <NamePlate key={index} title={word} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div
           className={`${
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
-          } flex justify-between absolute top-[20px] left-[20px] z-10 duration-700`}
+          } flex justify-between absolute top-0 left-0 z-10 duration-700`}
         >
           <Toolbar
             selectedTool={selectedTool}
@@ -325,9 +342,9 @@ const Drawing: React.FC = () => {
           />
           <div
             className={`${
-              isToolbar ? '' : 'rotate-[900deg]'
-            }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2 ml-3 cursor-pointer duration-700`}
-            onClick={onToolbar}
+              isToolbar ? 'ml-3' : 'rotate-[900deg] ml-[30px]'
+            }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2  cursor-pointer duration-700`}
+            onClick={() => setIsToolbar(!isToolbar)}
           >
             <img
               src="/images/drawing/toolbarController.svg"
@@ -336,61 +353,45 @@ const Drawing: React.FC = () => {
             />
           </div>
         </div>
-        <ul className="flex flex-col max-w-[70px] absolute top-[20px] right-[20px] z-10">
-          {items.ToxicCover && (
-            <li>
-              <img
-                src="/images/drawing/toxicCover.png"
-                alt="Toxic Cover"
-                draggable={false}
-              />
-            </li>
-          )}
-          {items.GrowingBomb && (
-            <li>
-              <img
-                src="/images/drawing/growingBomb.png"
-                alt="Growing Bomb"
-                draggable={false}
-              />
-            </li>
-          )}
-          {items.PhantomReverse && (
-            <li>
-              <img
-                src="/images/drawing/phantomReverse.png"
-                alt="Phantom Reverse"
-                draggable={false}
-              />
-            </li>
-          )}
-          {items.LaundryFlip && (
-            <li>
-              <img
-                src="/images/drawing/laundryFlip.png"
-                alt="Laundry Flip"
-                draggable={false}
-              />
-            </li>
-          )}
-          {items.TimeCutter && (
-            <li>
-              <img
-                src="/images/drawing/timeCutter.png"
-                alt="Time Cutter"
-                draggable={false}
-              />
-            </li>
-          )}
-        </ul>
+        <div className="absolute top-0 right-0 z-10 max-w-[70px] flex flex-wrap gap-[10px]">
+          <div
+            className="w-full cursor-pointer"
+            onClick={() => setIsSettingsModalOpen(true)}
+          >
+            <img src="/images/drawing/settingIcon.png" alt="setting" />
+          </div>
+          <ul className="flex flex-col">
+            {Object.entries(gameState.items).map(
+              ([key, item]) =>
+                item.status && (
+                  <li key={key}>
+                    <img
+                      src={`/images/drawing/items/${key}.png`}
+                      alt={key}
+                      draggable={false}
+                    />
+                  </li>
+                )
+            )}
+          </ul>
+        </div>
+
         <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          {quizState === 'waiting' ? (
-            ''
-          ) : (
-            <TimeBar duration={10} onComplete={onTimeUp} />
+          {gameState.gameStatus !== 'waiting' && (
+            <TimeBar
+              duration={10}
+              onComplete={() => console.log('Time Over!')}
+            />
           )}
         </div>
       </div>
+      <Modal
+        isOpen={isSettingsModalOpen}
+        title="Setting"
+        onClose={() => setIsSettingsModalOpen(false)}
+      >
+        <Settings />
+      </Modal>
     </div>
   );
 };
