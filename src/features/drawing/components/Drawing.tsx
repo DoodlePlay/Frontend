@@ -5,8 +5,9 @@ import * as fabric from 'fabric';
 
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
+import NamePlate from '../../../components/NamePlate/NamePlate';
 
-type QuizState = 'breakTime' | 'timeOver' | 'success' | 'wait' | 'choose';
+type QuizState = 'breakTime' | 'timeOver' | 'success' | 'waiting' | 'choose';
 
 const initialItemsState = {
   ToxicCover: false,
@@ -19,7 +20,7 @@ const initialItemsState = {
 const Drawing: React.FC = () => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const [items, setItems] = useState(initialItemsState);
-  const [quizState, setQuizState] = useState<QuizState>('wait');
+  const [quizState, setQuizState] = useState<QuizState>('waiting');
   const [comment, setComment] = useState('');
   const [selectedTool, setSelectedTool] = useState<
     'pencil' | 'eraser' | 'square' | 'paint' | 'circle' | 'clear'
@@ -217,6 +218,8 @@ const Drawing: React.FC = () => {
         return '/images/drawing/timeOver.png';
       case 'success':
         return '/images/drawing/success.png';
+      case 'waiting':
+        return '/images/drawing/waiting.png';
       default:
         return '';
     }
@@ -284,15 +287,28 @@ const Drawing: React.FC = () => {
           id="fabric-canvas"
           className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
         />
-        <div className="flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20">
+        <div
+          style={{
+            background: `${
+              quizState === 'waiting'
+                ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
+                : ''
+            }`,
+          }}
+          className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
+        >
           <img
             src={getBackgroundImage()}
             className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
             draggable={false}
           />
-          <p className="text-center font-cherry text-secondary-default text-6xl">
-            {comment}
-          </p>
+          {quizState === 'waiting' ? (
+            <NamePlate title="winner" score={200}></NamePlate>
+          ) : (
+            <p className="text-center font-cherry text-secondary-default text-6xl">
+              {comment}
+            </p>
+          )}
         </div>
         <div
           className={`${
@@ -368,7 +384,11 @@ const Drawing: React.FC = () => {
           )}
         </ul>
         <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          <TimeBar duration={10} onComplete={onTimeUp} />
+          {quizState === 'waiting' ? (
+            ''
+          ) : (
+            <TimeBar duration={10} onComplete={onTimeUp} />
+          )}
         </div>
       </div>
     </div>
