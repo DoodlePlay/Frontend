@@ -53,7 +53,7 @@ const Drawing: React.FC = () => {
 
       if (viewportHeight <= 1000) {
         setCanvasSize({
-          width: viewportHeight * 0.73,
+          width: 730,
           height: viewportHeight * 0.6,
         });
       } else {
@@ -297,7 +297,7 @@ const Drawing: React.FC = () => {
         <div
           className={`${
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
-          } max-w-[740px] flex justify-between absolute top-[20px] left-[20px] z-10 duration-700`}
+          } flex justify-between absolute top-[20px] left-[20px] z-10 duration-700`}
         >
           <Toolbar
             selectedTool={selectedTool}
@@ -367,7 +367,7 @@ const Drawing: React.FC = () => {
             </li>
           )}
         </ul>
-        <div className="max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
+        <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
           <TimeBar duration={10} onComplete={onTimeUp} />
         </div>
       </div>

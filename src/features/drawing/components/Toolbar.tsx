@@ -38,7 +38,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   setSelectedSize,
 }) => {
   return (
-    <div className="max-w-[150px] p-[20px] bg-primary-default flex flex-col gap-[20px] justify-between items-center rounded-lg shadow-lg border-[4px] border-black">
+    <div className="tall:max-w-[150px] short:max-w-[135px] tall:p-[20px] short:p-[15px] bg-primary-default flex flex-col tall:gap-[20px] short:gap-[5px] justify-between items-center rounded-lg shadow-lg border-[4px] border-black">
       <SizeSelector
         selectedSize={selectedSize}
         setSelectedSize={setSelectedSize}
@@ -72,7 +72,7 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
   ];
 
   return (
-    <div className="flex w-full flex-row flex-wrap gap-x-[10px] gap-y-[20px] justify-between items-center">
+    <div className="flex w-full flex-row flex-wrap tall:gap-x-[10px] short:gap-x-[5px] justify-between items-center">
       {sizes.map(({ option }) => (
         <div
           key={option}
@@ -107,7 +107,7 @@ const ToolSelector: React.FC<ToolSelectorProps> = ({
   ];
 
   return (
-    <div className="flex w-full flex-row flex-wrap gap-x-[10px] gap-y-[20px] justify-between">
+    <div className="flex w-full flex-row flex-wrap tall:gap-x-[10px] short:gap-x-[5px] tall:gap-y-[20px] short:gap-y-[10px] justify-between">
       {tools.map(tool => (
         <ToolItem
           key={tool}
@@ -170,7 +170,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
   setSelectedColor,
 }) => {
   return (
-    <div className="flex w-full flex-row flex-wrap gap-x-[10px] gap-y-[20px] justify-between">
+    <div className="flex w-full flex-row flex-wrap tall:gap-x-[10px] short:gap-x-[5px] tall:gap-y-[20px] short:gap-y-[10px] justify-between">
       {COLORS.map(color => (
         <ColorItem
           key={color}
