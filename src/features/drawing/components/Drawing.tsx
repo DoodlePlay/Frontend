@@ -27,32 +27,48 @@ const Drawing: React.FC = () => {
   const [selectedColor, setSelectedColor] = useState<string>('black');
   const [selectedSize, setSelectedSize] = useState<5 | 8 | 10>(5);
   const [isToolbar, setIsToolbar] = useState(true);
-
-  //Test 상황
-  items.ToxicCover = true;
-  items.LaundryFlip = true;
+  const [canvasSize, setCanvasSize] = useState({ width: 730, height: 600 });
 
   // 캔버스 초기화
   useEffect(() => {
     const canvas = new fabric.Canvas('fabric-canvas', {
       isDrawingMode: selectedTool === 'pencil',
-      width: 730,
-      height: 600,
+      width: canvasSize.width,
+      height: canvasSize.height,
       selection: false,
     });
     canvasRef.current = canvas;
 
-    // 처음 로드 시 도구에 따라 브러시를 설정합니다.
     updateCanvasBrush();
 
     return () => {
       canvas.dispose();
     };
+  }, [canvasSize]);
+
+  // 뷰포트 크기에 따라 캔버스 크기 조정
+  useEffect(() => {
+    const handleResize = () => {
+      const viewportHeight = window.innerHeight;
+
+      if (viewportHeight <= 1000) {
+        setCanvasSize({
+          width: viewportHeight * 0.73,
+          height: viewportHeight * 0.6,
+        });
+      } else {
+        setCanvasSize({ width: 730, height: 600 });
+      }
+    };
+
+    handleResize(); // 초기 실행
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // 도구나 색상, 크기가 변경될 때 브러시 업데이트
   useEffect(() => {
-    removeCanvasEventListeners(); // 이전 도구에 설정된 이벤트 리스너 제거
+    removeCanvasEventListeners();
     updateCanvasBrush();
   }, [selectedTool, selectedColor, selectedSize]);
 
@@ -69,24 +85,21 @@ const Drawing: React.FC = () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
 
-      // 초기화: 모든 도구의 기본 상태 설정
-      canvas.isDrawingMode = false; // 도형을 그릴 때는 드로잉 모드를 끈다.
+      canvas.isDrawingMode = false;
       canvas.selection = false;
-      removeCanvasEventListeners(); // 모든 기존 이벤트 리스너 제거
+      removeCanvasEventListeners();
 
       if (selectedTool === 'pencil') {
         canvas.isDrawingMode = true;
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.freeDrawingBrush.width = selectedSize;
-
         canvas.freeDrawingCursor = `url("/images/drawingCursor.png"), auto`;
       } else if (selectedTool === 'eraser') {
         canvas.isDrawingMode = true;
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = '#FFFFFF';
         canvas.freeDrawingBrush.width = selectedSize * 2;
-
         canvas.freeDrawingCursor = `url("/images/eraser.png"), auto`;
       } else if (selectedTool === 'square') {
         activateDrawingMode('square');
@@ -95,7 +108,7 @@ const Drawing: React.FC = () => {
       } else if (selectedTool === 'paint') {
         activateFillMode();
       } else if (selectedTool === 'clear') {
-        canvas.clear(); // 모든 객체 제거
+        canvas.clear();
         setSelectedTool('pencil');
       } else {
         canvas.isDrawingMode = false;
@@ -110,7 +123,6 @@ const Drawing: React.FC = () => {
     let shapeObject: fabric.Object | null = null;
 
     canvas.isDrawingMode = false;
-    // 도형 그리기 모드에서 모든 객체 선택 비활성화
     canvas.selection = false;
     canvas.forEachObject(obj => {
       obj.selectable = false;
@@ -182,13 +194,11 @@ const Drawing: React.FC = () => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
 
-    // 모든 객체의 선택을 비활성화
     canvas.forEachObject(obj => {
       obj.selectable = false;
-      obj.hoverCursor = 'default'; // 커서 변경을 막기 위해 기본 커서로 설정
+      obj.hoverCursor = 'default';
     });
 
-    // fill 도구 활성화
     canvas.on('mouse:down', event => {
       const clickedObject = canvas.findTarget(event.e);
       if (clickedObject && clickedObject instanceof fabric.Object) {
@@ -255,6 +265,10 @@ const Drawing: React.FC = () => {
     }
   };
 
+  //Test 상황
+  items.ToxicCover = true;
+  items.LaundryFlip = true;
+
   return (
     <div className="relative">
       <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-30">
@@ -265,7 +279,7 @@ const Drawing: React.FC = () => {
           draggable={false}
         />
       </h1>
-      <div className="flex flex-col gap-y-[20px] bg-white drop-shadow-drawing max-w-[780px] min-h-[630px] w-full h-full relative p-[20px] rounded-[10px] border-[4px] border-black overflow-hidden">
+      <div className="flex flex-col gap-y-[20px] bg-white drop-shadow-drawing max-w-[780px] w-full h-full relative p-[20px] rounded-[10px] border-[4px] border-black overflow-hidden">
         <canvas
           id="fabric-canvas"
           className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
