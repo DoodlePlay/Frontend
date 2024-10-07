@@ -8,6 +8,7 @@ interface ButtonProps {
   text: string;
   color: ButtonColor;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
+  className?: string;
 }
 
 const buttonStyles: Record<ButtonColor, string> = {
@@ -24,7 +25,7 @@ const textStrokeStyles: Record<ButtonColor, React.CSSProperties> = {
 
 const Button: React.FC<
   ButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ text, color, onClick }) => {
+> = ({ text, color, onClick, className }) => {
   const baseStyle =
     'text-[34px] leading-9 font-cherry w-full px-5 pb-1.5 rounded-[10px] border-4 border-black drop-shadow-button';
 
@@ -41,7 +42,7 @@ const Button: React.FC<
 
   return (
     <button
-      className={`${baseStyle} ${colorStyle}`}
+      className={`${baseStyle} ${colorStyle} ${className}`}
       style={strokeStyle}
       onClick={onClick}
     >

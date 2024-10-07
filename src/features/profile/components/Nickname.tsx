@@ -89,7 +89,7 @@ const Nickname = () => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <img
-          src="/images/EditButton.svg"
+          src="/images/editButton.svg"
           alt="Edit Character"
           className="hover:scale-105 transition-transform duration-100"
         />
@@ -101,7 +101,7 @@ const Nickname = () => {
       />
       <form>
         <div className="flex items-center">
-          <img src="/images/People.svg" alt="people icon" />
+          <img src="/images/people.svg" alt="people icon" />
           <label className="font-bold text-2xl ml-[10px] whitespace-nowrap">
             닉네임 :
           </label>
@@ -131,15 +131,13 @@ const Nickname = () => {
             </span>
           </div>
         )}
-        <div className="mt-[40px]">
-          <Button
-            type="submit"
-            text="Play"
-            color="primary"
-            onClick={handleSubmit(onSubmit)}
-            className="mt-[40px]"
-          />
-        </div>
+        <Button
+          type="submit"
+          text="Play"
+          color="primary"
+          onClick={handleSubmit(onSubmit)}
+          className="mt-[40px] h-[60px]"
+        />
       </form>
       <div
         ref={bubbleRef}
