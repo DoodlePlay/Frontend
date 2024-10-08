@@ -393,7 +393,11 @@ const Drawing: React.FC = () => {
             className="w-full cursor-pointer"
             onClick={() => setIsSettingsModalOpen(true)}
           >
-            <img src="/images/drawing/settingIcon.png" alt="setting" />
+            <img
+              src="/images/drawing/settingIcon.png"
+              alt="setting"
+              draggable={false}
+            />
           </div>
           {gameState.gameStatus === 'drawing' && (
             <ul className="flex flex-col">
