@@ -276,16 +276,16 @@ const Drawing: React.FC = () => {
     let imgPath = '';
     switch (gameState.gameStatus) {
       case 'breakTime':
-        imgPath = '/images/drawing/breakTime';
+        imgPath = '/images/drawing/breakTime.webp';
         break;
       case 'timeOver':
-        imgPath = '/images/drawing/timeOver';
+        imgPath = '/images/drawing/timeOver.webp';
         break;
       case 'success':
-        imgPath = '/images/drawing/success';
+        imgPath = '/images/drawing/success.webp';
         break;
       case 'waiting':
-        imgPath = '/images/drawing/waiting';
+        imgPath = '/images/drawing/waiting.webp';
         break;
       default:
         imgPath = '';
@@ -369,11 +369,9 @@ const Drawing: React.FC = () => {
             className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
           >
             <img
-              src={`${backgroundImage}.webp`}
+              src={backgroundImage}
               onLoad={onImageLoad}
-              className={`${imageLoaded ? 'visible' : 'invisible'} ${
-                comment === undefined ? 'w-4/5' : 'w-3/5'
-              }`}
+              className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
               draggable={false}
               loading="lazy"
             />
