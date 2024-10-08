@@ -33,26 +33,11 @@ const initialGameState = {
   turnDeadline: null as number | null,
   correctAnswerCount: 0,
   items: {
-    ToxicCover: { user: null, status: true, isUsed: false, isDisabled: true },
-    GrowingBomb: {
-      user: null,
-      status: false,
-      isUsed: false,
-      isDisabled: false,
-    },
-    PhantomReverse: {
-      user: null,
-      status: false,
-      isUsed: false,
-      isDisabled: false,
-    },
-    LaundryFlip: {
-      user: null,
-      status: false,
-      isUsed: false,
-      isDisabled: false,
-    },
-    TimeCutter: { user: null, status: false, isUsed: false, isDisabled: false },
+    ToxicCover: { user: null, status: true },
+    GrowingBomb: { user: null, status: false },
+    PhantomReverse: { user: null, status: false },
+    LaundryFlip: { user: null, status: false },
+    TimeCutter: { user: null, status: false },
   },
   order: [] as string[],
   participants: {} as Record<
@@ -80,7 +65,6 @@ const Drawing: React.FC = () => {
   const [canvasSize, setCanvasSize] = useState({ width: 730, height: 600 });
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
-  // 임시 기능(삭제 예정)
   const quizStates: QuizState[] = [
     'drawing',
     'breakTime',
@@ -89,16 +73,6 @@ const Drawing: React.FC = () => {
     'waiting',
     'choosing',
   ];
-
-  // QuizState 변경 버튼 핸들러
-  const onStateChange = () => {
-    const currentIndex = quizStates.indexOf(gameState.gameStatus);
-    const nextIndex = (currentIndex + 1) % quizStates.length;
-    setGameState(prev => ({
-      ...prev,
-      gameStatus: quizStates[nextIndex],
-    }));
-  };
 
   // 캔버스 초기화
   useEffect(() => {
@@ -114,7 +88,7 @@ const Drawing: React.FC = () => {
     return () => {
       canvas.dispose();
     };
-  }, [canvasSize, quizStates]);
+  }, [canvasSize]);
 
   // 뷰포트 크기에 따라 캔버스 크기 조정
   useEffect(() => {
@@ -311,19 +285,16 @@ const Drawing: React.FC = () => {
     }
   }, [gameState.gameStatus]);
 
-  const useItem = (itemKey: string) => {
-    setGameState(prevState => {
-      const newItems = { ...prevState.items };
-      newItems[itemKey] = {
-        ...newItems[itemKey],
-        isUsed: true,
-        isDisabled: true,
-      };
-      return {
-        ...prevState,
-        items: newItems,
-      };
-    });
+  // QuizState 변경 버튼 핸들러
+  const onStateChange = () => {
+    const currentIndex = quizStates.indexOf(gameState.gameStatus);
+    const nextIndex = (currentIndex + 1) % quizStates.length;
+    setGameState(prev => ({
+      ...prev,
+      gameStatus: quizStates[nextIndex],
+    }));
+
+    canvasRef.current.clear();
   };
 
   return (
@@ -426,32 +397,18 @@ const Drawing: React.FC = () => {
           </div>
           {gameState.gameStatus === 'drawing' && (
             <ul className="flex flex-col">
-              {Object.entries(gameState.items).map(([key, item]) => (
-                <li
-                  key={key}
-                  className="relative cursor-pointer"
-                  onClick={() =>
-                    !item.isUsed && !item.isDisabled && useItem(key)
-                  }
-                >
-                  <img
-                    src={`/images/drawing/items/${key}.png`}
-                    alt={key}
-                    draggable={false}
-                    style={{
-                      opacity: item.isDisabled ? 0.5 : 1, // 사용 불가일 경우 반투명
-                    }}
-                  />
-                  {item.isUsed && (
-                    <div className="absolute inset-0 bg-red-500 opacity-50 flex justify-center items-center">
-                      <span className="text-white font-bold text-xl">X</span>
-                    </div>
-                  )}
-                  {item.isDisabled && !item.isUsed && (
-                    <div className="absolute inset-0 bg-black opacity-50" />
-                  )}
-                </li>
-              ))}
+              {Object.entries(gameState.items).map(
+                ([key, item]) =>
+                  item.status && (
+                    <li key={key}>
+                      <img
+                        src={`/images/drawing/items/${key}.png`}
+                        alt={key}
+                        draggable={false}
+                      />
+                    </li>
+                  )
+              )}
             </ul>
           )}
         </div>
