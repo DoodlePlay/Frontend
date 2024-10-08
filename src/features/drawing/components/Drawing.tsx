@@ -378,20 +378,29 @@ const Drawing: React.FC = () => {
               loading="lazy"
             />
 
-            {gameState.gameStatus === 'waiting' ? (
-              <NamePlate title="winner" score={200} />
-            ) : (
-              <p className="text-center font-cherry text-secondary-default text-6xl">
-                {comment}
-              </p>
+            {imageLoaded && (
+              <>
+                {gameState.gameStatus === 'waiting' ? (
+                  <NamePlate title="winner" score={200} />
+                ) : (
+                  <p className="text-center font-cherry text-secondary-default text-6xl">
+                    {comment}
+                  </p>
+                )}
+              </>
             )}
 
             {gameState.gameStatus === 'choosing' && (
-              <div className="flex space-x-4 mt-4">
-                {gameState.totalWords.map((word, index) => (
-                  <NamePlate key={index} title={word} />
-                ))}
-              </div>
+              <>
+                <p className="text-center font-cherry text-secondary-default text-6xl">
+                  {comment}
+                </p>
+                <div className="flex space-x-4 mt-4">
+                  {gameState.totalWords.map((word, index) => (
+                    <NamePlate key={index} title={word} />
+                  ))}
+                </div>
+              </>
             )}
           </div>
         )}
