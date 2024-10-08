@@ -65,6 +65,9 @@ const Drawing: React.FC = () => {
   const [canvasSize, setCanvasSize] = useState({ width: 730, height: 600 });
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
+  const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
+  const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
+
   const quizStates: QuizState[] = [
     'drawing',
     'breakTime',
@@ -252,21 +255,48 @@ const Drawing: React.FC = () => {
     });
   };
 
-  // 상황에 따른 이미지를 출력합니다.
-  const getBackgroundImage = () => {
+  const preloadImages = () => {
+    const images = [
+      '/images/drawing/breakTime.png',
+      '/images/drawing/timeOver.png',
+      '/images/drawing/success.png',
+      '/images/drawing/waiting.png',
+    ];
+    images.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  };
+
+  useEffect(() => {
+    preloadImages();
+  }, []);
+
+  const updateBackgroundImage = () => {
+    let imgPath = '';
     switch (gameState.gameStatus) {
       case 'breakTime':
-        return '/images/drawing/breakTime.png';
+        imgPath = '/images/drawing/breakTime.png';
+        break;
       case 'timeOver':
-        return '/images/drawing/timeOver.png';
+        imgPath = '/images/drawing/timeOver.png';
+        break;
       case 'success':
-        return '/images/drawing/success.png';
+        imgPath = '/images/drawing/success.png';
+        break;
       case 'waiting':
-        return '/images/drawing/waiting.png';
+        imgPath = '/images/drawing/waiting.png';
+        break;
       default:
-        return '';
+        imgPath = '';
     }
+    setImageLoaded(false); // 로딩 상태 초기화
+    setBackgroundImage(imgPath);
   };
+
+  useEffect(() => {
+    updateBackgroundImage();
+  }, [gameState.gameStatus]);
 
   // 상황에 따른 comment를 설정하는 useEffect
   useEffect(() => {
@@ -297,9 +327,13 @@ const Drawing: React.FC = () => {
     canvasRef.current.clear();
   };
 
+  const onImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
-      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[9]">
+      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-1/2">
         <img
           className="m-auto"
           src="/images/Logo.svg"
@@ -311,7 +345,7 @@ const Drawing: React.FC = () => {
       {gameState.currentDrawer &&
         gameState.currentWord &&
         gameState.gameStatus === 'drawing' && (
-          <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[9]">
+          <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
             <NamePlate title={gameState.currentWord} />
           </div>
         )}
@@ -335,8 +369,11 @@ const Drawing: React.FC = () => {
             className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
           >
             <img
-              src={getBackgroundImage()}
-              className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
+              src={backgroundImage}
+              onLoad={onImageLoad}
+              className={`${imageLoaded ? 'visible' : 'invisible'} ${
+                comment === undefined ? 'w-4/5' : 'w-3/5'
+              }`}
               draggable={false}
             />
 
