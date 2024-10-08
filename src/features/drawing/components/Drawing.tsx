@@ -319,6 +319,7 @@ const Drawing: React.FC = () => {
   const onStateChange = () => {
     const currentIndex = quizStates.indexOf(gameState.gameStatus);
     const nextIndex = (currentIndex + 1) % quizStates.length;
+    setImageLoaded(false); // 이미지 로딩 상태 초기화
     setGameState(prev => ({
       ...prev,
       gameStatus: quizStates[nextIndex],
