@@ -361,7 +361,7 @@ const Drawing: React.FC = () => {
           <div
             style={{
               background: `${
-                gameState.gameStatus === 'waiting'
+                gameState.gameStatus === 'waiting' && imageLoaded
                   ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
                   : ''
               }`,
