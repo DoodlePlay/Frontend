@@ -33,11 +33,26 @@ const initialGameState = {
   turnDeadline: null as number | null,
   correctAnswerCount: 0,
   items: {
-    ToxicCover: { user: null, status: true },
-    GrowingBomb: { user: null, status: false },
-    PhantomReverse: { user: null, status: false },
-    LaundryFlip: { user: null, status: false },
-    TimeCutter: { user: null, status: false },
+    ToxicCover: { user: null, status: true, isUsed: false, isDisabled: true },
+    GrowingBomb: {
+      user: null,
+      status: false,
+      isUsed: false,
+      isDisabled: false,
+    },
+    PhantomReverse: {
+      user: null,
+      status: false,
+      isUsed: false,
+      isDisabled: false,
+    },
+    LaundryFlip: {
+      user: null,
+      status: false,
+      isUsed: false,
+      isDisabled: false,
+    },
+    TimeCutter: { user: null, status: false, isUsed: false, isDisabled: false },
   },
   order: [] as string[],
   participants: {} as Record<
@@ -295,6 +310,21 @@ const Drawing: React.FC = () => {
     }
   }, [gameState.gameStatus]);
 
+  const useItem = (itemKey: string) => {
+    setGameState(prevState => {
+      const newItems = { ...prevState.items };
+      newItems[itemKey] = {
+        ...newItems[itemKey],
+        isUsed: true,
+        isDisabled: true,
+      };
+      return {
+        ...prevState,
+        items: newItems,
+      };
+    });
+  };
+
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
       <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[9]">
@@ -395,18 +425,32 @@ const Drawing: React.FC = () => {
           </div>
           {gameState.gameStatus === 'drawing' && (
             <ul className="flex flex-col">
-              {Object.entries(gameState.items).map(
-                ([key, item]) =>
-                  item.status && (
-                    <li key={key}>
-                      <img
-                        src={`/images/drawing/items/${key}.png`}
-                        alt={key}
-                        draggable={false}
-                      />
-                    </li>
-                  )
-              )}
+              {Object.entries(gameState.items).map(([key, item]) => (
+                <li
+                  key={key}
+                  className="relative cursor-pointer"
+                  onClick={() =>
+                    !item.isUsed && !item.isDisabled && useItem(key)
+                  }
+                >
+                  <img
+                    src={`/images/drawing/items/${key}.png`}
+                    alt={key}
+                    draggable={false}
+                    style={{
+                      opacity: item.isDisabled ? 0.5 : 1, // 사용 불가일 경우 반투명
+                    }}
+                  />
+                  {item.isUsed && (
+                    <div className="absolute inset-0 bg-red-500 opacity-50 flex justify-center items-center">
+                      <span className="text-white font-bold text-xl">X</span>
+                    </div>
+                  )}
+                  {item.isDisabled && !item.isUsed && (
+                    <div className="absolute inset-0 bg-black opacity-50" />
+                  )}
+                </li>
+              ))}
             </ul>
           )}
         </div>
