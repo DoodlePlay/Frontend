@@ -12,7 +12,11 @@ const NamePlate: React.FC<NamePlateProps> = ({
   isDrawingActive,
 }) => {
   return (
-    <div className="flex items-center justify-center bg-white rounded-[5px] shadow-lg max-w-xs p-[5px] border-2 border-neutral-default">
+    <div
+      className={`flex items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default ${
+        !score && 'cursor-pointer'
+      }`}
+    >
       <div
         className={`border-2 border-primary-default p-2 flex w-full rounded-[5px] items-center justify-center ${
           isDrawingActive ? `flex-row gap-2.5 py-[5px]` : `flex-col py-[10px]`
