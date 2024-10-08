@@ -33,11 +33,11 @@ const initialGameState = {
   turnDeadline: null as number | null,
   correctAnswerCount: 0,
   items: {
-    ToxicCover: { user: null, status: true },
-    GrowingBomb: { user: null, status: false },
-    PhantomReverse: { user: null, status: false },
-    LaundryFlip: { user: null, status: false },
-    TimeCutter: { user: null, status: false },
+    toxicCover: { user: null, status: true },
+    growingBomb: { user: null, status: false },
+    phantomReverse: { user: null, status: false },
+    laundryFlip: { user: null, status: false },
+    timeCutter: { user: null, status: false },
   },
   order: [] as string[],
   participants: {} as Record<
@@ -337,7 +337,7 @@ const Drawing: React.FC = () => {
       <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-1/2">
         <img
           className="m-auto"
-          src="/images/Logo.svg"
+          src="/images/logo.svg"
           alt="Logo"
           draggable={false}
         />
