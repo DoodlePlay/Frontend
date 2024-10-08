@@ -15,13 +15,14 @@ type QuizState =
   | 'success'
   | 'waiting'
   | 'choosing'
-  | 'drawing';
+  | 'drawing'
+  | 'create';
 
 const initialGameState = {
   host: '',
-  gameStatus: 'drawing' as QuizState,
-  currentDrawer: null,
-  currentWord: null,
+  gameStatus: 'create' as QuizState,
+  currentDrawer: '22202',
+  currentWord: '사자',
   totalWords: ['사자', '호랑이' /* ... 추가적인 단어들 */],
   selectedWords: [] as string[],
   isWordSelected: false,
@@ -64,6 +65,25 @@ const Drawing: React.FC = () => {
   const [canvasSize, setCanvasSize] = useState({ width: 730, height: 600 });
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
+  const quizStates: QuizState[] = [
+    'drawing',
+    'breakTime',
+    'timeOver',
+    'success',
+    'waiting',
+    'choosing',
+  ];
+
+  // QuizState 변경 버튼 핸들러
+  const onStateChange = () => {
+    const currentIndex = quizStates.indexOf(gameState.gameStatus);
+    const nextIndex = (currentIndex + 1) % quizStates.length;
+    setGameState(prev => ({
+      ...prev,
+      gameStatus: quizStates[nextIndex],
+    }));
+  };
+
   // 캔버스 초기화
   useEffect(() => {
     const canvas = new fabric.Canvas('fabric-canvas', {
@@ -78,7 +98,7 @@ const Drawing: React.FC = () => {
     return () => {
       canvas.dispose();
     };
-  }, [canvasSize]);
+  }, [canvasSize, quizStates]);
 
   // 뷰포트 크기에 따라 캔버스 크기 조정
   useEffect(() => {
@@ -285,6 +305,15 @@ const Drawing: React.FC = () => {
           draggable={false}
         />
       </h1>
+      {/* 정답 단어 NamePlate */}
+      {gameState.currentDrawer &&
+        gameState.currentWord &&
+        gameState.gameStatus === 'drawing' && (
+          <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[9]">
+            <NamePlate title={gameState.currentWord} />
+          </div>
+        )}
+
       <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
         <canvas
           id="fabric-canvas"
@@ -332,57 +361,64 @@ const Drawing: React.FC = () => {
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
           } flex justify-between absolute top-0 left-0 z-10 duration-700`}
         >
-          <Toolbar
-            selectedTool={selectedTool}
-            setSelectedTool={setSelectedTool}
-            selectedColor={selectedColor}
-            setSelectedColor={setSelectedColor}
-            selectedSize={selectedSize}
-            setSelectedSize={setSelectedSize}
-          />
-          <div
-            className={`${
-              isToolbar ? 'ml-3' : 'rotate-[900deg] ml-[30px]'
-            }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2  cursor-pointer duration-700`}
-            onClick={() => setIsToolbar(!isToolbar)}
-          >
-            <img
-              src="/images/drawing/toolbarController.svg"
-              alt="toolbar-controller"
-              draggable={false}
-            />
-          </div>
+          {gameState.currentDrawer && gameState.gameStatus === 'drawing' && (
+            <>
+              <Toolbar
+                selectedTool={selectedTool}
+                setSelectedTool={setSelectedTool}
+                selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                selectedSize={selectedSize}
+                setSelectedSize={setSelectedSize}
+              />
+              <div
+                className={`${
+                  isToolbar ? 'ml-3' : 'rotate-[900deg] ml-[30px]'
+                }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2  cursor-pointer duration-700`}
+                onClick={() => setIsToolbar(!isToolbar)}
+              >
+                <img
+                  src="/images/drawing/toolbarController.svg"
+                  alt="toolbar-controller"
+                  draggable={false}
+                />
+              </div>
+            </>
+          )}
         </div>
-        <div className="absolute top-0 right-0 z-10 max-w-[70px] flex flex-wrap gap-[10px]">
+        <div className="absolute top-0 right-0 z-40 max-w-[70px] flex flex-wrap gap-[10px]">
           <div
             className="w-full cursor-pointer"
             onClick={() => setIsSettingsModalOpen(true)}
           >
             <img src="/images/drawing/settingIcon.png" alt="setting" />
           </div>
-          <ul className="flex flex-col">
-            {Object.entries(gameState.items).map(
-              ([key, item]) =>
-                item.status && (
-                  <li key={key}>
-                    <img
-                      src={`/images/drawing/items/${key}.png`}
-                      alt={key}
-                      draggable={false}
-                    />
-                  </li>
-                )
-            )}
-          </ul>
+          {gameState.gameStatus === 'drawing' && (
+            <ul className="flex flex-col">
+              {Object.entries(gameState.items).map(
+                ([key, item]) =>
+                  item.status && (
+                    <li key={key}>
+                      <img
+                        src={`/images/drawing/items/${key}.png`}
+                        alt={key}
+                        draggable={false}
+                      />
+                    </li>
+                  )
+              )}
+            </ul>
+          )}
         </div>
 
         <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          {gameState.gameStatus !== 'waiting' && (
-            <TimeBar
-              duration={10}
-              onComplete={() => console.log('Time Over!')}
-            />
-          )}
+          {gameState.gameStatus === 'choosing' ||
+            (gameState.gameStatus === 'drawing' && (
+              <TimeBar
+                duration={10}
+                onComplete={() => console.log('Time Over!')}
+              />
+            ))}
         </div>
       </div>
       <Modal
@@ -392,6 +428,13 @@ const Drawing: React.FC = () => {
       >
         <Settings />
       </Modal>
+      {/* 상태 변경 버튼 */}
+      <button
+        onClick={onStateChange}
+        className="fixed bottom-10 right-10 bg-blue-500 text-white p-2 rounded z-50"
+      >
+        Change State
+      </button>
     </div>
   );
 };
