@@ -80,6 +80,7 @@ const Drawing: React.FC = () => {
   const [canvasSize, setCanvasSize] = useState({ width: 730, height: 600 });
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
+  // 임시 기능(삭제 예정)
   const quizStates: QuizState[] = [
     'drawing',
     'breakTime',
