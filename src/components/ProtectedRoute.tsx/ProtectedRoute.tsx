@@ -1,0 +1,20 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import useUserInfoStore from '../../features/profile/store/userInfoStore';
+
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
+  const { nickname, clickedAvatarIndex } = useUserInfoStore();
+
+  useEffect(() => {
+    if (!nickname || clickedAvatarIndex === undefined) {
+      router.push('/');
+    }
+  }, [nickname, clickedAvatarIndex, router]);
+
+  return <>{children}</>;
+};
+
+export default ProtectedRoute;
