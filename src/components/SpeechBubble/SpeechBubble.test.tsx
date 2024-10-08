@@ -37,6 +37,6 @@ describe('SpeechBubble 컴포넌트 테스트', () => {
     const { container: unselectedContainer } = render(
       <SpeechBubble isAvatarSelected={false} />
     );
-    expect(unselectedContainer.firstChild).toHaveClass('max-w-[180px]');
+    expect(unselectedContainer.firstChild).toHaveClass('w-[180px]');
   });
 });
