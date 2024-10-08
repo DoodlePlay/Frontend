@@ -12,6 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "fabric": "^6.4.2",
     "@testing-library/dom": "^10.4.0",
     "bcryptjs": "^2.4.3",
     "firebase": "^10.14.0",

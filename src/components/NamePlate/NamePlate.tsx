@@ -13,16 +13,20 @@ const NamePlate: React.FC<NamePlateProps> = ({
 }) => {
   return (
     <div
-      className={` ${
-        isDrawingActive ? '' : 'w-[100px]'
-      } flex items-center justify-center bg-white rounded-[5px] shadow-lg max-w-xs p-[5px] border-2 border-neutral-default`}
+      className={`flex items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default ${
+        !score && 'cursor-pointer'
+      }`}
     >
       <div
-        className={`border-2 border-primary-default p-[2px] flex w-full rounded-[5px] items-center justify-center ${
-          isDrawingActive ? `flex-row gap-2.5 px-[8px] py-[5px]` : `flex-col`
+        className={`border-2 border-primary-default p-2 flex w-full rounded-[5px] items-center justify-center ${
+          isDrawingActive ? `flex-row gap-2.5 py-[5px]` : `flex-col py-[10px]`
         }`}
       >
-        <span className={'text-black font-bold  text-[14px]'}>{title}</span>
+        <span
+          className={`text-black font-bold ${score ? 'text-base' : 'text-4xl'}`}
+        >
+          {title}
+        </span>
         {score !== undefined && (
           <span className="text-secondary-default text-base font-bold">
             {score}점
