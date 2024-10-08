@@ -375,6 +375,7 @@ const Drawing: React.FC = () => {
                 comment === undefined ? 'w-4/5' : 'w-3/5'
               }`}
               draggable={false}
+              loading="lazy"
             />
 
             {gameState.gameStatus === 'waiting' ? (
