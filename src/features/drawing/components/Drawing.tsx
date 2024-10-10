@@ -9,6 +9,7 @@ import NamePlate from '../../../components/NamePlate/NamePlate';
 import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
+import ToxicEffect from './ToxicEffect';
 
 type QuizState =
   | 'breakTime'
@@ -68,6 +69,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
+  const [isToxicUsed, setIsToxicUsed] = useState(false); // Toxic-Cover 아이템 사용 여부
 
   const quizStates: QuizState[] = [
     'drawing',
@@ -333,7 +335,20 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
     setImageLoaded(true);
   };
 
-  // console.log(activeItem);
+  useEffect(() => {
+    // activeItem이 'Toxic-Cover'이면서 아직 사용되지 않았을 때만 효과 적용
+    if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
+      setIsToxicUsed(true); // 효과를 한 번만 적용하도록 사용 상태 변경
+    }
+  }, [activeItem]);
+
+  // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
+  useEffect(() => {
+    if (gameState.gameStatus !== 'drawing' && isToxicUsed) {
+      // gameState가 변경될 때 효과가 사라지도록 처리
+      setIsToxicUsed(false);
+    }
+  }, [gameState]);
 
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
@@ -359,6 +374,12 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           id="fabric-canvas"
           className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
         />
+        {activeItem === 'Toxic-Cover' &&
+          gameState.gameStatus === 'drawing' &&
+          isToxicUsed && (
+            <ToxicEffect count={7} gameState={gameState.gameStatus} />
+          )}{' '}
+        {/* Toxic-Cover 사용 시 ToxicEffect 렌더링 */}
         {gameState.gameStatus === 'drawing' ? (
           ''
         ) : (
@@ -407,7 +428,6 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
             )}
           </div>
         )}
-
         <div
           className={`${
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
@@ -466,7 +486,6 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
             </ul>
           )}
         </div>
-
         <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
           {gameState.gameStatus === 'choosing' ||
             (gameState.gameStatus === 'drawing' && (
