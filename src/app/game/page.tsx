@@ -1,6 +1,8 @@
+import ProtectedRoute from '../../components/ProtectedRoute.tsx/ProtectedRoute';
 import Drawing from '../../features/drawing/components/Drawing';
 import GameControlButtons from '../../features/drawing/components/GameControlButtons';
 import ItemBox from '../../features/drawing/components/ItemBox';
+import VideoChat from '../../features/videoChat/components/VideoChat';
 
 const GamePage = () => {
   return (
@@ -13,8 +15,8 @@ const GamePage = () => {
           </div>
         </div>
         <div className="flex flex-col right w-full max-w-[420px] gap-y-[20px]">
-          <div className="w-full h-full bg-disabled border-[4px] border-black rounded-[10px]">
-            avatar
+          <div className="w-full border-[4px] border-black rounded-[10px]">
+            <VideoChat />
           </div>
           <div className="flex flex-col w-full gap-y-[20px]">
             <ItemBox />

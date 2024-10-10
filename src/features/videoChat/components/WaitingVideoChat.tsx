@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Avatar from '../../../components/Avatar/Avatar';
-import NamePlate from '../../../components/NamePlate';
+import NamePlate from '../../../components/NamePlate/NamePlate';
 import { Avatars } from '../../profile/components/Nickname';
 import useUserInfoStore from '../../profile/store/userInfoStore';
 
@@ -63,7 +63,7 @@ const WaitingVideoChat = () => {
     setOrder(data.order);
   }, []);
   return (
-    <div className="grid grid-cols-2 grid-rows-3 gap-y-[50px]">
+    <div className="grid grid-cols-2 grid-rows-3 gap-y-[55px]">
       {order.map((userId, index) => (
         <div key={index} className="flex justify-center">
           <div key={index}>
