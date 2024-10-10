@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 
 interface NamePlateProps {
   title: string;
@@ -11,24 +13,64 @@ const NamePlate: React.FC<NamePlateProps> = ({
   score,
   isDrawingActive,
 }) => {
+  const [length, setLength] = useState(100);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const viewportHeight = window.innerHeight;
+
+      const newLength = Math.min(viewportHeight * 0.1, 100);
+      setLength(newLength);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   return (
     <div
-      className={`flex items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default ${
+      className={`flex flex-shrink items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default ${
         !score && 'cursor-pointer'
       }`}
+      style={
+        isDrawingActive
+          ? { width: `${length * 2}px`, height: `${length * 0.6}px` }
+          : { width: `${length}px`, height: `${length * 0.7}px` }
+      }
     >
       <div
-        className={`border-2 border-primary-default p-2 flex w-full rounded-[5px] items-center justify-center ${
-          isDrawingActive ? `flex-row gap-2.5 py-[5px]` : `flex-col py-[10px]`
+        className={`border-2 border-primary-default p-1 flex rounded-[5px] items-center justify-center ${
+          isDrawingActive
+            ? `flex-row w-[200px] gap-2.5 px-[8px] py-[5px]`
+            : `flex-col`
         }`}
+        style={
+          isDrawingActive
+            ? {
+                width: `${length * 2}px`,
+                height: `${length * 0.45}px`,
+              }
+            : {
+                width: `${length}px`,
+                height: `${length * 0.56}px`,
+              }
+        }
       >
         <span
-          className={`text-black font-bold ${score ? 'text-base' : 'text-4xl'}`}
+          className={`text-black font-bold ${
+            window.innerHeight < 800 ? 'text-[10px]' : 'text-[14px]'
+          } text-ellipsis whitespace-nowrap`}
         >
           {title}
         </span>
         {score !== undefined && (
-          <span className="text-secondary-default text-base font-bold">
+          <span
+            className={`text-secondary-default ${
+              window.innerHeight < 800 ? 'text-[10px]' : 'text-[14px]'
+            } font-bold`}
+          >
             {score}점
           </span>
         )}

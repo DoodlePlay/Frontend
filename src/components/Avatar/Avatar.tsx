@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import useUserInfoStore from '../../features/profile/store/userInfoStore';
 
@@ -90,6 +90,22 @@ const Avatar = ({
     setupVideoStream();
   }, [isVideoOn]);
 
+  const [length, setLength] = useState(100);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const viewportHeight = window.innerHeight;
+
+      const newLength = Math.min(viewportHeight * 0.1, 100);
+      setLength(newLength);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   return (
     <div
       className={`overflow-hidden outline outline-3 outline-black  rounded-full flex-shrink-0 ${
@@ -97,6 +113,14 @@ const Avatar = ({
       } ${
         isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'
       } ${className} `}
+      style={
+        //뷰포트의 크기가 1000px보다 작을 때 아바타의 w, h를 동적으로 조젋
+        size === 'small'
+          ? { width: `${length}px`, height: `${length}px` }
+          : size === 'medium'
+          ? { width: `160px`, height: `160px` }
+          : { width: `${Math.min(length * 2)}px`, height: `${length * 2}px` }
+      }
     >
       {isVideoOn ? (
         <div className="w-full h-full object-cover scale-[1.12] translate-y-[8px] bg-webCam bg-cover bg-center bg-white">
