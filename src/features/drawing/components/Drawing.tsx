@@ -6,6 +6,7 @@ import * as fabric from 'fabric';
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
 import NamePlate from '../../../components/NamePlate/NamePlate';
+import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
 
@@ -347,7 +348,7 @@ const Drawing: React.FC = () => {
         gameState.currentWord &&
         gameState.gameStatus === 'drawing' && (
           <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
-            <NamePlate title={gameState.currentWord} />
+            <KeywordPlate title={gameState.currentWord} />
           </div>
         )}
 
@@ -397,7 +398,7 @@ const Drawing: React.FC = () => {
                 </p>
                 <div className="flex space-x-4 mt-4">
                   {gameState.totalWords.map((word, index) => (
-                    <NamePlate key={index} title={word} />
+                    <KeywordPlate key={index} title={word} />
                   ))}
                 </div>
               </>
