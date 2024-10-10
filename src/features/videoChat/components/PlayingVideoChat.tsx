@@ -9,7 +9,7 @@ import useUserInfoStore from '../../profile/store/userInfoStore';
 
 const data = {
   turn: 2,
-  order: [1, 2, 3, 4, 5],
+  order: [1, 2, 3, 4, 5, 6],
   currentDrawer: 1,
   participants: {
     1: {
