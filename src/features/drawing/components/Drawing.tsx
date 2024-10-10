@@ -53,7 +53,7 @@ const initialGameState = {
   >,
 };
 
-const Drawing: React.FC = () => {
+const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
@@ -332,6 +332,8 @@ const Drawing: React.FC = () => {
   const onImageLoad = () => {
     setImageLoaded(true);
   };
+
+  // console.log(activeItem);
 
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
