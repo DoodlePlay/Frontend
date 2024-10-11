@@ -108,7 +108,7 @@ const Avatar = ({
   }, []);
   return (
     <div
-      className={`overflow-hidden outline outline-3 outline-black  rounded-full flex-shrink-0 ${
+      className={`overflow-hidden outline outline-3 outline-black  rounded-full ${
         sizeClasses[size]
       } ${
         isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'

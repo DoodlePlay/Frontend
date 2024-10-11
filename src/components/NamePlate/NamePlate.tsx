@@ -31,7 +31,7 @@ const NamePlate: React.FC<NamePlateProps> = ({
   }, []);
   return (
     <div
-      className={`flex flex-shrink items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default ${
+      className={`flex items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default ${
         !score && 'cursor-pointer'
       }`}
       style={
