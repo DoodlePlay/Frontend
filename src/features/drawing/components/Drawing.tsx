@@ -402,7 +402,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
         gameState.currentWord &&
         gameState.gameStatus === 'drawing' && (
           <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
-            <KeywordPlate title={gameState.currentWord} />
+            <KeywordPlate title={gameState.currentWord} isChoosing={false} />
           </div>
         )}
 
@@ -447,7 +447,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
             {imageLoaded && (
               <>
                 {gameState.gameStatus === 'waiting' ? (
-                  <NamePlate title="winner" score={200} />
+                  <KeywordPlate title="winner" score={200} isChoosing={false} />
                 ) : (
                   <p className="text-center font-cherry text-secondary-default text-6xl">
                     {comment}
@@ -463,7 +463,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
                 </p>
                 <div className="flex space-x-4 mt-4">
                   {gameState.totalWords.map((word, index) => (
-                    <KeywordPlate key={index} title={word} />
+                    <KeywordPlate key={index} title={word} isChoosing />
                   ))}
                 </div>
               </>
