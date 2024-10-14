@@ -72,6 +72,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
   const [isToxicUsed, setIsToxicUsed] = useState(false); // Toxic-Cover 아이템 사용 여부
   const [isBombUsed, setIsBombUsed] = useState(false); // Growing-Bomb 아이템 사용 여부
+  const [isFlipped, setIsFlipped] = useState(false); // Laundry-Flip 아이템 사용 여부
 
   const quizStates: QuizState[] = [
     'drawing',
@@ -350,6 +351,20 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
         setIsBombUsed(false); // 5초 후 BombEffect 사라지도록 설정
       }, 5000);
     }
+    // 'Laundry-Flip' 아이템 효과 (정확히 정의 한 후 재조정)
+    else if (activeItem === 'Laundry-Flip' && !isFlipped) {
+      setIsFlipped(true);
+      // if (canvasRef.current) {
+      //   const canvas = canvasRef.current;
+      //   canvas.getObjects().forEach(obj => {
+      //     obj.set('flipY', !obj.flipY); // 현재 상태 반전
+      //   });
+      //   canvas.renderAll();
+      // }
+      setTimeout(() => {
+        setIsFlipped(false); // 10초 후 Flip 사라지도록 설정
+      }, 10000);
+    }
   }, [activeItem]);
 
   // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
@@ -358,6 +373,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
       // gameState가 변경될 때 효과가 사라지도록 처리
       setIsToxicUsed(false);
       setIsBombUsed(false);
+      setIsFlipped(false);
     }
   }, [gameState]);
 
@@ -371,7 +387,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           draggable={false}
         />
       </h1>
-      {/* 정답 단어 NamePlate */}
+      {/* 정답 단어 KeywordPlate */}
       {gameState.currentDrawer &&
         gameState.currentWord &&
         gameState.gameStatus === 'drawing' && (
@@ -383,7 +399,9 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
       <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
         <canvas
           id="fabric-canvas"
-          className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
+          className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10 ${
+            isFlipped ? 'transform scale-y-[-1]' : ''
+          }`}
         />
 
         {activeItem === 'Toxic-Cover' &&
