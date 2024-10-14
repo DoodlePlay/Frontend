@@ -28,7 +28,7 @@ const NamePlate: React.FC<NamePlateProps> = ({
       }
     >
       <div
-        className={`border-2 border-primary-default flex rounded-[5px] items-center justify-center ${
+        className={`border-2 border-primary-default p-1 flex rounded-[5px] items-center justify-center ${
           isDrawingActive
             ? `flex-row gap-2.5 w-[200px] px-[8px] py-[5px]`
             : `flex-col`
