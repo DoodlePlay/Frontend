@@ -49,7 +49,7 @@ const ToxicEffect = ({
   }, [count, gameState]);
 
   return (
-    <>
+    <div className="absolute left-0 top-0 w-full h-full">
       {positions.map((pos, index) => (
         <img
           key={index}
@@ -62,7 +62,7 @@ const ToxicEffect = ({
           }}
         />
       ))}
-    </>
+    </div>
   );
 };
 
