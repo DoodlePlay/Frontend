@@ -447,7 +447,12 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
             {imageLoaded && (
               <>
                 {gameState.gameStatus === 'waiting' ? (
-                  <KeywordPlate title="winner" score={200} isChoosing={false} />
+                  <NamePlate
+                    title="winner"
+                    score={200}
+                    isDrawingActive
+                    isWinner
+                  />
                 ) : (
                   <p className="text-center font-cherry text-secondary-default text-6xl">
                     {comment}

@@ -7,12 +7,14 @@ interface NamePlateProps {
   title: string;
   isDrawingActive?: boolean;
   score?: number; // 점수가 있는 경우, 옵션으로 표시
+  isWinner?: boolean;
 }
 
 const NamePlate: React.FC<NamePlateProps> = ({
   title,
   score,
   isDrawingActive,
+  isWinner,
 }) => {
   const length = Resize();
 
@@ -26,9 +28,9 @@ const NamePlate: React.FC<NamePlateProps> = ({
       }
     >
       <div
-        className={`border-2 border-primary-default p-1 flex rounded-[5px] items-center justify-center ${
+        className={`border-2 border-primary-default flex rounded-[5px] items-center justify-center ${
           isDrawingActive
-            ? `flex-row w-[200px] gap-2.5 px-[8px] py-[5px]`
+            ? `flex-row gap-2.5 w-[200px] px-[8px] py-[5px]`
             : `flex-col`
         }`}
         style={
@@ -47,6 +49,9 @@ const NamePlate: React.FC<NamePlateProps> = ({
           className={`text-black font-bold ${
             window.innerHeight < 800 ? 'text-[10px]' : 'text-[14px]'
           } text-ellipsis whitespace-nowrap`}
+          style={{
+            fontSize: isWinner ? '1.5rem' : '',
+          }}
         >
           {title}
         </span>
@@ -55,6 +60,9 @@ const NamePlate: React.FC<NamePlateProps> = ({
             className={`text-secondary-default ${
               window.innerHeight < 800 ? 'text-[10px]' : 'text-[14px]'
             } font-bold`}
+            style={{
+              fontSize: isWinner ? '1.5rem' : '',
+            }}
           >
             {score}점
           </span>
