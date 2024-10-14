@@ -126,7 +126,7 @@ const Nickname = () => {
         </div>
         {errors.nickname && (
           <div className="pl-[158px] mt-1">
-            <span className="absolute  text-red-500">
+            <span className="absolute  text-fuschia font-semibold">
               {errors.nickname.message}
             </span>
           </div>
