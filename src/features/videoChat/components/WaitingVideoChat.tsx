@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import Avatar from '../../../components/Avatar/Avatar';
 import NamePlate from '../../../components/NamePlate/NamePlate';
 import { Avatars } from '../../profile/components/Nickname';
