@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import useUserInfoStore from '../../features/profile/store/userInfoStore';
+import Resize from '../../hooks/Resize/Resize';
 
 interface AvatarProps {
   isVideoOn?: boolean;
@@ -10,6 +11,7 @@ interface AvatarProps {
   isMyCharacter?: boolean;
   size?: 'small' | 'medium' | 'large';
   src: string;
+  className?: string;
 }
 
 const sizeClasses = {
@@ -24,6 +26,7 @@ const Avatar = ({
   isMyCharacter = false,
   size = 'small',
   src,
+  className = '',
 }: AvatarProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -88,14 +91,25 @@ const Avatar = ({
     setupVideoStream();
   }, [isVideoOn]);
 
+  const length = Resize();
   return (
     <div
-      className={`overflow-hidden outline outline-3 outline-black rounded-full ${
+      className={`overflow-hidden outline outline-3 outline-black  rounded-full ${
         sizeClasses[size]
-      } ${isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'} `}
+      } ${
+        isMyCharacter || isClicked ? 'bg-primary-default' : 'bg-white'
+      } ${className} `}
+      style={
+        //뷰포트의 크기가 1000px보다 작을 때 아바타의 w, h를 동적으로 조젋
+        size === 'small'
+          ? { width: `${length}px`, height: `${length}px` }
+          : size === 'medium'
+          ? { width: `160px`, height: `160px` }
+          : { width: `${Math.min(length * 2)}px`, height: `${length * 2}px` }
+      }
     >
       {isVideoOn ? (
-        <div className="w-full h-full object-cover scale-110 translate-y-[9px] bg-webCam bg-cover bg-center">
+        <div className="w-full h-full object-cover scale-[1.12] translate-y-[8px] bg-webCam bg-cover bg-center bg-white">
           <video
             ref={videoRef}
             role="video"
@@ -108,7 +122,8 @@ const Avatar = ({
         <img
           src={src}
           alt="Avatar"
-          className="w-full h-full object-cover scale-110 translate-y-[9px]"
+          draggable="false"
+          className="w-full h-full object-cover scale-[1.12] translate-y-[8px]"
         />
       )}
     </div>
