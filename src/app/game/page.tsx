@@ -1,4 +1,4 @@
-import ProtectedRoute from '../../components/ProtectedRoute.tsx/ProtectedRoute';
+import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 import Drawing from '../../features/drawing/components/Drawing';
 import GameControlButtons from '../../features/drawing/components/GameControlButtons';
 import ItemBox from '../../features/drawing/components/ItemBox';

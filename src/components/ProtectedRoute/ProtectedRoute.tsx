@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+
 import useUserInfoStore from '../../features/profile/store/userInfoStore';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -10,7 +11,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!nickname || clickedAvatarIndex === undefined) {
-      router.push('/');
+      router.replace('/');
     }
   }, [nickname, clickedAvatarIndex, router]);
 

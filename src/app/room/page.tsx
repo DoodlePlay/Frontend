@@ -2,7 +2,7 @@ import CreateRoomButton from '../../features/lobby/components/CreateRoomButton';
 import RoomSearchSection from '../../features/lobby/components/RoomSearchSection';
 import { getRooms } from '../../features/lobby/api/gameRoomsApi';
 import UserProfileSection from '../../features/lobby/components/UserProfileSection';
-import ProtectedRoute from '../../components/ProtectedRoute.tsx/ProtectedRoute';
+import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 
 const LobbyPage: React.FC = async () => {
   const rooms = await getRooms();
