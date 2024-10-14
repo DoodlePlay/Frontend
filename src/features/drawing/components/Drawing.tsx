@@ -305,18 +305,14 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
 
   // 상황에 따른 comment를 설정하는 useEffect
   useEffect(() => {
-    switch (gameState.gameStatus) {
-      case 'timeOver':
-        setComment("Time's up");
-        break;
-      case 'breakTime':
-        setComment('Break Time');
-        break;
-      case 'choosing':
-        setComment('Choose a word');
-        break;
-      default:
-        setComment('');
+    if (gameState.gameStatus === 'timeOver') {
+      setComment("Time's up");
+    } else if (gameState.gameStatus === 'breakTime') {
+      setComment('Break Time');
+    } else if (gameState.gameStatus === 'choosing') {
+      setComment('Choose a word');
+    } else {
+      setComment('');
     }
   }, [gameState.gameStatus]);
 
@@ -367,7 +363,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
 
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
-      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-1/2">
+      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-[50%]">
         <img
           className="m-auto"
           src="/images/logo.svg"
@@ -389,6 +385,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           id="fabric-canvas"
           className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
         />
+
         {activeItem === 'Toxic-Cover' &&
           isToxicUsed &&
           gameState.gameStatus === 'drawing' && (
@@ -414,12 +411,11 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
             <img
               src={backgroundImage}
               onLoad={onImageLoad}
-              className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
+              className={`${comment === '' ? 'max-h-[80%]' : 'max-h-[60%]'} `}
               draggable={false}
               loading="lazy"
               style={{ visibility: imageLoaded ? 'visible' : 'hidden' }}
             />
-
             {imageLoaded && (
               <>
                 {gameState.gameStatus === 'waiting' ? (
