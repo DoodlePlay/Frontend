@@ -10,6 +10,7 @@ import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
 import ToxicEffect from './ToxicEffect';
+import BombEffect from './BombEffect';
 
 type QuizState =
   | 'breakTime'
@@ -70,6 +71,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
   const [isToxicUsed, setIsToxicUsed] = useState(false); // Toxic-Cover 아이템 사용 여부
+  const [isBombUsed, setIsBombUsed] = useState(false); // Growing-Bomb 아이템 사용 여부
 
   const quizStates: QuizState[] = [
     'drawing',
@@ -322,14 +324,21 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   const onStateChange = () => {
     const currentIndex = quizStates.indexOf(gameState.gameStatus);
     const nextIndex = (currentIndex + 1) % quizStates.length;
-    setImageLoaded(false); // 이미지 로딩 상태 초기화
+    const newTurnDeadline = Date.now() + 5 * 60 * 1000; // 현재 시간에서 5분 후
+
     setGameState(prev => ({
       ...prev,
       gameStatus: quizStates[nextIndex],
+      turnDeadline: newTurnDeadline,
     }));
 
     canvasRef.current.clear();
   };
+
+  // 현재 시간과 타임바 종료 시간 계산
+  const remainingTime = gameState.turnDeadline
+    ? Math.max(0, Math.floor((gameState.turnDeadline - Date.now()) / 1000))
+    : 0;
 
   const onImageLoad = () => {
     setImageLoaded(true);
@@ -339,14 +348,20 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
     // activeItem이 'Toxic-Cover'이면서 아직 사용되지 않았을 때만 효과 적용
     if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
       setIsToxicUsed(true); // 효과를 한 번만 적용하도록 사용 상태 변경
+    } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
+      setIsBombUsed(true);
+      setTimeout(() => {
+        setIsBombUsed(false); // 5초 후 BombEffect 사라지도록 설정
+      }, 5000);
     }
   }, [activeItem]);
 
   // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
   useEffect(() => {
-    if (gameState.gameStatus !== 'drawing' && isToxicUsed) {
+    if (gameState.gameStatus !== 'drawing') {
       // gameState가 변경될 때 효과가 사라지도록 처리
       setIsToxicUsed(false);
+      setIsBombUsed(false);
     }
   }, [gameState]);
 
@@ -375,11 +390,14 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
         />
         {activeItem === 'Toxic-Cover' &&
-          gameState.gameStatus === 'drawing' &&
-          isToxicUsed && (
+          isToxicUsed &&
+          gameState.gameStatus === 'drawing' && (
             <ToxicEffect count={7} gameState={gameState.gameStatus} />
-          )}{' '}
-        {/* Toxic-Cover 사용 시 ToxicEffect 렌더링 */}
+          )}
+        {activeItem === 'Growing-Bomb' &&
+          isBombUsed &&
+          gameState.gameStatus === 'drawing' && <BombEffect />}
+
         {gameState.gameStatus === 'drawing' ? (
           ''
         ) : (
@@ -490,7 +508,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           {gameState.gameStatus === 'choosing' ||
             (gameState.gameStatus === 'drawing' && (
               <TimeBar
-                duration={10}
+                duration={remainingTime}
                 onComplete={() => console.log('Time Over!')}
               />
             ))}

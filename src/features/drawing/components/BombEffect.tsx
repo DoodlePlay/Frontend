@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 const BombEffect = () => {
   return (
-    <div className="relative flex items-center justify-center w-full">
+    <div className="absolute flex items-center justify-center w-full h-full">
       <motion.img
         src="/images/drawing/items/effects/explosion_01.svg"
         alt="explosion"
@@ -14,6 +14,7 @@ const BombEffect = () => {
           ease: 'easeInOut',
           repeat: Infinity,
         }}
+        draggable={false}
       />
       <motion.img
         src="/images/drawing/items/effects/explosion_02.svg"
@@ -26,6 +27,7 @@ const BombEffect = () => {
           ease: 'easeInOut',
           repeat: Infinity,
         }}
+        draggable={false}
       />
     </div>
   );
