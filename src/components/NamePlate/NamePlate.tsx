@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Resize from '../../hooks/Resize/Resize';
 
 interface NamePlateProps {
   title: string;
@@ -13,22 +14,8 @@ const NamePlate: React.FC<NamePlateProps> = ({
   score,
   isDrawingActive,
 }) => {
-  const [length, setLength] = useState(100);
+  const length = Resize();
 
-  useEffect(() => {
-    const handleResize = () => {
-      const viewportHeight = window.innerHeight;
-
-      const newLength = Math.min(viewportHeight * 0.1, 100);
-      setLength(newLength);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
   return (
     <div
       className={`flex items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default ${

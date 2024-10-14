@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import useUserInfoStore from '../../features/profile/store/userInfoStore';
+import Resize from '../../hooks/Resize/Resize';
 
 interface AvatarProps {
   isVideoOn?: boolean;
@@ -90,22 +91,7 @@ const Avatar = ({
     setupVideoStream();
   }, [isVideoOn]);
 
-  const [length, setLength] = useState(100);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const viewportHeight = window.innerHeight;
-
-      const newLength = Math.min(viewportHeight * 0.1, 100);
-      setLength(newLength);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    handleResize();
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const length = Resize();
   return (
     <div
       className={`overflow-hidden outline outline-3 outline-black  rounded-full ${
