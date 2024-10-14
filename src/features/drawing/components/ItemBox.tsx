@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 
 import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';

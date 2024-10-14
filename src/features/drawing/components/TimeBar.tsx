@@ -1,5 +1,3 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 
 interface TimerBarProps {
@@ -9,12 +7,17 @@ interface TimerBarProps {
 
 const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
   const [progressWidth, setProgressWidth] = useState('100%');
+  const [animationDuration, setAnimationDuration] = useState(duration); // 애니메이션 지속 시간 상태 추가
 
   useEffect(() => {
-    // 타이머가 시작되면 자연스럽게 100%에서 0%로 너비가 줄어들도록 설정합니다.
+    setProgressWidth('100%'); // duration이 변경될 때마다 progressWidth를 초기화
+
+    // 새 duration에 맞춰 애니메이션 지속 시간 업데이트
     setTimeout(() => {
       setProgressWidth('0%');
     }, 50); // 살짝 지연 후 시작
+
+    setAnimationDuration(duration); // 새로운 duration 반영
 
     // duration이 끝나면 onComplete 호출
     const timer = setTimeout(() => {
@@ -33,7 +36,9 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
           alt="hourglass"
           draggable={false}
           className="animate-spin"
-          style={{ animation: `spin ${duration / 2}s linear infinite` }}
+          style={{
+            animation: `spin ${animationDuration / 2}s linear infinite`,
+          }}
         />
       </div>
       <div className="w-full bg-disabled h-3 rounded-full overflow-hidden">
@@ -41,7 +46,7 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
           className="bg-secondary-default h-full transition-all ease-linear"
           style={{
             width: progressWidth,
-            transitionDuration: `${duration}s`,
+            transitionDuration: `${animationDuration}s`, // 애니메이션 지속 시간 적용
           }}
         ></div>
       </div>

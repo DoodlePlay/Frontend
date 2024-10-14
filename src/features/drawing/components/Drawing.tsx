@@ -350,9 +350,8 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
       setTimeout(() => {
         setIsBombUsed(false); // 5초 후 BombEffect 사라지도록 설정
       }, 5000);
-    }
-    // 'Laundry-Flip' 아이템 효과 (정확히 정의 한 후 재조정)
-    else if (activeItem === 'Laundry-Flip' && !isFlipped) {
+    } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
+      // 'Laundry-Flip' 아이템 효과 (정확히 정의 한 후 재조정)
       setIsFlipped(true);
       // if (canvasRef.current) {
       //   const canvas = canvasRef.current;
@@ -364,6 +363,17 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
       setTimeout(() => {
         setIsFlipped(false); // 10초 후 Flip 사라지도록 설정
       }, 10000);
+    } else if (
+      // 'Time-Cutter' 아이템 효과
+      activeItem === 'Time-Cutter' &&
+      gameState.turnDeadline &&
+      remainingTime > 0
+    ) {
+      const reducedTime = Date.now() + (remainingTime * 1000) / 2; // 남은 시간의 반만큼 감소
+      setGameState(prev => ({
+        ...prev,
+        turnDeadline: reducedTime,
+      }));
     }
   }, [activeItem]);
 
@@ -519,13 +529,18 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           )}
         </div>
         <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          {gameState.gameStatus === 'choosing' ||
-            (gameState.gameStatus === 'drawing' && (
-              <TimeBar
-                duration={remainingTime}
-                onComplete={() => console.log('Time Over!')}
-              />
-            ))}
+          {gameState.gameStatus === 'drawing' && (
+            <TimeBar
+              duration={remainingTime}
+              onComplete={() => console.log('Time Over!')}
+            />
+          )}
+          {gameState.gameStatus === 'choosing' && (
+            <TimeBar
+              duration={5}
+              onComplete={() => console.log('Time Over!')}
+            />
+          )}
         </div>
       </div>
       <Modal
