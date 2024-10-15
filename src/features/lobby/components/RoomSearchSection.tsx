@@ -120,6 +120,12 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
     }
   };
 
+  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      onSubmitPassword();
+    }
+  };
+
   useEffect(() => {
     if (isGameStatusModalOpen) {
       const timer = setTimeout(() => {
@@ -181,6 +187,7 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
               maxLength={4}
               value={password}
               onInput={onPasswordInput}
+              onKeyUp={onKeyPress}
               ref={passwordInputRef}
             />
             <Button text="Enter" color="primary" onClick={onSubmitPassword} />
