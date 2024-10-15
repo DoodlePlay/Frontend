@@ -11,6 +11,7 @@ import SearchBar from './SearchBar';
 import GameStatusModal from './GameStatusModal';
 import RoomCard from './RoomCard';
 import { Room, getRoomById, getRooms, joinRoom } from '../api/gameRoomsApi';
+import socketStore from '../../socket/socketStore';
 
 interface RoomSearchSectionProps {
   rooms: Room[];
@@ -21,6 +22,7 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
 }) => {
   const router = useRouter();
   const passwordInputRef = useRef<HTMLInputElement>(null);
+  const { connectSocket } = socketStore();
   const [rooms, setRooms] = useState(initialRooms);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedRoomPassword, setSelectedRoomPassword] = useState<
@@ -69,7 +71,8 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
         setPasswordModalOpen(true);
       } else {
         await joinRoom(roomId);
-        router.push('/game'); // 추후 roomId 붙은 라우터 수정
+        connectSocket(roomId);
+        router.push('/game');
       }
     } catch (error) {
       console.error('Error fetching room details:', error);
@@ -104,7 +107,8 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
         );
         if (isPasswordValid) {
           await joinRoom(selectedRoom);
-          router.push('/game'); // 추후 roomId 붙은 라우터 수정
+          connectSocket(selectedRoom);
+          router.push('/game');
 
           onClosePasswordModal();
         } else {
