@@ -352,17 +352,17 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
       }, 5000);
     } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
       // 'Laundry-Flip' 아이템 효과 (정확히 정의 한 후 재조정)
-      setIsFlipped(true);
-      // if (canvasRef.current) {
-      //   const canvas = canvasRef.current;
-      //   canvas.getObjects().forEach(obj => {
-      //     obj.set('flipY', !obj.flipY); // 현재 상태 반전
-      //   });
-      //   canvas.renderAll();
-      // }
-      setTimeout(() => {
-        setIsFlipped(false); // 10초 후 Flip 사라지도록 설정
-      }, 10000);
+      // setIsFlipped(true);
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        canvas.getObjects().forEach(obj => {
+          obj.set('flipY', !obj.flipY); // 현재 상태 반전
+        });
+        canvas.renderAll();
+      }
+      // setTimeout(() => {
+      //   setIsFlipped(false); // 10초 후 Flip 사라지도록 설정
+      // }, 10000);
     } else if (
       // 'Time-Cutter' 아이템 효과
       activeItem === 'Time-Cutter' &&
@@ -409,9 +409,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
       <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
         <canvas
           id="fabric-canvas"
-          className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10 ${
-            isFlipped ? 'transform scale-y-[-1]' : ''
-          }`}
+          className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
         />
 
         {activeItem === 'Toxic-Cover' &&
