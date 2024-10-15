@@ -4,16 +4,26 @@ interface ChatBubbleProps {
   nickname: string;
   message: string;
   isCurrentUser: boolean;
+  isSystemMessage?: boolean;
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
   message,
   nickname,
   isCurrentUser,
+  isSystemMessage = false,
 }) => {
+  if (isSystemMessage) {
+    return (
+      <div className="text-center text-sm italic text-neutral-default my-2">
+        {message}
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`flex items-center gap-3 ${
+      className={`flex items-center gap-4 ${
         isCurrentUser ? 'flex-row-reverse' : ''
       }`}
     >
