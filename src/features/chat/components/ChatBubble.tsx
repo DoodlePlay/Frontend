@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface ChatBubbleProps {
   nickname: string;
   message: string;
@@ -5,40 +7,31 @@ interface ChatBubbleProps {
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
-  nickname,
   message,
+  nickname,
   isCurrentUser,
 }) => {
   return (
     <div
-      className={`flex items-center ${
-        isCurrentUser ? 'justify-end' : 'justify-start'
+      className={`flex items-center gap-3 ${
+        isCurrentUser ? 'flex-row-reverse' : ''
       }`}
     >
-      {isCurrentUser ? <div>message + 이름</div> : <div>이름 + message</div>}
+      <div className="font-bold">{nickname}</div>
 
-      {/* 화살표 */}
       <div
-        className={`relative p-2 bg-${
-          isCurrentUser ? 'blue' : 'gray'
-        }-200 rounded-lg text-${isCurrentUser ? 'right' : 'left'} max-w-[70%]`}
+        className={`relative ${
+          isCurrentUser ? 'bg-primary-default' : 'bg-secondary-200'
+        } rounded-[3px] px-[10px] py-2 max-w-80 w-fit`}
       >
         {message}
-        <span
-          className={`absolute ${
-            isCurrentUser ? 'right-full' : 'left-full'
-          } top-1/2 transform -translate-y-1/2`}
-        >
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <polygon
-              points={isCurrentUser ? '10,5 0,0 0,10' : '0,5 10,0 10,10'}
-              fill={isCurrentUser ? '#3B82F6' : '#D1D5DB'}
-            />
-          </svg>
-        </span>
-      </div>
-      <div className={`ml-2 text-${isCurrentUser ? 'right' : 'left'}`}>
-        <span className="font-bold">{nickname}</span>
+        <div
+          className={`absolute top-1/2 w-0 h-0 border-t-[7px] border-b-[7px] ${
+            isCurrentUser
+              ? 'border-l-[7px] border-transparent border-l-[#ffc700] right-0 mr-[-7px]'
+              : 'border-r-[7px] border-transparent border-r-[#BBE6BB] left-0 ml-[-7px]'
+          } translate-y-[-50%]`}
+        ></div>
       </div>
     </div>
   );
