@@ -50,7 +50,7 @@ const NamePlate: React.FC<NamePlateProps> = ({
             window.innerHeight < 800 ? 'text-[10px]' : 'text-[14px]'
           } text-ellipsis whitespace-nowrap`}
           style={{
-            fontSize: isWinner ? '1.5rem' : '',
+            fontSize: isWinner ? '1.4rem' : '',
           }}
         >
           {title}
@@ -61,7 +61,7 @@ const NamePlate: React.FC<NamePlateProps> = ({
               window.innerHeight < 800 ? 'text-[10px]' : 'text-[14px]'
             } font-bold`}
             style={{
-              fontSize: isWinner ? '1.5rem' : '',
+              fontSize: isWinner ? '1.2rem' : '',
             }}
           >
             {score}점

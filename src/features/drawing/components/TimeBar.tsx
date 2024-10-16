@@ -1,54 +1,74 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface TimerBarProps {
-  duration: number; // duration 추후 설정 예정
+  duration: number; // 총 duration 설정
   onComplete: () => void;
+  isTimeCut: boolean; // Time-Cutter 아이템 사용 여부
 }
 
-const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
-  const [progressWidth, setProgressWidth] = useState('100%');
-  const [animationDuration, setAnimationDuration] = useState(duration); // 애니메이션 지속 시간 상태 추가
+const TimerBar: React.FC<TimerBarProps> = ({
+  duration,
+  onComplete,
+  isTimeCut,
+}) => {
+  const [remainingDuration, setRemainingDuration] = useState(duration); // 남은 시간
+  const [progressDuration, setProgressDuration] = useState(duration); // progress 애니메이션 시간
 
   useEffect(() => {
-    setProgressWidth('100%'); // duration이 변경될 때마다 progressWidth를 초기화
+    setRemainingDuration(duration); // 타이머 초기화
+    setProgressDuration(duration); // 애니메이션 시간 초기화
 
-    // 새 duration에 맞춰 애니메이션 지속 시간 업데이트
-    setTimeout(() => {
-      setProgressWidth('0%');
-    }, 50); // 살짝 지연 후 시작
-
-    setAnimationDuration(duration); // 새로운 duration 반영
-
-    // duration이 끝나면 onComplete 호출
     const timer = setTimeout(() => {
       onComplete();
     }, duration * 1000);
 
-    // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
     return () => clearTimeout(timer);
   }, [duration, onComplete]);
+
+  useEffect(() => {
+    if (isTimeCut) {
+      const halfTime = remainingDuration / 2;
+      setRemainingDuration(halfTime); // 남은 시간의 절반으로 설정
+      setProgressDuration(halfTime); // 애니메이션 시간도 절반으로 줄이기
+
+      const timer = setTimeout(() => {
+        onComplete();
+      }, halfTime * 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isTimeCut]);
 
   return (
     <div className="flex items-center gap-x-[15px]">
       <div className="ml-[15px]">
-        <img
+        <motion.img
           src="/images/drawing/hourglass.svg"
           alt="hourglass"
           draggable={false}
-          className="animate-spin"
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: progressDuration / 2,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
           style={{
-            animation: `spin ${animationDuration / 2}s linear infinite`,
+            width: '30px', // 아이콘 크기 조정
+            height: '30px',
           }}
         />
       </div>
       <div className="w-full bg-disabled h-3 rounded-full overflow-hidden">
-        <div
-          className="bg-secondary-default h-full transition-all ease-linear"
-          style={{
-            width: progressWidth,
-            transitionDuration: `${animationDuration}s`, // 애니메이션 지속 시간 적용
-          }}
-        ></div>
+        <motion.div
+          className={`${
+            isTimeCut === true ? 'bg-fuschia' : 'bg-secondary-default'
+          } h-full`}
+          initial={{ width: '100%' }}
+          animate={{ width: '0%' }}
+          transition={{ duration: progressDuration, ease: 'linear' }}
+          key={progressDuration} // 변경 시 애니메이션 재시작
+        />
       </div>
     </div>
   );

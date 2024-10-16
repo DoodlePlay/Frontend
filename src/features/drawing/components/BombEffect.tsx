@@ -11,7 +11,7 @@ const BombEffect = () => {
         animate={{ scale: 1.8 }}
         transition={{
           type: 'spring',
-          stiffness: 100,
+          stiffness: 30,
         }}
         draggable={false}
       />
@@ -23,7 +23,7 @@ const BombEffect = () => {
         animate={{ scale: 1.8 }}
         transition={{
           type: 'spring',
-          stiffness: 100,
+          stiffness: 30,
         }}
         draggable={false}
       />

@@ -23,7 +23,7 @@ type QuizState =
 
 const initialGameState = {
   host: '',
-  gameStatus: 'create' as QuizState,
+  gameStatus: 'drawing' as QuizState,
   currentDrawer: '22202',
   currentWord: '사자',
   totalWords: ['사자', '호랑이' /* ... 추가적인 단어들 */],
@@ -33,10 +33,10 @@ const initialGameState = {
   maxRound: 3,
   round: 3,
   turn: 1,
-  turnDeadline: null as number | null,
+  turnDeadline: Date.now() + (3 / 2) * 60 * 1000,
   correctAnswerCount: 0,
   items: {
-    toxicCover: { user: null, status: true },
+    toxicCover: { user: null, status: false },
     growingBomb: { user: null, status: false },
     phantomReverse: { user: null, status: false },
     laundryFlip: { user: null, status: false },
@@ -73,6 +73,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   const [isToxicUsed, setIsToxicUsed] = useState(false); // Toxic-Cover 아이템 사용 여부
   const [isBombUsed, setIsBombUsed] = useState(false); // Growing-Bomb 아이템 사용 여부
   const [isFlipped, setIsFlipped] = useState(false); // Laundry-Flip 아이템 사용 여부
+  const [isTimeCut, setIsTimeCut] = useState(false); // Time-Cutter 아이템 사용 여부
 
   const quizStates: QuizState[] = [
     'drawing',
@@ -321,7 +322,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   const onStateChange = () => {
     const currentIndex = quizStates.indexOf(gameState.gameStatus);
     const nextIndex = (currentIndex + 1) % quizStates.length;
-    const newTurnDeadline = Date.now() + 5 * 60 * 1000; // 현재 시간에서 5분 후
+    const newTurnDeadline = Date.now() + (3 / 2) * 60 * 1000; // 현재 시간에서 5분 후
 
     setGameState(prev => ({
       ...prev,
@@ -337,6 +338,8 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
     ? Math.max(0, Math.floor((gameState.turnDeadline - Date.now()) / 1000))
     : 0;
 
+  useEffect(() => {}, []);
+
   const onImageLoad = () => {
     setImageLoaded(true);
   };
@@ -344,15 +347,14 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   useEffect(() => {
     // activeItem이 'Toxic-Cover'이면서 아직 사용되지 않았을 때만 효과 적용
     if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
-      setIsToxicUsed(true); // 효과를 한 번만 적용하도록 사용 상태 변경
+      setIsToxicUsed(true);
     } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
       setIsBombUsed(true);
       setTimeout(() => {
-        setIsBombUsed(false); // 5초 후 BombEffect 사라지도록 설정
+        setIsBombUsed(false);
       }, 5000);
     } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
       // 'Laundry-Flip' 아이템 효과 (정확히 정의 한 후 재조정)
-      // setIsFlipped(true);
       if (canvasRef.current) {
         const canvas = canvasRef.current;
         canvas.getObjects().forEach(obj => {
@@ -360,22 +362,64 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
         });
         canvas.renderAll();
       }
+      // setIsFlipped(true);
       // setTimeout(() => {
       //   setIsFlipped(false); // 10초 후 Flip 사라지도록 설정
       // }, 10000);
     } else if (
       // 'Time-Cutter' 아이템 효과
       activeItem === 'Time-Cutter' &&
-      gameState.turnDeadline &&
+      !isTimeCut &&
       remainingTime > 0
     ) {
-      const reducedTime = Date.now() + (remainingTime * 1000) / 2; // 남은 시간의 반만큼 감소
+      const newDeadline = Date.now() + (remainingTime * 1000) / 2; // 남은 시간의 반만큼 감소
       setGameState(prev => ({
         ...prev,
-        turnDeadline: reducedTime,
+        turnDeadline: newDeadline,
       }));
     }
   }, [activeItem]);
+
+  // 아이템 사용 로직
+  useEffect(() => {
+    if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
+      setGameState(prevState => ({
+        ...prevState,
+        items: {
+          ...prevState.items,
+          toxicCover: { ...prevState.items.toxicCover, status: true },
+        },
+      }));
+      setIsToxicUsed(true);
+    } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
+      setGameState(prevState => ({
+        ...prevState,
+        items: {
+          ...prevState.items,
+          growingBomb: { ...prevState.items.growingBomb, status: true },
+        },
+      }));
+      setIsBombUsed(true);
+    } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
+      setGameState(prevState => ({
+        ...prevState,
+        items: {
+          ...prevState.items,
+          laundryFlip: { ...prevState.items.laundryFlip, status: true },
+        },
+      }));
+      setIsFlipped(true);
+    } else if (activeItem === 'Time-Cutter' && !isTimeCut) {
+      setGameState(prevState => ({
+        ...prevState,
+        items: {
+          ...prevState.items,
+          timeCutter: { ...prevState.items.timeCutter, status: true },
+        },
+      }));
+      setIsTimeCut(true);
+    }
+  }, [activeItem, isToxicUsed, isBombUsed, isFlipped, isTimeCut]);
 
   // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
   useEffect(() => {
@@ -384,6 +428,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
       setIsToxicUsed(false);
       setIsBombUsed(false);
       setIsFlipped(false);
+      setIsTimeCut(false);
     }
   }, [gameState]);
 
@@ -536,12 +581,14 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
             <TimeBar
               duration={remainingTime}
               onComplete={() => console.log('Time Over!')}
+              isTimeCut={isTimeCut}
             />
           )}
           {gameState.gameStatus === 'choosing' && (
             <TimeBar
               duration={5}
               onComplete={() => console.log('Time Over!')}
+              isTimeCut={isTimeCut}
             />
           )}
         </div>
