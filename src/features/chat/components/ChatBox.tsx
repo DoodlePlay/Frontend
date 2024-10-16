@@ -3,14 +3,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import ChatBubble from './ChatBubble';
+import useUserInfoStore from '../../profile/store/userInfoStore';
+import useSocketStore from '../../socket/socketStore';
 
 interface ChatMessage {
-  userId: string;
+  nickname: string;
   message: string;
+  isSystemMessage?: boolean;
 }
 
 const ChatBox: React.FC = () => {
-  const currentUserId = 'user125';
+  const { nickname } = useUserInfoStore();
+  const { socket, roomId } = useSocketStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
@@ -19,10 +23,29 @@ const ChatBox: React.FC = () => {
   const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && inputValue.trim()) {
       const newMessage: ChatMessage = {
-        userId: currentUserId,
+        nickname,
         message: inputValue,
       };
-      setMessages([...messages, newMessage]);
+
+      if (socket) {
+        socket.emit('sendMessage', roomId, newMessage);
+      }
+
+      setInputValue('');
+    }
+  };
+
+  const onSendMessage = () => {
+    if (inputValue.trim()) {
+      const newMessage: ChatMessage = {
+        nickname,
+        message: inputValue,
+      };
+
+      if (socket) {
+        socket.emit('sendMessage', roomId, newMessage);
+      }
+
       setInputValue('');
     }
   };
@@ -38,6 +61,44 @@ const ChatBox: React.FC = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on('newMessage', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+
+      socket.on('userJoined', (joinedNickname: string) => {
+        setMessages(prevMessages => [
+          ...prevMessages,
+          {
+            nickname: 'System',
+            message: `🙌 ${joinedNickname}님이 방에 입장했습니다 🙌`,
+            isSystemMessage: true,
+          },
+        ]);
+      });
+
+      socket.on('userLeft', (leftNickname: string) => {
+        setMessages(prevMessages => [
+          ...prevMessages,
+          {
+            nickname: 'System',
+            message: `👋 ${leftNickname}님이 방에서 퇴장했습니다 👋`,
+            isSystemMessage: true,
+          },
+        ]);
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('newMessage');
+        socket.off('userJoined');
+        socket.off('userLeft');
+      }
+    };
+  }, [socket]);
+
   return (
     <div className="relative flex flex-col h-[240px] p-5 bg-neutral-100 border-[3px] border-black rounded-[10px] shadow-board">
       <div
@@ -47,9 +108,10 @@ const ChatBox: React.FC = () => {
         {messages.map((msg, idx) => (
           <ChatBubble
             key={idx + 1}
-            nickname={msg.userId}
+            nickname={msg.nickname}
             message={msg.message}
-            isCurrentUser={msg.userId === currentUserId}
+            isCurrentUser={msg.nickname === nickname}
+            isSystemMessage={msg.isSystemMessage}
           />
         ))}
       </div>
@@ -65,11 +127,7 @@ const ChatBox: React.FC = () => {
           ref={chatInputRef}
         />
         <button
-          onClick={() => {
-            if (inputValue.trim()) {
-              setInputValue('');
-            }
-          }}
+          onClick={onSendMessage}
           className="w-[94px] h-[31px] text-[20px] font-cherry rounded-[5px] border-[2px] border-black bg-primary-default hover:bg-primary-600 text-secondary-default leading-6 drop-shadow-button"
           style={{
             textShadow:
