@@ -23,7 +23,7 @@ type QuizState =
 
 const initialGameState = {
   host: '',
-  gameStatus: 'drawing' as QuizState,
+  gameStatus: 'create' as QuizState,
   currentDrawer: '22202',
   currentWord: '사자',
   totalWords: ['사자', '호랑이' /* ... 추가적인 단어들 */],
