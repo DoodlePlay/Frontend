@@ -5,9 +5,11 @@ import { useState } from 'react';
 
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
+import useSocketStore from '../../socket/socketStore';
 
 const GameControlButtons = () => {
   const router = useRouter();
+  const { disconnectSocket } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onStartGame = () => {
@@ -20,6 +22,7 @@ const GameControlButtons = () => {
   };
 
   const confirmExit = () => {
+    disconnectSocket();
     router.replace('/room'); // /room 페이지로 이동하면서 히스토리 스택을 대체합니다.
     setIsModalOpen(false);
   };

@@ -11,6 +11,8 @@ import SearchBar from './SearchBar';
 import GameStatusModal from './GameStatusModal';
 import RoomCard from './RoomCard';
 import { Room, getRoomById, getRooms, joinRoom } from '../api/gameRoomsApi';
+import useUserInfoStore from '../../profile/store/userInfoStore';
+import useSocketStore from '../../socket/socketStore';
 
 interface RoomSearchSectionProps {
   rooms: Room[];
@@ -21,6 +23,9 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
 }) => {
   const router = useRouter();
   const passwordInputRef = useRef<HTMLInputElement>(null);
+  const { nickname, clickedAvatarIndex, isVideoOn, isFlipped } =
+    useUserInfoStore();
+  const { connectSocket } = useSocketStore();
   const [rooms, setRooms] = useState(initialRooms);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedRoomPassword, setSelectedRoomPassword] = useState<
@@ -69,7 +74,16 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
         setPasswordModalOpen(true);
       } else {
         await joinRoom(roomId);
-        router.push('/game'); // 추후 roomId 붙은 라우터 수정
+
+        const userInfo = {
+          nickname,
+          score: 0,
+          clickedAvatarIndex,
+          isVideoOn,
+          isFlipped,
+        };
+        connectSocket(roomId, userInfo, 'joinRoom');
+        router.push('/game');
       }
     } catch (error) {
       console.error('Error fetching room details:', error);
@@ -104,7 +118,16 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
         );
         if (isPasswordValid) {
           await joinRoom(selectedRoom);
-          router.push('/game'); // 추후 roomId 붙은 라우터 수정
+
+          const userInfo = {
+            nickname,
+            score: 0,
+            clickedAvatarIndex,
+            isVideoOn,
+            isFlipped,
+          };
+          connectSocket(selectedRoom, userInfo, 'joinRoom');
+          router.push('/game');
 
           onClosePasswordModal();
         } else {
@@ -113,6 +136,12 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
       }
     } catch (error) {
       console.error('Error fetching room details:', error);
+    }
+  };
+
+  const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      onSubmitPassword();
     }
   };
 
@@ -177,6 +206,7 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
               maxLength={4}
               value={password}
               onInput={onPasswordInput}
+              onKeyUp={onKeyPress}
               ref={passwordInputRef}
             />
             <Button text="Enter" color="primary" onClick={onSubmitPassword} />

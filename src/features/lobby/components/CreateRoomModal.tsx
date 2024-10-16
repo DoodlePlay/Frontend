@@ -6,6 +6,8 @@ import bcrypt from 'bcryptjs';
 import Modal from '../../../components/Modal/Modal';
 import Button from '../../../components/Button/Button';
 import { createRoom } from '../api/gameRoomsApi';
+import useSocketStore from '../../socket/socketStore';
+import useUserInfoStore from '../../profile/store/userInfoStore';
 
 interface RoomFormValues {
   roomTitle: string;
@@ -22,6 +24,9 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   onClose,
 }) => {
   const router = useRouter();
+  const { nickname, clickedAvatarIndex, isVideoOn, isFlipped } =
+    useUserInfoStore();
+  const { connectSocket } = useSocketStore();
   const {
     register,
     handleSubmit,
@@ -61,9 +66,23 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
     try {
       const roomId = await createRoom(roomData);
-      console.log('Room created with ID:', roomId);
+
+      const userInfo = {
+        nickname,
+        score: 0,
+        clickedAvatarIndex,
+        isVideoOn,
+        isFlipped,
+      };
+
+      const roomInfo = {
+        rounds: roomData.rounds,
+        topic: roomData.topic,
+        isItemsEnabled: roomData.isItemsEnabled,
+      };
+      connectSocket(roomId, userInfo, 'createRoom', roomInfo);
       onClose();
-      router.push('/game'); // 추후 roomId 붙은 라우터 수정
+      router.push('/game');
     } catch (error) {
       console.error('Error creating room:', error);
     }

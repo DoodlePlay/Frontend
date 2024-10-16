@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
+import ChatBox from '../../features/chat/components/ChatBox';
 import Drawing from '../../features/drawing/components/Drawing';
 import GameControlButtons from '../../features/drawing/components/GameControlButtons';
 import ItemBox from '../../features/drawing/components/ItemBox';
@@ -17,9 +18,7 @@ const GamePage = () => {
         <div className="flex w-full max-w-[1240px] gap-[40px]">
           <div className="flex flex-col left w-full gap-y-[20px]">
             <Drawing activeItem={activeItem} />
-            <div className="w-full h-[240px] bg-disabled border-[4px] border-black rounded-[10px]">
-              chat
-            </div>
+            <ChatBox />
           </div>
           <div className="flex flex-col right w-full max-w-[420px] gap-y-[20px]">
             <div className="w-full border-[4px] border-black rounded-[10px]">
