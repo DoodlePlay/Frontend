@@ -12,15 +12,16 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "fabric": "^6.4.2",
     "@testing-library/dom": "^10.4.0",
     "bcryptjs": "^2.4.3",
+    "fabric": "^6.4.2",
     "firebase": "^10.14.0",
     "framer-motion": "^11.9.0",
     "next": "^14.2.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
+    "socket.io-client": "^4.8.0",
     "zustand": "^4.5.5"
   },
   "devDependencies": {
