@@ -5,12 +5,12 @@ import * as fabric from 'fabric';
 
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
+import ToxicEffect from './ToxicEffect';
+import BombEffect from './BombEffect';
 import NamePlate from '../../../components/NamePlate/NamePlate';
 import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
-import ToxicEffect from './ToxicEffect';
-import BombEffect from './BombEffect';
 
 type QuizState =
   | 'breakTime'
@@ -54,8 +54,11 @@ const initialGameState = {
     }
   >,
 };
+interface DrawingProps {
+  activeItem: string | null;
+}
 
-const Drawing = ({ activeItem }: { activeItem: string | null }) => {
+const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
@@ -322,7 +325,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
   const onStateChange = () => {
     const currentIndex = quizStates.indexOf(gameState.gameStatus);
     const nextIndex = (currentIndex + 1) % quizStates.length;
-    const newTurnDeadline = Date.now() + (3 / 2) * 60 * 1000; // 현재 시간에서 5분 후
+    const newTurnDeadline = Date.now() + (3 / 2) * 60 * 1000; // 현재 시간에서 1분30초 후
 
     setGameState(prev => ({
       ...prev,
@@ -362,10 +365,6 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
         });
         canvas.renderAll();
       }
-      // setIsFlipped(true);
-      // setTimeout(() => {
-      //   setIsFlipped(false); // 10초 후 Flip 사라지도록 설정
-      // }, 10000);
     } else if (
       // 'Time-Cutter' 아이템 효과
       activeItem === 'Time-Cutter' &&
