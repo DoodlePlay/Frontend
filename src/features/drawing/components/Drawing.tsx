@@ -377,6 +377,7 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
         ...prev,
         turnDeadline: newDeadline,
       }));
+      setIsTimeCut(true);
     }
   }, [activeItem]);
 
@@ -390,7 +391,6 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           toxicCover: { ...prevState.items.toxicCover, status: true },
         },
       }));
-      setIsToxicUsed(true);
     } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
       setGameState(prevState => ({
         ...prevState,
@@ -399,7 +399,6 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           growingBomb: { ...prevState.items.growingBomb, status: true },
         },
       }));
-      setIsBombUsed(true);
     } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
       setGameState(prevState => ({
         ...prevState,
@@ -408,7 +407,6 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           laundryFlip: { ...prevState.items.laundryFlip, status: true },
         },
       }));
-      setIsFlipped(true);
     } else if (activeItem === 'Time-Cutter' && !isTimeCut) {
       setGameState(prevState => ({
         ...prevState,
@@ -417,7 +415,6 @@ const Drawing = ({ activeItem }: { activeItem: string | null }) => {
           timeCutter: { ...prevState.items.timeCutter, status: true },
         },
       }));
-      setIsTimeCut(true);
     }
   }, [activeItem, isToxicUsed, isBombUsed, isFlipped, isTimeCut]);
 
