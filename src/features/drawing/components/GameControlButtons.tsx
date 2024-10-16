@@ -20,7 +20,8 @@ const GameControlButtons = () => {
   };
 
   const confirmExit = () => {
-    router.push('/room'); // /room 페이지로 이동합니다.
+    router.replace('/room'); // /room 페이지로 이동하면서 히스토리 스택을 대체합니다.
+    setIsModalOpen(false);
   };
 
   const closeModal = () => {
