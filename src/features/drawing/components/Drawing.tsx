@@ -75,6 +75,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
   const [isToxicUsed, setIsToxicUsed] = useState(false); // Toxic-Cover 아이템 사용 여부
   const [isBombUsed, setIsBombUsed] = useState(false); // Growing-Bomb 아이템 사용 여부
+  const [isTextRevers, setIsTextRevers] = useState(false); // Phantom-Reverse 아이템 사용 여부
   const [isFlipped, setIsFlipped] = useState(false); // Laundry-Flip 아이템 사용 여부
   const [isTimeCut, setIsTimeCut] = useState(false); // Time-Cutter 아이템 사용 여부
 
@@ -348,7 +349,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   };
 
   useEffect(() => {
-    // activeItem이 'Toxic-Cover'이면서 아직 사용되지 않았을 때만 효과 적용
+    // 각 아이템의 효과를 개별 조건문으로 처리하여, Time-Cutter 아이템만 특정 효과를 받도록 함
     if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
       setIsToxicUsed(true);
     } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
@@ -356,8 +357,9 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       setTimeout(() => {
         setIsBombUsed(false);
       }, 5000);
+    } else if (activeItem === 'Phantom-Reverse' && !isTextRevers) {
+      setIsTextRevers(true); // 채팅 반대로 출력 기능
     } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
-      // 'Laundry-Flip' 아이템 효과 (정확히 정의 한 후 재조정)
       if (canvasRef.current) {
         const canvas = canvasRef.current;
         canvas.getObjects().forEach(obj => {
@@ -365,8 +367,8 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
         });
         canvas.renderAll();
       }
+      setIsFlipped(true);
     } else if (
-      // 'Time-Cutter' 아이템 효과
       activeItem === 'Time-Cutter' &&
       !isTimeCut &&
       remainingTime > 0
@@ -376,7 +378,10 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
         ...prev,
         turnDeadline: newDeadline,
       }));
-      setIsTimeCut(true);
+      setIsTimeCut(true); // Time-Cutter 아이템이 활성화될 때만 true로 설정
+    } else {
+      // Time-Cutter가 아닌 다른 아이템을 사용할 때는 isTimeCut을 false로 설정하여 효과가 재발하지 않게 함
+      setIsTimeCut(false);
     }
   }, [activeItem]);
 
@@ -398,6 +403,14 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
           growingBomb: { ...prevState.items.growingBomb, status: true },
         },
       }));
+    } else if (activeItem === 'Phantom-Reverse' && !isBombUsed) {
+      setGameState(prevState => ({
+        ...prevState,
+        items: {
+          ...prevState.items,
+          phantomReverse: { ...prevState.items.phantomReverse, status: true },
+        },
+      }));
     } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
       setGameState(prevState => ({
         ...prevState,
@@ -415,7 +428,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
         },
       }));
     }
-  }, [activeItem, isToxicUsed, isBombUsed, isFlipped, isTimeCut]);
+  }, [activeItem, isToxicUsed, isBombUsed, isTextRevers, isFlipped, isTimeCut]);
 
   // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
   useEffect(() => {
@@ -423,6 +436,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       // gameState가 변경될 때 효과가 사라지도록 처리
       setIsToxicUsed(false);
       setIsBombUsed(false);
+      setIsTextRevers(false);
       setIsFlipped(false);
       setIsTimeCut(false);
     }
