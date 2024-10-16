@@ -5,11 +5,11 @@ import { useState } from 'react';
 
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
-import socketStore from '../../socket/socketStore';
+import useSocketStore from '../../socket/socketStore';
 
 const GameControlButtons = () => {
   const router = useRouter();
-  const { disconnectSocket } = socketStore();
+  const { disconnectSocket } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onStartGame = () => {

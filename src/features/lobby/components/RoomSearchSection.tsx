@@ -11,7 +11,8 @@ import SearchBar from './SearchBar';
 import GameStatusModal from './GameStatusModal';
 import RoomCard from './RoomCard';
 import { Room, getRoomById, getRooms, joinRoom } from '../api/gameRoomsApi';
-import socketStore from '../../socket/socketStore';
+import useUserInfoStore from '../../profile/store/userInfoStore';
+import useSocketStore from '../../socket/socketStore';
 
 interface RoomSearchSectionProps {
   rooms: Room[];
@@ -22,7 +23,9 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
 }) => {
   const router = useRouter();
   const passwordInputRef = useRef<HTMLInputElement>(null);
-  const { connectSocket } = socketStore();
+  const { nickname, clickedAvatarIndex, isVideoOn, isFlipped } =
+    useUserInfoStore();
+  const { connectSocket } = useSocketStore();
   const [rooms, setRooms] = useState(initialRooms);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedRoomPassword, setSelectedRoomPassword] = useState<
@@ -71,7 +74,15 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
         setPasswordModalOpen(true);
       } else {
         await joinRoom(roomId);
-        connectSocket(roomId);
+
+        const userInfo = {
+          nickname,
+          score: 0,
+          clickedAvatarIndex,
+          isVideoOn,
+          isFlipped,
+        };
+        connectSocket(roomId, userInfo, 'joinRoom');
         router.push('/game');
       }
     } catch (error) {
@@ -107,7 +118,15 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
         );
         if (isPasswordValid) {
           await joinRoom(selectedRoom);
-          connectSocket(selectedRoom);
+
+          const userInfo = {
+            nickname,
+            score: 0,
+            clickedAvatarIndex,
+            isVideoOn,
+            isFlipped,
+          };
+          connectSocket(selectedRoom, userInfo, 'joinRoom');
           router.push('/game');
 
           onClosePasswordModal();
