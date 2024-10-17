@@ -1,75 +1,79 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 
 interface TimerBarProps {
-  duration: number; // 총 duration 설정
+  duration: number;
   onComplete: () => void;
-  isTimeCut: boolean; // Time-Cutter 아이템 사용 여부
+  isTimeCut: boolean;
 }
+
+const MIN_DURATION = 1; // 최소 지속 시간 1초
 
 const TimerBar: React.FC<TimerBarProps> = ({
   duration,
   onComplete,
   isTimeCut,
 }) => {
-  const [remainingDuration, setRemainingDuration] = useState(duration); // 남은 시간
-  const [progressDuration, setProgressDuration] = useState(duration); // progress 애니메이션 시간
-
-  useEffect(() => {
-    setRemainingDuration(duration); // 타이머 초기화
-    setProgressDuration(duration); // 애니메이션 시간 초기화
-
-    const timer = setTimeout(() => {
-      onComplete();
-    }, duration * 1000);
-
-    return () => clearTimeout(timer);
-  }, [duration, onComplete]);
+  const [remainingDuration, setRemainingDuration] = useState(duration);
+  const [animationDuration, setAnimationDuration] = useState(duration);
 
   useEffect(() => {
     if (isTimeCut) {
-      const halfTime = remainingDuration / 2;
-      setRemainingDuration(halfTime); // 남은 시간의 절반으로 설정
-      setProgressDuration(halfTime); // 애니메이션 시간도 절반으로 줄이기
+      const halfRemainingTime = Math.max(remainingDuration / 2, MIN_DURATION);
+      setRemainingDuration(halfRemainingTime);
+      setAnimationDuration(halfRemainingTime);
 
       const timer = setTimeout(() => {
         onComplete();
-      }, halfTime * 1000);
+      }, halfRemainingTime * 1000);
+
+      return () => clearTimeout(timer);
+    } else {
+      setRemainingDuration(duration);
+      setAnimationDuration(duration);
+
+      const timer = setTimeout(() => {
+        onComplete();
+      }, duration * 1000);
 
       return () => clearTimeout(timer);
     }
-  }, [isTimeCut]);
+  }, [isTimeCut, duration, onComplete]);
 
   return (
     <div className="flex items-center gap-x-[15px]">
       <div className="ml-[15px]">
-        <motion.img
+        <img
           src="/images/drawing/hourglass.svg"
           alt="hourglass"
           draggable={false}
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: progressDuration / 2,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
           style={{
-            width: '30px', // 아이콘 크기 조정
+            width: '30px',
             height: '30px',
           }}
         />
       </div>
-      <div className="w-full bg-disabled h-3 rounded-full overflow-hidden">
-        <motion.div
-          className={`${
-            isTimeCut === true ? 'bg-fuschia' : 'bg-secondary-default'
-          } h-full`}
-          initial={{ width: '100%' }}
-          animate={{ width: '0%' }}
-          transition={{ duration: progressDuration, ease: 'linear' }}
-          key={progressDuration} // 변경 시 애니메이션 재시작
+      <div className="w-full bg-disabled h-3 rounded-full overflow-hidden relative">
+        <div
+          className={`absolute top-0 left-0 h-full ${
+            isTimeCut ? 'bg-fuschia' : 'bg-secondary-default'
+          }`}
+          style={{
+            width: '100%',
+            animation: `shrink ${animationDuration}s linear forwards`,
+          }}
         />
       </div>
+      <span>{remainingDuration}</span>
+      <style jsx>{`
+        @keyframes shrink {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 };

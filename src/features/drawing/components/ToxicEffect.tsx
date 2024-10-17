@@ -1,37 +1,30 @@
 import React, { useEffect, useState } from 'react';
 
 const toxicImagePaths = [
-  '/images/drawing/items/effects/toxic_01.svg',
-  '/images/drawing/items/effects/toxic_02.svg',
-  '/images/drawing/items/effects/toxic_03.svg',
-  '/images/drawing/items/effects/toxic_04.svg',
-  '/images/drawing/items/effects/toxic_05.svg',
-  '/images/drawing/items/effects/toxic_06.svg',
-  '/images/drawing/items/effects/toxic_07.svg',
+  '/images/drawing/items/effects/toxic01.svg',
+  '/images/drawing/items/effects/toxic02.svg',
+  '/images/drawing/items/effects/toxic03.svg',
+  '/images/drawing/items/effects/toxic04.svg',
+  '/images/drawing/items/effects/toxic05.svg',
+  '/images/drawing/items/effects/toxic06.svg',
+  '/images/drawing/items/effects/toxic07.svg',
 ];
 
-const ToxicEffect = ({
-  count,
-  gameState,
-}: {
-  count: number;
-  gameState: string;
-}) => {
-  const [positions, setPositions] = useState<
-    { src: string; left: number; top: number }[]
-  >([]);
+interface Position {
+  src: string;
+  left: number;
+  top: number;
+}
+
+const ToxicEffect: React.FC = () => {
+  const [positions, setPositions] = useState<Position[]>([]);
 
   useEffect(() => {
-    if (gameState !== 'drawing') {
-      setPositions([]); // drawing 상태가 아닐 때 positions를 빈 배열로 설정하여 이미지 삭제
-      return;
-    }
-
-    const step = Math.floor(80 / Math.sqrt(count)); // 그리드 기반 위치 간격
+    const step = Math.floor(80 / Math.sqrt(7));
     let leftPos = 0;
     let topPos = 0;
 
-    const newPositions = Array.from({ length: count }, (_, i) => {
+    const newPositions: Position[] = Array.from({ length: 7 }, (_, i) => {
       const src = toxicImagePaths[i % toxicImagePaths.length];
       const left = leftPos + Math.random() * step;
       const top = topPos + Math.random() * step;
@@ -46,7 +39,7 @@ const ToxicEffect = ({
     });
 
     setPositions(newPositions);
-  }, [count, gameState]);
+  }, []);
 
   return (
     <div className="absolute left-0 top-0 w-full h-full">

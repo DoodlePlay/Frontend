@@ -342,23 +342,33 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     ? Math.max(0, Math.floor((gameState.turnDeadline - Date.now()) / 1000))
     : 0;
 
-  useEffect(() => {}, []);
-
   const onImageLoad = () => {
     setImageLoaded(true);
   };
 
   useEffect(() => {
-    // 각 아이템의 효과를 개별 조건문으로 처리하여, Time-Cutter 아이템만 특정 효과를 받도록 함
+    const updateGameState = itemKey => {
+      setGameState(prevState => ({
+        ...prevState,
+        items: {
+          ...prevState.items,
+          [itemKey]: { ...prevState.items[itemKey], status: true },
+        },
+      }));
+    };
+
     if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
       setIsToxicUsed(true);
+      updateGameState('toxicCover');
     } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
       setIsBombUsed(true);
       setTimeout(() => {
         setIsBombUsed(false);
       }, 5000);
+      updateGameState('growingBomb');
     } else if (activeItem === 'Phantom-Reverse' && !isTextRevers) {
       setIsTextRevers(true); // 채팅 반대로 출력 기능
+      updateGameState('phantomReverse');
     } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
       if (canvasRef.current) {
         const canvas = canvasRef.current;
@@ -368,6 +378,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
         canvas.renderAll();
       }
       setIsFlipped(true);
+      updateGameState('laundryFlip');
     } else if (
       activeItem === 'Time-Cutter' &&
       !isTimeCut &&
@@ -377,58 +388,14 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       setGameState(prev => ({
         ...prev,
         turnDeadline: newDeadline,
+        items: {
+          ...prev.items,
+          timeCutter: { ...prev.items.timeCutter, status: true },
+        },
       }));
       setIsTimeCut(true); // Time-Cutter 아이템이 활성화될 때만 true로 설정
-    } else {
-      // Time-Cutter가 아닌 다른 아이템을 사용할 때는 isTimeCut을 false로 설정하여 효과가 재발하지 않게 함
-      setIsTimeCut(false);
     }
   }, [activeItem]);
-
-  // 아이템 사용 로직
-  useEffect(() => {
-    if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
-      setGameState(prevState => ({
-        ...prevState,
-        items: {
-          ...prevState.items,
-          toxicCover: { ...prevState.items.toxicCover, status: true },
-        },
-      }));
-    } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
-      setGameState(prevState => ({
-        ...prevState,
-        items: {
-          ...prevState.items,
-          growingBomb: { ...prevState.items.growingBomb, status: true },
-        },
-      }));
-    } else if (activeItem === 'Phantom-Reverse' && !isBombUsed) {
-      setGameState(prevState => ({
-        ...prevState,
-        items: {
-          ...prevState.items,
-          phantomReverse: { ...prevState.items.phantomReverse, status: true },
-        },
-      }));
-    } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
-      setGameState(prevState => ({
-        ...prevState,
-        items: {
-          ...prevState.items,
-          laundryFlip: { ...prevState.items.laundryFlip, status: true },
-        },
-      }));
-    } else if (activeItem === 'Time-Cutter' && !isTimeCut) {
-      setGameState(prevState => ({
-        ...prevState,
-        items: {
-          ...prevState.items,
-          timeCutter: { ...prevState.items.timeCutter, status: true },
-        },
-      }));
-    }
-  }, [activeItem, isToxicUsed, isBombUsed, isTextRevers, isFlipped, isTimeCut]);
 
   // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
   useEffect(() => {
@@ -469,9 +436,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
 
         {activeItem === 'Toxic-Cover' &&
           isToxicUsed &&
-          gameState.gameStatus === 'drawing' && (
-            <ToxicEffect count={7} gameState={gameState.gameStatus} />
-          )}
+          gameState.gameStatus === 'drawing' && <ToxicEffect />}
         {activeItem === 'Growing-Bomb' &&
           isBombUsed &&
           gameState.gameStatus === 'drawing' && <BombEffect />}
@@ -613,7 +578,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       {/* 상태 변경 버튼 */}
       <button
         onClick={onStateChange}
-        className="fixed bottom-10 right-10 bg-blue-500 text-white p-2 rounded z-50"
+        className="fixed bottom-20 right-10 bg-blue-500 text-white p-2 rounded z-50"
       >
         Change State
       </button>
