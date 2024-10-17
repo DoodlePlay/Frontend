@@ -66,7 +66,6 @@ const TimerBar: React.FC<TimerBarProps> = ({
           }}
         />
       </div>
-      <span>{remainingDuration}</span>
       <style jsx>{`
         @keyframes shrink {
           from {
