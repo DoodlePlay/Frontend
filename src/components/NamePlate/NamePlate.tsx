@@ -23,7 +23,10 @@ const NamePlate: React.FC<NamePlateProps> = ({
       className={`flex items-center justify-center bg-white rounded-[5px] drop-shadow-namePlate max-w-xs p-[5px] border-2 border-neutral-default`}
       style={
         isDrawingActive
-          ? { width: `${length * 2}px`, height: `${length * 0.6}px` }
+          ? {
+              width: `${isWinner ? '200px' : `${length * 2}px`}`,
+              height: `${length * 0.6}px`,
+            }
           : { width: `${length}px`, height: `${length * 0.7}px` }
       }
     >
@@ -36,7 +39,7 @@ const NamePlate: React.FC<NamePlateProps> = ({
         style={
           isDrawingActive
             ? {
-                width: `${length * 2}px`,
+                width: `${isWinner ? '200px' : `${length * 2}px`}`,
                 height: `${length * 0.45}px`,
               }
             : {
