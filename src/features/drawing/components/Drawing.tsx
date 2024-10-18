@@ -5,7 +5,10 @@ import * as fabric from 'fabric';
 
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
+import ToxicEffect from './ToxicEffect';
+import BombEffect from './BombEffect';
 import NamePlate from '../../../components/NamePlate/NamePlate';
+import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
 
@@ -30,10 +33,10 @@ const initialGameState = {
   maxRound: 3,
   round: 3,
   turn: 1,
-  turnDeadline: null as number | null,
+  turnDeadline: Date.now() + (3 / 2) * 60 * 1000,
   correctAnswerCount: 0,
   items: {
-    toxicCover: { user: null, status: true },
+    toxicCover: { user: null, status: false },
     growingBomb: { user: null, status: false },
     phantomReverse: { user: null, status: false },
     laundryFlip: { user: null, status: false },
@@ -51,8 +54,11 @@ const initialGameState = {
     }
   >,
 };
+interface DrawingProps {
+  activeItem: string | null;
+}
 
-const Drawing: React.FC = () => {
+const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
@@ -67,6 +73,11 @@ const Drawing: React.FC = () => {
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
+  const [isToxicUsed, setIsToxicUsed] = useState(false); // Toxic-Cover 아이템 사용 여부
+  const [isBombUsed, setIsBombUsed] = useState(false); // Growing-Bomb 아이템 사용 여부
+  const [isTextRevers, setIsTextRevers] = useState(false); // Phantom-Reverse 아이템 사용 여부
+  const [isFlipped, setIsFlipped] = useState(false); // Laundry-Flip 아이템 사용 여부
+  const [isTimeCut, setIsTimeCut] = useState(false); // Time-Cutter 아이템 사용 여부
 
   const quizStates: QuizState[] = [
     'drawing',
@@ -300,18 +311,14 @@ const Drawing: React.FC = () => {
 
   // 상황에 따른 comment를 설정하는 useEffect
   useEffect(() => {
-    switch (gameState.gameStatus) {
-      case 'timeOver':
-        setComment("Time's up");
-        break;
-      case 'breakTime':
-        setComment('Break Time');
-        break;
-      case 'choosing':
-        setComment('Choose a word');
-        break;
-      default:
-        setComment('');
+    if (gameState.gameStatus === 'timeOver') {
+      setComment("Time's up");
+    } else if (gameState.gameStatus === 'breakTime') {
+      setComment('Break Time');
+    } else if (gameState.gameStatus === 'choosing') {
+      setComment('Choose a word');
+    } else {
+      setComment('');
     }
   }, [gameState.gameStatus]);
 
@@ -319,22 +326,92 @@ const Drawing: React.FC = () => {
   const onStateChange = () => {
     const currentIndex = quizStates.indexOf(gameState.gameStatus);
     const nextIndex = (currentIndex + 1) % quizStates.length;
-    setImageLoaded(false); // 이미지 로딩 상태 초기화
+    const newTurnDeadline = Date.now() + (3 / 2) * 60 * 1000; // 현재 시간에서 1분30초 후
+
     setGameState(prev => ({
       ...prev,
       gameStatus: quizStates[nextIndex],
+      turnDeadline: newTurnDeadline,
     }));
 
     canvasRef.current.clear();
   };
 
+  // 현재 시간과 타임바 종료 시간 계산
+  const remainingTime = gameState.turnDeadline
+    ? Math.max(0, Math.floor((gameState.turnDeadline - Date.now()) / 1000))
+    : 0;
+
   const onImageLoad = () => {
     setImageLoaded(true);
   };
 
+  useEffect(() => {
+    const updateGameState = itemKey => {
+      setGameState(prevState => ({
+        ...prevState,
+        items: {
+          ...prevState.items,
+          [itemKey]: { ...prevState.items[itemKey], status: true },
+        },
+      }));
+    };
+
+    if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
+      setIsToxicUsed(true);
+      updateGameState('toxicCover');
+    } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
+      setIsBombUsed(true);
+      setTimeout(() => {
+        setIsBombUsed(false);
+      }, 5000);
+      updateGameState('growingBomb');
+    } else if (activeItem === 'Phantom-Reverse' && !isTextRevers) {
+      setIsTextRevers(true); // 채팅 반대로 출력 기능
+      updateGameState('phantomReverse');
+    } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        canvas.getObjects().forEach(obj => {
+          obj.set('flipY', !obj.flipY); // 현재 상태 반전
+        });
+        canvas.renderAll();
+      }
+      setIsFlipped(true);
+      updateGameState('laundryFlip');
+    } else if (
+      activeItem === 'Time-Cutter' &&
+      !isTimeCut &&
+      remainingTime > 0
+    ) {
+      const newDeadline = Date.now() + (remainingTime * 1000) / 2; // 남은 시간의 반만큼 감소
+      setGameState(prev => ({
+        ...prev,
+        turnDeadline: newDeadline,
+        items: {
+          ...prev.items,
+          timeCutter: { ...prev.items.timeCutter, status: true },
+        },
+      }));
+      setIsTimeCut(true); // Time-Cutter 아이템이 활성화될 때만 true로 설정
+    }
+  }, [activeItem]);
+
+  // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
+  useEffect(() => {
+    if (gameState.gameStatus !== 'drawing') {
+      // gameState가 변경될 때 효과가 사라지도록 처리
+      setIsToxicUsed(false);
+      setIsBombUsed(false);
+      setIsTextRevers(false);
+      setIsFlipped(false);
+      setIsTimeCut(false);
+    }
+  }, [gameState]);
+
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
-      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-1/2">
+      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-[50%]">
         <img
           className="m-auto"
           src="/images/logo.svg"
@@ -342,20 +419,28 @@ const Drawing: React.FC = () => {
           draggable={false}
         />
       </h1>
-      {/* 정답 단어 NamePlate */}
+      {/* 정답 단어 KeywordPlate */}
       {gameState.currentDrawer &&
         gameState.currentWord &&
         gameState.gameStatus === 'drawing' && (
           <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
-            <NamePlate title={gameState.currentWord} />
+            <KeywordPlate title={gameState.currentWord} isChoosing={false} />
           </div>
         )}
 
       <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
         <canvas
           id="fabric-canvas"
-          className="rounded-[10px] absolute w-full h-full left-0 top-0 z-10"
+          className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
         />
+
+        {activeItem === 'Toxic-Cover' &&
+          isToxicUsed &&
+          gameState.gameStatus === 'drawing' && <ToxicEffect />}
+        {activeItem === 'Growing-Bomb' &&
+          isBombUsed &&
+          gameState.gameStatus === 'drawing' && <BombEffect />}
+
         {gameState.gameStatus === 'drawing' ? (
           ''
         ) : (
@@ -372,16 +457,20 @@ const Drawing: React.FC = () => {
             <img
               src={backgroundImage}
               onLoad={onImageLoad}
-              className={`${comment === undefined ? 'w-4/5' : 'w-3/5'}`}
+              className={`${comment === '' ? 'max-h-[80%]' : 'max-h-[60%]'} `}
               draggable={false}
               loading="lazy"
               style={{ visibility: imageLoaded ? 'visible' : 'hidden' }}
             />
-
             {imageLoaded && (
               <>
                 {gameState.gameStatus === 'waiting' ? (
-                  <NamePlate title="winner" score={200} />
+                  <NamePlate
+                    title="winner"
+                    score={200}
+                    isDrawingActive
+                    isWinner
+                  />
                 ) : (
                   <p className="text-center font-cherry text-secondary-default text-6xl">
                     {comment}
@@ -397,14 +486,13 @@ const Drawing: React.FC = () => {
                 </p>
                 <div className="flex space-x-4 mt-4">
                   {gameState.totalWords.map((word, index) => (
-                    <NamePlate key={index} title={word} />
+                    <KeywordPlate key={index} title={word} isChoosing />
                   ))}
                 </div>
               </>
             )}
           </div>
         )}
-
         <div
           className={`${
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
@@ -463,15 +551,21 @@ const Drawing: React.FC = () => {
             </ul>
           )}
         </div>
-
         <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          {gameState.gameStatus === 'choosing' ||
-            (gameState.gameStatus === 'drawing' && (
-              <TimeBar
-                duration={10}
-                onComplete={() => console.log('Time Over!')}
-              />
-            ))}
+          {gameState.gameStatus === 'drawing' && (
+            <TimeBar
+              duration={remainingTime}
+              onComplete={() => console.log('Time Over!')}
+              isTimeCut={isTimeCut}
+            />
+          )}
+          {gameState.gameStatus === 'choosing' && (
+            <TimeBar
+              duration={5}
+              onComplete={() => console.log('Time Over!')}
+              isTimeCut={isTimeCut}
+            />
+          )}
         </div>
       </div>
       <Modal
@@ -484,7 +578,7 @@ const Drawing: React.FC = () => {
       {/* 상태 변경 버튼 */}
       <button
         onClick={onStateChange}
-        className="fixed bottom-10 right-10 bg-blue-500 text-white p-2 rounded z-50"
+        className="fixed bottom-20 right-10 bg-blue-500 text-white p-2 rounded z-50"
       >
         Change State
       </button>

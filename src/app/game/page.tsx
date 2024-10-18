@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 import ChatBox from '../../features/chat/components/ChatBox';
 import Drawing from '../../features/drawing/components/Drawing';
@@ -6,12 +10,14 @@ import ItemBox from '../../features/drawing/components/ItemBox';
 import VideoChat from '../../features/videoChat/components/VideoChat';
 
 const GamePage = () => {
+  const [activeItem, setActiveItem] = useState<string | null>(null);
+
   return (
     <ProtectedRoute>
       <div className="flex items-center justify-center min-h-dvh overflow-hidden scrollbar-hide">
         <div className="flex w-full max-w-[1240px] gap-[40px]">
           <div className="flex flex-col left w-full gap-y-[20px]">
-            <Drawing />
+            <Drawing activeItem={activeItem} />
             <ChatBox />
           </div>
           <div className="flex flex-col right w-full max-w-[420px] gap-y-[20px]">
@@ -19,7 +25,7 @@ const GamePage = () => {
               <VideoChat />
             </div>
             <div className="flex flex-col w-full gap-y-[20px]">
-              <ItemBox />
+              <ItemBox onItemClick={setActiveItem} />
               <GameControlButtons />
             </div>
           </div>

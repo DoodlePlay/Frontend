@@ -1,29 +1,46 @@
-'use client';
-
 import { useEffect, useState } from 'react';
 
 interface TimerBarProps {
-  duration: number; // duration 추후 설정 예정
+  duration: number;
   onComplete: () => void;
+  isTimeCut: boolean;
 }
 
-const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
-  const [progressWidth, setProgressWidth] = useState('100%');
+const MIN_DURATION = 1;
+
+const TimerBar: React.FC<TimerBarProps> = ({
+  duration,
+  onComplete,
+  isTimeCut,
+}) => {
+  const [remainingDuration, setRemainingDuration] = useState(duration);
+  const [isCutActive, setIsCutActive] = useState(isTimeCut);
 
   useEffect(() => {
-    // 타이머가 시작되면 자연스럽게 100%에서 0%로 너비가 줄어들도록 설정합니다.
-    setTimeout(() => {
-      setProgressWidth('0%');
-    }, 50); // 살짝 지연 후 시작
+    // Time-Cutter 사용 시
+    if (isTimeCut && !isCutActive) {
+      const newDuration = Math.max(remainingDuration / 2, MIN_DURATION);
+      setRemainingDuration(newDuration);
+      setIsCutActive(true);
 
-    // duration이 끝나면 onComplete 호출
+      const timer = setTimeout(() => {
+        onComplete();
+      }, newDuration * 1000);
+
+      return () => clearTimeout(timer);
+    }
+
+    // Time-Cutter가 트리거되지 않은 기본 타이머
     const timer = setTimeout(() => {
       onComplete();
-    }, duration * 1000);
+    }, remainingDuration * 1000);
 
-    // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
     return () => clearTimeout(timer);
-  }, [duration, onComplete]);
+  }, [isTimeCut, onComplete, remainingDuration]);
+
+  // TODO
+  // TimeBar를 현재 시간 부터 5분으로 아이템을 사용하면 다른 부분에서 시간이 계속 바뀌면서 다른 버튼에도 영향을 가는 것으로 추측
+  // 현재 시간이 아닌 게임이 진행 시작 시간을 기준으로 작업하는게 좋아 보임.
 
   return (
     <div className="flex items-center gap-x-[15px]">
@@ -32,19 +49,33 @@ const TimerBar: React.FC<TimerBarProps> = ({ duration, onComplete }) => {
           src="/images/drawing/hourglass.svg"
           alt="hourglass"
           draggable={false}
-          className="animate-spin"
-          style={{ animation: `spin ${duration / 2}s linear infinite` }}
+          style={{
+            width: '30px',
+            height: '30px',
+          }}
         />
       </div>
-      <div className="w-full bg-disabled h-3 rounded-full overflow-hidden">
+      <div className="w-full bg-disabled h-3 rounded-full overflow-hidden relative">
         <div
-          className="bg-secondary-default h-full transition-all ease-linear"
+          className={`absolute top-0 left-0 h-full ${
+            isTimeCut ? 'bg-fuschia' : 'bg-secondary-default'
+          }`}
           style={{
-            width: progressWidth,
-            transitionDuration: `${duration}s`,
+            width: '100%',
+            animation: `shrink ${remainingDuration}s linear forwards`,
           }}
-        ></div>
+        />
       </div>
+      <style jsx>{`
+        @keyframes shrink {
+          from {
+            width: 100%;
+          }
+          to {
+            width: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 };

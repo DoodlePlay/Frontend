@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 
 // 색상 목록 상수 정의
