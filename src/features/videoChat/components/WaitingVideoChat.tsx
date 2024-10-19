@@ -16,7 +16,7 @@ const WaitingVideoChat = () => {
     setOrder(gameState.order);
   }, [gameState]);
   return (
-    <div className="grid grid-cols-2 grid-rows-3 gap-y-[55px]">
+    <div className="grid grid-cols-2 grid-rows-3 gap-y-[10px]">
       {order.map((userId, index) => (
         <div key={index} className="flex justify-center">
           <div key={index}>
@@ -24,7 +24,7 @@ const WaitingVideoChat = () => {
               src={
                 Avatars[gameState.participants[userId].clickedAvatarIndex].src
               }
-              size={'small'}
+              size={'waiting'}
               isMyCharacter={
                 gameState.participants[userId].nickname === nickname
               }
@@ -32,6 +32,7 @@ const WaitingVideoChat = () => {
             <NamePlate
               title={gameState.participants[userId].nickname}
               score={gameState.participants[userId].score}
+              isWaiting
             />
           </div>
         </div>
