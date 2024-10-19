@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 
 import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';
@@ -37,13 +35,18 @@ const items = [
   },
 ];
 
-const ItemBox = () => {
+const ItemBox = ({
+  onItemClick,
+}: {
+  onItemClick: (itemId: string) => void;
+}) => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [usedItems, setUsedItems] = useState<string[]>([]); // 사용된 아이템 목록
 
-  const onItemClick = (itemId: string) => {
+  const onHandleItemClick = (itemId: string) => {
     if (!usedItems.includes(itemId)) {
-      setUsedItems([...usedItems, itemId]); // 아이템 사용으로 처리
+      setUsedItems([...usedItems, itemId]);
+      onItemClick(itemId); // 클릭된 아이템 ID를 부모 컴포넌트로 전달
     }
   };
   // Todo: 총 라운드가 끝나면 아이템 상태 초기화
@@ -66,7 +69,7 @@ const ItemBox = () => {
             className="relative max-w-[70px] max-h-[70px] bg-white border-[3px] border-black rounded-[5px] z-30 cursor-pointer"
             onMouseEnter={() => setHoveredItem(item.id)}
             onMouseLeave={() => setHoveredItem(null)}
-            onClick={() => onItemClick(item.id)}
+            onClick={() => onHandleItemClick(item.id)}
           >
             <img
               src={item.image}
