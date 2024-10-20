@@ -255,16 +255,29 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
 
+    // 모든 객체를 선택 불가능하게 하고, hover 커서를 기본값으로 설정
     canvas.forEachObject(obj => {
       obj.selectable = false;
       obj.hoverCursor = 'default';
     });
 
+    // mouse:down 이벤트에서만 fill을 적용
     canvas.on('mouse:down', event => {
       const clickedObject = canvas.findTarget(event.e);
+
       if (clickedObject && clickedObject instanceof fabric.Object) {
+        // 클릭한 객체에 선택한 색상으로 채웁니다.
         clickedObject.set({ fill: selectedColor });
         canvas.renderAll();
+
+        // 채운 정보(색상 및 좌표)를 소켓으로 전송
+        socket.emit('drawing', roomId, {
+          eventType: 'fill',
+          color: selectedColor,
+          left: clickedObject.left,
+          top: clickedObject.top,
+          type: clickedObject.type, // 객체 유형 정보 전송 (circle, rect 등)
+        });
       }
     });
   };
@@ -457,13 +470,14 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
 
       if (selectedTool === 'clear') {
         setSelectedTool('clear'); // clear 후 자동으로 pencil 도구로 변경
-      } else {
+      } else if (selectedTool === 'pencil' || selectedTool === 'eraser') {
         sendDrawingData('start', pointer.x, pointer.y, selectedTool); // 일반 도구 사용 시 좌표값 전송
       }
     });
 
     canvas.on('mouse:move', (event: fabric.TPointerEventInfo<MouseEvent>) => {
-      if (!isDrawing || selectedTool === 'clear') return; // clear일 때는 무시
+      if (!isDrawing || selectedTool === 'clear' || selectedTool === 'paint')
+        return; // clear일 때는 무시
       const pointer = canvas.getPointer(event.e);
       sendDrawingData('move', pointer.x, pointer.y, selectedTool);
     });
@@ -513,6 +527,26 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
             brush.onMouseUp(eventData);
           }
         }
+      }
+    });
+
+    // 소켓을 통해 받은 데이터로 채우기 작업 처리
+    socket.on('drawingData', data => {
+      if (!canvasRef.current) return;
+      const canvas = canvasRef.current;
+
+      if (data.eventType === 'fill') {
+        // 클릭된 객체의 좌표와 유형에 따라 객체를 찾아서 색상을 변경
+        canvas.getObjects().forEach(obj => {
+          if (
+            obj.type === data.type &&
+            obj.left === data.left &&
+            obj.top === data.top
+          ) {
+            obj.set({ fill: data.color });
+            canvas.renderAll();
+          }
+        });
       }
     });
 
