@@ -24,7 +24,7 @@ type QuizState =
 
 const initialGameState = {
   host: '',
-  gameStatus: 'drawing' as QuizState,
+  gameStatus: 'create' as QuizState,
   currentDrawer: '22202',
   currentWord: '사자',
   totalWords: ['사자', '호랑이' /* ... 추가적인 단어들 */],
@@ -91,7 +91,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     'choosing',
   ];
 
-  // 캔버스 초기화
+  // 캔버스를 초기화하고, 선택된 도구에 맞게 브러시 설정
   useEffect(() => {
     const canvas = new fabric.Canvas('fabric-canvas', {
       isDrawingMode: selectedTool === 'pencil',
@@ -133,6 +133,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     updateCanvasBrush();
   }, [selectedTool, selectedColor, selectedSize]);
 
+  // 캔버스에 등록된 이벤트 제거
   const removeCanvasEventListeners = () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -141,7 +142,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       canvas.off('mouse:up');
     }
   };
-
+  // 캔버스 브러시 설정
   const updateCanvasBrush = () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
@@ -177,11 +178,14 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     }
   };
 
+  // 도형 그리기 모드 (사각형, 원)
   const activateDrawingMode = (shape: 'square' | 'circle') => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     let isDrawing = false;
     let shapeObject: fabric.Object | null = null;
+    let startX = 0,
+      startY = 0;
 
     canvas.isDrawingMode = false;
     canvas.selection = false;
@@ -189,11 +193,11 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       obj.selectable = false;
     });
 
-    const drawShape = (event: any) => {
+    const drawShape = (event: fabric.TPointerEventInfo<MouseEvent>) => {
       if (!isDrawing) {
         const pointer = canvas.getPointer(event.e);
-        const startX = pointer.x;
-        const startY = pointer.y;
+        startX = pointer.x;
+        startY = pointer.y;
 
         if (shape === 'square') {
           shapeObject = new fabric.Rect({
@@ -218,32 +222,62 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
           });
         }
 
-        canvas.add(shapeObject);
-        isDrawing = true;
+        if (shapeObject) {
+          canvas.add(shapeObject);
+        }
+
+        // 소켓으로 도형 시작 좌표 전송
+        socket.emit('drawing', roomId, {
+          eventType: 'start',
+          shape,
+          left: startX,
+          top: startY,
+          color: selectedColor,
+        });
       }
     };
 
-    const resizeShape = (event: any) => {
+    const resizeShape = (event: fabric.TPointerEventInfo<MouseEvent>) => {
       if (!shapeObject) return;
       const pointer = canvas.getPointer(event.e);
+
       if (shape === 'square') {
         shapeObject.set({
-          width: Math.abs(pointer.x - shapeObject.left!),
-          height: Math.abs(pointer.y - shapeObject.top!),
+          width: Math.abs(pointer.x - startX),
+          height: Math.abs(pointer.y - startY),
         });
       } else if (shape === 'circle') {
         const radius = Math.sqrt(
-          Math.pow(pointer.x - shapeObject.left!, 2) +
-            Math.pow(pointer.y - shapeObject.top!, 2)
+          Math.pow(pointer.x - startX, 2) + Math.pow(pointer.y - startY, 2)
         );
         (shapeObject as fabric.Circle).set({ radius });
       }
       canvas.renderAll();
+
+      // 소켓으로 도형의 크기 변화를 전송
+      socket.emit('drawing', roomId, {
+        eventType: 'move',
+        shape,
+        left: startX,
+        top: startY,
+        width: shape === 'square' ? Math.abs(pointer.x - startX) : undefined,
+        height: shape === 'square' ? Math.abs(pointer.y - startY) : undefined,
+        radius:
+          shape === 'circle'
+            ? Math.sqrt(
+                Math.pow(pointer.x - startX, 2) +
+                  Math.pow(pointer.y - startY, 2)
+              )
+            : undefined,
+      });
     };
 
     const finishShape = () => {
       isDrawing = false;
       shapeObject = null;
+
+      // 소켓으로 도형 종료 이벤트 전송
+      socket.emit('drawing', roomId, { eventType: 'end' });
     };
 
     canvas.on('mouse:down', drawShape);
@@ -251,6 +285,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     canvas.on('mouse:up', finishShape);
   };
 
+  // 채우기 모드 (객체에 색 채우기)
   const activateFillMode = () => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
@@ -261,27 +296,25 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       obj.hoverCursor = 'default';
     });
 
-    // mouse:down 이벤트에서만 fill을 적용
     canvas.on('mouse:down', event => {
       const clickedObject = canvas.findTarget(event.e);
 
       if (clickedObject && clickedObject instanceof fabric.Object) {
-        // 클릭한 객체에 선택한 색상으로 채웁니다.
         clickedObject.set({ fill: selectedColor });
         canvas.renderAll();
 
-        // 채운 정보(색상 및 좌표)를 소켓으로 전송
         socket.emit('drawing', roomId, {
           eventType: 'fill',
           color: selectedColor,
           left: clickedObject.left,
           top: clickedObject.top,
-          type: clickedObject.type, // 객체 유형 정보 전송 (circle, rect 등)
+          type: clickedObject.type,
         });
       }
     });
   };
 
+  // 배경 이미지 프리로드
   const preloadImages = () => {
     const images = [
       '/images/drawing/breakTime.png',
@@ -299,6 +332,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     preloadImages();
   }, []);
 
+  // 게임 상태에 따른 배경 이미지 업데이트
   const updateBackgroundImage = () => {
     let imgPath = '';
     switch (gameState.gameStatus) {
@@ -317,7 +351,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       default:
         imgPath = '';
     }
-    setImageLoaded(false); // 로딩 상태 초기화
+    setImageLoaded(false);
     setBackgroundImage(imgPath);
   };
 
@@ -325,7 +359,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     updateBackgroundImage();
   }, [gameState.gameStatus]);
 
-  // 상황에 따른 comment를 설정하는 useEffect
+  // 게임 상태에 따라 화면에 보여줄 메시지 업데이트
   useEffect(() => {
     if (gameState.gameStatus === 'timeOver') {
       setComment("Time's up");
@@ -338,7 +372,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     }
   }, [gameState.gameStatus]);
 
-  // QuizState 변경 버튼 핸들러
+  // 게임 상태 변경
   const onStateChange = () => {
     const currentIndex = quizStates.indexOf(gameState.gameStatus);
     const nextIndex = (currentIndex + 1) % quizStates.length;
@@ -413,10 +447,9 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     }
   }, [activeItem]);
 
-  // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리
+  // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리(수정 예정)
   useEffect(() => {
     if (gameState.gameStatus !== 'drawing') {
-      // gameState가 변경될 때 효과가 사라지도록 처리
       setIsToxicUsed(false);
       setIsBombUsed(false);
       setIsTextRevers(false);
@@ -433,7 +466,6 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       if (canvasRef.current) {
         canvasRef.current.clear(); // 로컬 캔버스 클리어
       }
-      // clear 후 pencil 도구로 자동 전환
       setSelectedTool('pencil');
     }
   }, [selectedTool, socket, roomId]);
@@ -471,12 +503,18 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       if (selectedTool === 'clear') {
         setSelectedTool('clear'); // clear 후 자동으로 pencil 도구로 변경
       } else if (selectedTool === 'pencil' || selectedTool === 'eraser') {
-        sendDrawingData('start', pointer.x, pointer.y, selectedTool); // 일반 도구 사용 시 좌표값 전송
+        sendDrawingData('start', pointer.x, pointer.y, selectedTool);
       }
     });
 
     canvas.on('mouse:move', (event: fabric.TPointerEventInfo<MouseEvent>) => {
-      if (!isDrawing || selectedTool === 'clear' || selectedTool === 'paint')
+      if (
+        !isDrawing ||
+        selectedTool === 'clear' ||
+        selectedTool === 'paint' ||
+        selectedTool === 'square' ||
+        selectedTool === 'circle'
+      )
         return; // clear일 때는 무시
       const pointer = canvas.getPointer(event.e);
       sendDrawingData('move', pointer.x, pointer.y, selectedTool);
@@ -550,13 +588,68 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       }
     });
 
+    // 상대방이 도형을 그릴 때 좌표를 그대로 반영
+    socket.on('drawingData', data => {
+      if (!canvasRef.current) return;
+      const canvas = canvasRef.current;
+
+      let shapeObject: fabric.Object | null = null;
+
+      if (data.eventType === 'start') {
+        if (data.shape === 'square') {
+          shapeObject = new fabric.Rect({
+            left: data.left, // 좌표 그대로 사용
+            top: data.top, // 좌표 그대로 사용
+            originX: 'center',
+            originY: 'center',
+            width: 0,
+            height: 0,
+            fill: data.color,
+            selectable: false,
+          });
+        } else if (data.shape === 'circle') {
+          shapeObject = new fabric.Circle({
+            left: data.left, // 좌표 그대로 사용
+            top: data.top, // 좌표 그대로 사용
+            originX: 'center',
+            originY: 'center',
+            radius: 0,
+            fill: data.color,
+            selectable: false,
+          });
+        }
+
+        if (shapeObject) {
+          canvas.add(shapeObject);
+        }
+
+        socket.on('drawingData', moveData => {
+          if (!shapeObject) return; // shapeObject가 null일 경우 동작하지 않음
+
+          if (moveData.eventType === 'move') {
+            if (moveData.shape === 'square') {
+              shapeObject.set({
+                width: moveData.width,
+                height: moveData.height,
+              });
+            } else if (moveData.shape === 'circle') {
+              (shapeObject as fabric.Circle).set({ radius: moveData.radius });
+            }
+            canvas.renderAll();
+          } else if (moveData.eventType === 'end') {
+            shapeObject = null;
+          }
+        });
+      }
+    });
+
     return () => {
       canvas.off('mouse:down');
       canvas.off('mouse:move');
       canvas.off('mouse:up');
       socket.off('drawingData');
     };
-  }, [socket, roomId, selectedColor, selectedSize, selectedTool]);
+  }, [socket, roomId, selectedColor, selectedSize, selectedTool, quizStates]); // TODO: 상태 정의
 
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
