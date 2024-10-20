@@ -11,6 +11,7 @@ import NamePlate from '../../../components/NamePlate/NamePlate';
 import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
+import useSocketStore from '../../socket/socketStore';
 
 type QuizState =
   | 'breakTime'
@@ -23,7 +24,7 @@ type QuizState =
 
 const initialGameState = {
   host: '',
-  gameStatus: 'create' as QuizState,
+  gameStatus: 'drawing' as QuizState,
   currentDrawer: '22202',
   currentWord: '사자',
   totalWords: ['사자', '호랑이' /* ... 추가적인 단어들 */],
@@ -78,6 +79,8 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   const [isTextRevers, setIsTextRevers] = useState(false); // Phantom-Reverse 아이템 사용 여부
   const [isFlipped, setIsFlipped] = useState(false); // Laundry-Flip 아이템 사용 여부
   const [isTimeCut, setIsTimeCut] = useState(false); // Time-Cutter 아이템 사용 여부
+
+  const { socket, roomId } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
 
   const quizStates: QuizState[] = [
     'drawing',
@@ -409,6 +412,118 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     }
   }, [gameState]);
 
+  // socket으로 clear 전송
+  useEffect(() => {
+    if (selectedTool === 'clear') {
+      // clear 도구가 선택되었을 때 소켓으로 전송
+      socket.emit('drawing', roomId, { eventType: 'clear', tool: 'clear' });
+      if (canvasRef.current) {
+        canvasRef.current.clear(); // 로컬 캔버스 클리어
+      }
+      // clear 후 pencil 도구로 자동 전환
+      setSelectedTool('pencil');
+    }
+  }, [selectedTool, socket, roomId]);
+
+  // 소켓을 통해 그림 데이터를 서버로 전송 및 수신
+  useEffect(() => {
+    if (!socket || !roomId || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+    // 그림 그리는 중인지 여부를 추적하는 상태 변수 추가
+
+    const sendDrawingData = (
+      eventType: string,
+      x: number | null, // clear tool에 맞게 x, y는 null 가능
+      y: number | null,
+      tool: string
+    ) => {
+      socket.emit('drawing', roomId, {
+        eventType,
+        x,
+        y,
+        color: selectedColor,
+        size: selectedSize,
+        tool,
+      });
+    };
+
+    // 그림 그리기 상태를 관리하는 변수
+    let isDrawing = false;
+
+    // 캔버스 초기화 및 이벤트 리스너 설정
+    canvas.on('mouse:down', (event: fabric.TPointerEventInfo<MouseEvent>) => {
+      const pointer = canvas.getPointer(event.e);
+      isDrawing = true;
+
+      if (selectedTool === 'clear') {
+        setSelectedTool('clear'); // clear 후 자동으로 pencil 도구로 변경
+      } else {
+        sendDrawingData('start', pointer.x, pointer.y, selectedTool); // 일반 도구 사용 시 좌표값 전송
+      }
+    });
+
+    canvas.on('mouse:move', (event: fabric.TPointerEventInfo<MouseEvent>) => {
+      if (!isDrawing || selectedTool === 'clear') return; // clear일 때는 무시
+      const pointer = canvas.getPointer(event.e);
+      sendDrawingData('move', pointer.x, pointer.y, selectedTool);
+    });
+
+    canvas.on('mouse:up', () => {
+      isDrawing = false;
+      if (selectedTool !== 'clear') {
+        socket.emit('drawing', roomId, { eventType: 'end' });
+      }
+    });
+
+    socket.on('drawingData', data => {
+      if (!canvasRef.current) return;
+      const canvas = canvasRef.current;
+
+      if (data.tool === 'clear') {
+        canvas.clear(); // 소켓으로 받은 clear tool 처리
+      } else {
+        const pointer = new fabric.Point(data.x, data.y);
+        const brush = canvas.freeDrawingBrush;
+
+        if (!brush) {
+          console.error('Brush is undefined');
+          return;
+        }
+
+        const eventData = { pointer, e: new MouseEvent('x') };
+
+        if (data.eventType === 'start') {
+          if (data.tool === 'eraser') {
+            brush.color = '#FFFFFF'; // 지우개 모드일 때는 흰색으로 설정
+            brush.width = selectedSize * 2;
+          } else {
+            brush.color = data.color;
+            brush.width = data.size;
+          }
+
+          if (typeof brush.onMouseDown === 'function') {
+            brush.onMouseDown(pointer, eventData);
+          }
+        } else if (data.eventType === 'move') {
+          if (typeof brush.onMouseMove === 'function') {
+            brush.onMouseMove(pointer, eventData);
+          }
+        } else if (data.eventType === 'end') {
+          if (typeof brush.onMouseUp === 'function') {
+            brush.onMouseUp(eventData);
+          }
+        }
+      }
+    });
+
+    return () => {
+      canvas.off('mouse:down');
+      canvas.off('mouse:move');
+      canvas.off('mouse:up');
+      socket.off('drawingData');
+    };
+  }, [socket, roomId, selectedColor, selectedSize, selectedTool]);
+
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
       <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-[50%]">
@@ -421,7 +536,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       </h1>
       {/* 정답 단어 KeywordPlate */}
       {gameState.currentDrawer &&
-        gameState.currentWord &&
+        gameState.currentWord && // TODO : 그림 그리는 사람만 보여지기
         gameState.gameStatus === 'drawing' && (
           <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
             <KeywordPlate title={gameState.currentWord} isChoosing={false} />
@@ -498,30 +613,32 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
           } flex justify-between absolute top-0 left-0 z-10 duration-700`}
         >
-          {gameState.currentDrawer && gameState.gameStatus === 'drawing' && (
-            <>
-              <Toolbar
-                selectedTool={selectedTool}
-                setSelectedTool={setSelectedTool}
-                selectedColor={selectedColor}
-                setSelectedColor={setSelectedColor}
-                selectedSize={selectedSize}
-                setSelectedSize={setSelectedSize}
-              />
-              <div
-                className={`${
-                  isToolbar ? 'ml-3' : 'rotate-[900deg] ml-[30px]'
-                }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2  cursor-pointer duration-700`}
-                onClick={() => setIsToolbar(!isToolbar)}
-              >
-                <img
-                  src="/images/drawing/toolbarController.svg"
-                  alt="toolbar-controller"
-                  draggable={false}
+          {gameState.currentDrawer &&
+            gameState.gameStatus === 'drawing' &&
+            gameState.currentDrawer && ( // TODO : 그림 그리는 사람만 보여지기
+              <>
+                <Toolbar
+                  selectedTool={selectedTool}
+                  setSelectedTool={setSelectedTool}
+                  selectedColor={selectedColor}
+                  setSelectedColor={setSelectedColor}
+                  selectedSize={selectedSize}
+                  setSelectedSize={setSelectedSize}
                 />
-              </div>
-            </>
-          )}
+                <div
+                  className={`${
+                    isToolbar ? 'ml-3' : 'rotate-[900deg] ml-[30px]'
+                  }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2  cursor-pointer duration-700`}
+                  onClick={() => setIsToolbar(!isToolbar)}
+                >
+                  <img
+                    src="/images/drawing/toolbarController.svg"
+                    alt="toolbar-controller"
+                    draggable={false}
+                  />
+                </div>
+              </>
+            )}
         </div>
         <div className="absolute top-0 right-0 z-40 max-w-[70px] flex flex-wrap gap-[10px]">
           <div
