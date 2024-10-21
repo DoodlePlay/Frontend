@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import ChatBubble from './ChatBubble';
 import useUserInfoStore from '../../profile/store/userInfoStore';
@@ -14,8 +15,9 @@ interface ChatMessage {
 }
 
 const ChatBox: React.FC = () => {
+  const router = useRouter();
   const { nickname } = useUserInfoStore();
-  const { socket, roomId } = useSocketStore();
+  const { socket, roomId, disconnectSocket } = useSocketStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
@@ -95,6 +97,23 @@ const ChatBox: React.FC = () => {
       }
     };
   }, [socket]);
+
+  const handleDisconnect = () => {
+    disconnectSocket();
+    router.replace('/room');
+  };
+
+  useEffect(() => {
+    history.pushState(null, '', '');
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('popstate', handleDisconnect);
+
+    return () => {
+      window.removeEventListener('popstate', handleDisconnect);
+    };
+  }, []);
 
   return (
     <div className="relative flex flex-col h-[240px] p-5 bg-neutral-100 border-[3px] border-black rounded-[10px] shadow-board">
