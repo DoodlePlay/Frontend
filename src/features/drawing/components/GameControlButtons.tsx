@@ -6,11 +6,10 @@ import { useState } from 'react';
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
-import { leaveRoom } from '../../lobby/api/gameRoomsApi';
 
 const GameControlButtons = () => {
   const router = useRouter();
-  const { roomId, disconnectSocket } = useSocketStore();
+  const { disconnectSocket } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onStartGame = () => {
@@ -22,16 +21,10 @@ const GameControlButtons = () => {
     setIsModalOpen(true); // 모달을 엽니다.
   };
 
-  const confirmExit = async () => {
-    try {
-      disconnectSocket();
-      await leaveRoom(roomId);
-      router.replace('/room'); // /room 페이지로 이동하면서 히스토리 스택을 대체합니다.
-    } catch (error) {
-      console.error('Error while exiting the room:', error);
-    } finally {
-      setIsModalOpen(false);
-    }
+  const confirmExit = () => {
+    disconnectSocket();
+    router.replace('/room'); // /room 페이지로 이동하면서 히스토리 스택을 대체합니다.
+    setIsModalOpen(false);
   };
 
   const closeModal = () => {
