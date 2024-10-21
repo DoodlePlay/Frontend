@@ -38,8 +38,8 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
         <div
           className={`absolute top-1/2 w-0 h-0 border-t-[7px] border-b-[7px] ${
             isCurrentUser
-              ? 'border-l-[7px] border-transparent border-l-[#ffc700] right-0 mr-[-7px]'
-              : 'border-r-[7px] border-transparent border-r-[#BBE6BB] left-0 ml-[-7px]'
+              ? 'border-l-[7px] border-transparent border-l-[#ffc700] right-0 mr-[-6px]'
+              : 'border-r-[7px] border-transparent border-r-[#BBE6BB] left-0 ml-[-6px]'
           } translate-y-[-50%]`}
         ></div>
       </div>
