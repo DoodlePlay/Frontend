@@ -9,6 +9,7 @@ import useSocketStore from '../../socket/socketStore';
 interface ChatMessage {
   nickname: string;
   message: string;
+  socketId?: string;
   isSystemMessage?: boolean;
 }
 
@@ -21,30 +22,26 @@ const ChatBox: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && inputValue.trim()) {
+    if (event.key === 'Enter' && inputValue.trim() && socket) {
       const newMessage: ChatMessage = {
         nickname,
         message: inputValue,
       };
 
-      if (socket) {
-        socket.emit('sendMessage', roomId, newMessage);
-      }
+      socket.emit('sendMessage', roomId, newMessage);
 
       setInputValue('');
     }
   };
 
   const onSendMessage = () => {
-    if (inputValue.trim()) {
+    if (inputValue.trim() && socket) {
       const newMessage: ChatMessage = {
         nickname,
         message: inputValue,
       };
 
-      if (socket) {
-        socket.emit('sendMessage', roomId, newMessage);
-      }
+      socket.emit('sendMessage', roomId, newMessage);
 
       setInputValue('');
     }
@@ -110,7 +107,7 @@ const ChatBox: React.FC = () => {
             key={idx + 1}
             nickname={msg.nickname}
             message={msg.message}
-            isCurrentUser={msg.nickname === nickname}
+            isCurrentUser={msg.socketId === socket.id}
             isSystemMessage={msg.isSystemMessage}
           />
         ))}
