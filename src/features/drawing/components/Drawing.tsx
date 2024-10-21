@@ -107,10 +107,21 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     };
   }, [canvasSize]);
 
-  // 뷰포트 크기에 따라 캔버스 크기 조정
+  // 캔버스에 있는 모든 객체를 JSON 형식으로 저장하는 함수
+  const saveCanvasObjects = () => {
+    if (canvasRef.current) {
+      return JSON.stringify(canvasRef.current.toJSON());
+    }
+    return null;
+  };
+
+  // 리사이즈 핸들러 수정
   useEffect(() => {
     const handleResize = () => {
       const viewportHeight = window.innerHeight;
+
+      // 리사이즈 전에 현재 캔버스 상태를 저장
+      const savedCanvas = saveCanvasObjects();
 
       if (viewportHeight <= 1000) {
         setCanvasSize({
@@ -120,12 +131,29 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       } else {
         setCanvasSize({ width: 730, height: 600 });
       }
+
+      // 리사이즈 후에 저장된 캔버스 상태를 다시 불러옴
+      setTimeout(() => {
+        if (canvasRef.current && savedCanvas) {
+          canvasRef.current.clear(); // 기존 캔버스를 일단 클리어
+
+          // 비동기적으로 캔버스 상태를 복구
+          canvasRef.current.loadFromJSON(savedCanvas, () => {
+            canvasRef.current.renderAll(); // 모든 객체 로드 후 즉시 렌더링
+          });
+        }
+      }, 0); // 지연 시간 제거
     };
 
-    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [canvasSize]);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      canvasRef.current.renderAll();
+    }
+  }, [selectedTool, selectedColor, selectedSize, canvasSize]);
 
   // 도구나 색상, 크기가 변경될 때 브러시 업데이트
   useEffect(() => {
