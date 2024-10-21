@@ -9,6 +9,7 @@ import {
   increment,
   QueryDocumentSnapshot,
   DocumentData,
+  deleteDoc,
 } from 'firebase/firestore';
 
 import { db } from '../../../../firebase';
@@ -82,4 +83,21 @@ export const joinRoom = async (roomId: string): Promise<void> => {
   return await updateDoc(roomRef, {
     currentPlayers: increment(1),
   });
+};
+
+export const leaveRoom = async (roomId: string): Promise<void> => {
+  const roomRef = doc(db, 'GameRooms', roomId);
+  const roomSnap = await getDoc(roomRef);
+
+  if (roomSnap.exists()) {
+    const roomData = roomSnap.data();
+
+    if (roomData.currentPlayers > 1) {
+      return await updateDoc(roomRef, {
+        currentPlayers: increment(-1),
+      });
+    } else {
+      return await deleteDoc(roomRef);
+    }
+  }
 };

@@ -107,7 +107,7 @@ const ChatBox: React.FC = () => {
             key={idx + 1}
             nickname={msg.nickname}
             message={msg.message}
-            isCurrentUser={msg.socketId === socket.id}
+            isCurrentUser={msg.socketId === socket?.id}
             isSystemMessage={msg.isSystemMessage}
           />
         ))}
