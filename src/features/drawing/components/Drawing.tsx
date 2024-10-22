@@ -107,6 +107,18 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
     };
   }, [canvasSize]);
 
+  // 모든 객체 선택을 비활성화
+  const disableObjectSelection = () => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      canvas.forEachObject(obj => {
+        obj.selectable = false; // 객체의 선택 비활성화
+        obj.hoverCursor = 'default'; // 마우스 커서도 변경
+      });
+    }
+  };
+  disableObjectSelection();
+
   // 캔버스에 있는 모든 객체를 JSON 형식으로 저장하는 함수
   const saveCanvasObjects = () => {
     if (canvasRef.current) {
@@ -135,11 +147,9 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       // 리사이즈 후에 저장된 캔버스 상태를 다시 불러옴
       setTimeout(() => {
         if (canvasRef.current && savedCanvas) {
-          canvasRef.current.clear(); // 기존 캔버스를 일단 클리어
-
-          // 비동기적으로 캔버스 상태를 복구
           canvasRef.current.loadFromJSON(savedCanvas, () => {
-            canvasRef.current.renderAll(); // 모든 객체 로드 후 즉시 렌더링
+            canvasRef.current.renderAll();
+            disableObjectSelection(); // 리사이즈 후 객체 선택 방지
           });
         }
       }, 0); // 지연 시간 제거
@@ -151,7 +161,10 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
 
   useEffect(() => {
     if (canvasRef.current) {
-      canvasRef.current.renderAll();
+      setTimeout(() => {
+        canvasRef.current.renderAll();
+        disableObjectSelection();
+      }, 10);
     }
   }, [selectedTool, selectedColor, selectedSize, canvasSize]);
 
@@ -170,6 +183,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       canvas.off('mouse:up');
     }
   };
+
   // 캔버스 브러시 설정
   const updateCanvasBrush = () => {
     if (canvasRef.current) {
@@ -178,6 +192,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       canvas.isDrawingMode = false;
       canvas.selection = false;
       removeCanvasEventListeners();
+      disableObjectSelection(); // 객체 선택 비활성화
 
       if (selectedTool === 'pencil') {
         canvas.isDrawingMode = true;
@@ -217,9 +232,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
 
     canvas.isDrawingMode = false;
     canvas.selection = false;
-    canvas.forEachObject(obj => {
-      obj.selectable = false;
-    });
+    disableObjectSelection(); // 기존 객체 선택 비활성화
 
     const drawShape = (event: fabric.TPointerEventInfo<MouseEvent>) => {
       if (!isDrawing) {
@@ -252,6 +265,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
 
         if (shapeObject) {
           canvas.add(shapeObject);
+          disableObjectSelection();
         }
 
         // 소켓으로 도형 시작 좌표 전송
