@@ -8,8 +8,10 @@ import Drawing from '../../features/drawing/components/Drawing';
 import GameControlButtons from '../../features/drawing/components/GameControlButtons';
 import ItemBox from '../../features/drawing/components/ItemBox';
 import VideoChat from '../../features/videoChat/components/VideoChat';
+import useSocketStore from '../../features/socket/socketStore';
 
 const GamePage = () => {
+  const { gameState } = useSocketStore();
   const [activeItem, setActiveItem] = useState<string | null>(null);
 
   return (
@@ -25,7 +27,11 @@ const GamePage = () => {
               <VideoChat />
             </div>
             <div className="flex flex-col w-full gap-y-[20px]">
-              <ItemBox onItemClick={setActiveItem} />
+              {gameState.isItemsEnabled ? (
+                <ItemBox onItemClick={setActiveItem} />
+              ) : (
+                <div className="h-[150px]"></div>
+              )}
               <GameControlButtons />
             </div>
           </div>
