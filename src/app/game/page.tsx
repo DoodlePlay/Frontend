@@ -27,7 +27,7 @@ const GamePage = () => {
               <VideoChat />
             </div>
             <div className="flex flex-col w-full gap-y-[20px]">
-              {gameState.isItemsEnabled ? (
+              {gameState?.isItemsEnabled ? (
                 <ItemBox onItemClick={setActiveItem} />
               ) : (
                 <div className="h-[150px]"></div>
