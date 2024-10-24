@@ -9,15 +9,12 @@ interface ItemUsageState {
 }
 
 interface ItemStore {
-  activeItem: string | null;
   itemUsageState: ItemUsageState;
-  setActiveItem: (itemId: string) => void;
   setItemUsed: (itemId: keyof ItemUsageState) => void;
   resetItemUsageState: () => void;
 }
 
 const useItemStore = create<ItemStore>(set => ({
-  activeItem: null,
   itemUsageState: {
     ToxicCover: false,
     GrowingBomb: false,
@@ -25,7 +22,6 @@ const useItemStore = create<ItemStore>(set => ({
     LaundryFlip: false,
     TimeCutter: false,
   },
-  setActiveItem: itemId => set({ activeItem: itemId }),
   setItemUsed: itemId =>
     set(state => ({
       itemUsageState: {
