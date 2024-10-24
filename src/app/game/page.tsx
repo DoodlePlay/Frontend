@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 import ChatBox from '../../features/chat/components/ChatBox';
 import Drawing from '../../features/drawing/components/Drawing';
@@ -7,9 +9,15 @@ import GameControlButtons from '../../features/drawing/components/GameControlBut
 import ItemBox from '../../features/drawing/components/ItemBox';
 import VideoChat from '../../features/videoChat/components/VideoChat';
 import useSocketStore from '../../features/socket/socketStore';
+import useItemStore from '../../features/drawing/store/useItemStore';
 
 const GamePage = () => {
   const { gameState } = useSocketStore();
+  const { resetItemUsageState } = useItemStore();
+
+  useEffect(() => {
+    resetItemUsageState();
+  }, []);
 
   return (
     <ProtectedRoute>
