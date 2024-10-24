@@ -2,30 +2,31 @@ import React, { useState } from 'react';
 
 import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';
 import useItemStore from '../store/useItemStore';
+import useSocketStore from '../../socket/socketStore';
 
 const items = [
   {
-    id: 'Toxic-Cover',
+    id: 'ToxicCover',
     image: '/images/drawing/items/toxicCover.png',
     description: '군데군데 독극물을 뿌린다.',
   },
   {
-    id: 'Growing-Bomb',
+    id: 'GrowingBomb',
     image: '/images/drawing/items/growingBomb.png',
     description: '5초간 폭발이 발생한다.',
   },
   {
-    id: 'Phantom-Reverse',
+    id: 'PhantomReverse',
     image: '/images/drawing/items/phantomReverse.png',
     description: '글자를 거꾸로 입력한다.',
   },
   {
-    id: 'Laundry-Flip',
+    id: 'LaundryFlip',
     image: '/images/drawing/items/laundryFlip.png',
     description: '그림을 뒤집는다.',
   },
   {
-    id: 'Time-Cutter',
+    id: 'TimeCutter',
     image: '/images/drawing/items/timeCutter.png',
     description: '시간의 반을 먹어치운다.',
   },
@@ -33,12 +34,17 @@ const items = [
 
 const ItemBox: React.FC = () => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const { itemUsageState, setItemUsed, setActiveItem } = useItemStore();
+  const { socket, roomId, gameState } = useSocketStore();
+  const { itemUsageState, setItemUsed } = useItemStore();
 
   const onHandleItemClick = (itemId: string) => {
-    if (!itemUsageState[itemId as keyof typeof itemUsageState]) {
+    if (
+      !itemUsageState[itemId as keyof typeof itemUsageState] &&
+      !gameState.items[itemId as keyof typeof itemUsageState].status
+    ) {
       setItemUsed(itemId as keyof typeof itemUsageState);
-      setActiveItem(itemId as keyof typeof itemUsageState);
+
+      if (socket) socket.emit('itemUsed', roomId, itemId);
     }
   };
   // Todo: 총 라운드가 끝나면 아이템 상태 초기화
@@ -69,15 +75,19 @@ const ItemBox: React.FC = () => {
               className="w-full h-full object-contain"
               draggable={false}
             />
-            {itemUsageState[item.id as keyof typeof itemUsageState] ? (
+
+            {gameState.items[item.id as keyof typeof itemUsageState].status && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                <img
-                  src="/images/drawing/inactiveCross.png"
-                  alt="inactive"
-                  draggable={false}
-                />
+                {itemUsageState[item.id as keyof typeof itemUsageState] && (
+                  <img
+                    src="/images/drawing/inactiveCross.png"
+                    alt="inactive"
+                    draggable={false}
+                  />
+                )}
               </div>
-            ) : null}
+            )}
+
             {hoveredItem === item.id && (
               <SpeechBubble isAvatarSelected={false} title={item.id}>
                 {item.description}
