@@ -40,14 +40,19 @@ const ItemBox: React.FC = () => {
   const onHandleItemClick = (itemId: string) => {
     if (
       !itemUsageState[itemId as keyof typeof itemUsageState] &&
-      !gameState.items[itemId as keyof typeof itemUsageState].status
+      !gameState.items[itemId as keyof typeof itemUsageState].status &&
+      !isAnyItemUsedThisRound
     ) {
-      setItemUsed(itemId as keyof typeof itemUsageState);
+      setItemUsed(itemId as keyof typeof itemUsageState, gameState.round);
 
       if (socket) socket.emit('itemUsed', roomId, itemId);
     }
   };
   // Todo: 총 라운드가 끝나면 아이템 상태 초기화
+
+  const isAnyItemUsedThisRound = Object.values(itemUsageState).some(
+    item => item !== null && item === gameState.round
+  );
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-primary-default p-4 rounded-lg border-black border-[4px] drop-shadow-drawing z-20">
@@ -76,9 +81,11 @@ const ItemBox: React.FC = () => {
               draggable={false}
             />
 
-            {gameState.items[item.id as keyof typeof itemUsageState].status && (
+            {(gameState.items[item.id as keyof typeof itemUsageState].status ||
+              isAnyItemUsedThisRound) && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-                {itemUsageState[item.id as keyof typeof itemUsageState] && (
+                {itemUsageState[item.id as keyof typeof itemUsageState] !==
+                  null && (
                   <img
                     src="/images/drawing/inactiveCross.png"
                     alt="inactive"
