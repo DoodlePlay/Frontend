@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 import ProtectedRoute from '../../components/ProtectedRoute/ProtectedRoute';
 import ChatBox from '../../features/chat/components/ChatBox';
 import Drawing from '../../features/drawing/components/Drawing';
@@ -12,14 +10,13 @@ import useSocketStore from '../../features/socket/socketStore';
 
 const GamePage = () => {
   const { gameState } = useSocketStore();
-  const [activeItem, setActiveItem] = useState<string | null>(null);
 
   return (
     <ProtectedRoute>
       <div className="flex items-center justify-center min-h-dvh overflow-hidden scrollbar-hide">
         <div className="flex w-full max-w-[1240px] gap-[40px]">
           <div className="flex flex-col left w-full gap-y-[20px]">
-            <Drawing activeItem={activeItem} />
+            <Drawing />
             <ChatBox />
           </div>
           <div className="flex flex-col right w-full max-w-[420px] gap-y-[20px]">
@@ -28,7 +25,7 @@ const GamePage = () => {
             </div>
             <div className="flex flex-col w-full gap-y-[20px]">
               {gameState?.isItemsEnabled ? (
-                <ItemBox onItemClick={setActiveItem} />
+                <ItemBox />
               ) : (
                 <div className="h-[150px]"></div>
               )}

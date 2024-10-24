@@ -12,6 +12,7 @@ import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
+import useItemStore from '../store/useItemStore';
 
 type QuizState =
   | 'breakTime'
@@ -55,11 +56,8 @@ const initialGameState = {
     }
   >,
 };
-interface DrawingProps {
-  activeItem: string | null;
-}
 
-const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
+const Drawing: React.FC = () => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
@@ -81,6 +79,7 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   const [isTimeCut, setIsTimeCut] = useState(false); // Time-Cutter 아이템 사용 여부
 
   const { socket, roomId } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
+  const { activeItem } = useItemStore();
 
   const quizStates: QuizState[] = [
     'drawing',

@@ -1,52 +1,44 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';
+import useItemStore from '../store/useItemStore';
 
 const items = [
   {
     id: 'Toxic-Cover',
     image: '/images/drawing/items/toxicCover.png',
-    isActive: true,
     description: '군데군데 독극물을 뿌린다.',
   },
   {
     id: 'Growing-Bomb',
     image: '/images/drawing/items/growingBomb.png',
-    isActive: true,
     description: '5초간 폭발이 발생한다.',
   },
   {
     id: 'Phantom-Reverse',
     image: '/images/drawing/items/phantomReverse.png',
-    isActive: true,
     description: '글자를 거꾸로 입력한다.',
   },
   {
     id: 'Laundry-Flip',
     image: '/images/drawing/items/laundryFlip.png',
-    isActive: true,
     description: '그림을 뒤집는다.',
   },
   {
     id: 'Time-Cutter',
     image: '/images/drawing/items/timeCutter.png',
-    isActive: true,
     description: '시간의 반을 먹어치운다.',
   },
 ];
 
-const ItemBox = ({
-  onItemClick,
-}: {
-  onItemClick: (itemId: string) => void;
-}) => {
+const ItemBox: React.FC = () => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [usedItems, setUsedItems] = useState<string[]>([]); // 사용된 아이템 목록
+  const { itemUsageState, setItemUsed, setActiveItem } = useItemStore();
 
   const onHandleItemClick = (itemId: string) => {
-    if (!usedItems.includes(itemId)) {
-      setUsedItems([...usedItems, itemId]);
-      onItemClick(itemId); // 클릭된 아이템 ID를 부모 컴포넌트로 전달
+    if (!itemUsageState[itemId as keyof typeof itemUsageState]) {
+      setItemUsed(itemId as keyof typeof itemUsageState);
+      setActiveItem(itemId as keyof typeof itemUsageState);
     }
   };
   // Todo: 총 라운드가 끝나면 아이템 상태 초기화
@@ -77,15 +69,8 @@ const ItemBox = ({
               className="w-full h-full object-contain"
               draggable={false}
             />
-            {!item.isActive || usedItems.includes(item.id) ? (
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  background: usedItems.includes(item.id)
-                    ? 'rgba(0, 0, 0, 0.6)'
-                    : 'rgba(0, 0, 0, 0.2)',
-                }}
-              >
+            {itemUsageState[item.id as keyof typeof itemUsageState] ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60">
                 <img
                   src="/images/drawing/inactiveCross.png"
                   alt="inactive"
