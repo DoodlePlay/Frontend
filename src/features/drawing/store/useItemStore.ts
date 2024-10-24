@@ -1,42 +1,42 @@
 import { create } from 'zustand';
 
 interface ItemUsageState {
-  ToxicCover: boolean;
-  GrowingBomb: boolean;
-  PhantomReverse: boolean;
-  LaundryFlip: boolean;
-  TimeCutter: boolean;
+  ToxicCover: number | null;
+  GrowingBomb: number | null;
+  PhantomReverse: number | null;
+  LaundryFlip: number | null;
+  TimeCutter: number | null;
 }
 
 interface ItemStore {
   itemUsageState: ItemUsageState;
-  setItemUsed: (itemId: keyof ItemUsageState) => void;
+  setItemUsed: (itemId: keyof ItemUsageState, round: number) => void;
   resetItemUsageState: () => void;
 }
 
 const useItemStore = create<ItemStore>(set => ({
   itemUsageState: {
-    ToxicCover: false,
-    GrowingBomb: false,
-    PhantomReverse: false,
-    LaundryFlip: false,
-    TimeCutter: false,
+    ToxicCover: null,
+    GrowingBomb: null,
+    PhantomReverse: null,
+    LaundryFlip: null,
+    TimeCutter: null,
   },
-  setItemUsed: itemId =>
+  setItemUsed: (itemId, round) =>
     set(state => ({
       itemUsageState: {
         ...state.itemUsageState,
-        [itemId]: true,
+        [itemId]: round,
       },
     })),
   resetItemUsageState: () =>
     set({
       itemUsageState: {
-        ToxicCover: false,
-        GrowingBomb: false,
-        PhantomReverse: false,
-        LaundryFlip: false,
-        TimeCutter: false,
+        ToxicCover: null,
+        GrowingBomb: null,
+        PhantomReverse: null,
+        LaundryFlip: null,
+        TimeCutter: null,
       },
     }),
 }));
