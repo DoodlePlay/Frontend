@@ -6,15 +6,17 @@ import { useState } from 'react';
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
+import { updateGameStatus } from '../../lobby/api/gameRoomsApi';
 
 const GameControlButtons = () => {
   const router = useRouter();
   const { disconnectSocket, socket, roomId } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const onStartGame = () => {
+  const onStartGame = async () => {
     if (socket && roomId) {
       socket.emit('startGame', roomId);
+      await updateGameStatus(roomId, 'playing');
     }
   };
 
