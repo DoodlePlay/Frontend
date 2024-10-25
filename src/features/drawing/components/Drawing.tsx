@@ -55,11 +55,8 @@ const initialGameState = {
     }
   >,
 };
-interface DrawingProps {
-  activeItem: string | null;
-}
 
-const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
+const Drawing: React.FC = () => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
@@ -74,13 +71,14 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
-  const [isToxicUsed, setIsToxicUsed] = useState(false); // Toxic-Cover 아이템 사용 여부
-  const [isBombUsed, setIsBombUsed] = useState(false); // Growing-Bomb 아이템 사용 여부
-  const [isTextRevers, setIsTextRevers] = useState(false); // Phantom-Reverse 아이템 사용 여부
-  const [isFlipped, setIsFlipped] = useState(false); // Laundry-Flip 아이템 사용 여부
-  const [isTimeCut, setIsTimeCut] = useState(false); // Time-Cutter 아이템 사용 여부
 
-  const { socket, roomId } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
+  // TODO: 61번쨰 줄의 gameState 개별관리 코드 없어지면 socketGameState 별칭 지우기
+  const {
+    socket,
+    roomId,
+    gameState: socketGameState,
+    updateGameState,
+  } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
 
   const quizStates: QuizState[] = [
     'drawing',
@@ -439,66 +437,42 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   };
 
   useEffect(() => {
-    const updateGameState = itemKey => {
-      setGameState(prevState => ({
-        ...prevState,
-        items: {
-          ...prevState.items,
-          [itemKey]: { ...prevState.items[itemKey], status: true },
-        },
-      }));
+    if (socket) {
+      socket.on('itemUsedUpdate', updatedGameState => {
+        updateGameState(updatedGameState);
+      });
+    }
+
+    return () => {
+      if (socket) socket.off('itemUsedUpdate');
     };
+  }, [updateGameState]);
 
-    if (activeItem === 'Toxic-Cover' && !isToxicUsed) {
-      setIsToxicUsed(true);
-      updateGameState('toxicCover');
-    } else if (activeItem === 'Growing-Bomb' && !isBombUsed) {
-      setIsBombUsed(true);
-      setTimeout(() => {
-        setIsBombUsed(false);
-      }, 5000);
-      updateGameState('growingBomb');
-    } else if (activeItem === 'Phantom-Reverse' && !isTextRevers) {
-      setIsTextRevers(true); // 채팅 반대로 출력 기능
-      updateGameState('phantomReverse');
-    } else if (activeItem === 'Laundry-Flip' && !isFlipped) {
-      if (canvasRef.current) {
-        const canvas = canvasRef.current;
-        canvas.getObjects().forEach(obj => {
-          obj.set('flipY', !obj.flipY); // 현재 상태 반전
-        });
-        canvas.renderAll();
-      }
-      setIsFlipped(true);
-      updateGameState('laundryFlip');
-    } else if (
-      activeItem === 'Time-Cutter' &&
-      !isTimeCut &&
-      remainingTime > 0
-    ) {
-      const newDeadline = Date.now() + (remainingTime * 1000) / 2; // 남은 시간의 반만큼 감소
-      setGameState(prev => ({
-        ...prev,
-        turnDeadline: newDeadline,
-        items: {
-          ...prev.items,
-          timeCutter: { ...prev.items.timeCutter, status: true },
-        },
-      }));
-      setIsTimeCut(true); // Time-Cutter 아이템이 활성화될 때만 true로 설정
-    }
-  }, [activeItem]);
-
-  // 상태 변경 감지하여 drawing 상태가 아닐 때 아이템 효과가 사라지도록 처리(수정 예정)
   useEffect(() => {
-    if (gameState.gameStatus !== 'drawing') {
-      setIsToxicUsed(false);
-      setIsBombUsed(false);
-      setIsTextRevers(false);
-      setIsFlipped(false);
-      setIsTimeCut(false);
+    if (socketGameState?.activeItem) {
+      const { activeItem } = socketGameState;
+
+      if (activeItem === 'LaundryFlip') {
+        if (canvasRef.current) {
+          const canvas = canvasRef.current;
+          canvas.getObjects().forEach(obj => {
+            obj.set('flipY', !obj.flipY); // 현재 상태 반전
+          });
+          canvas.renderAll();
+        }
+      } else if (activeItem === 'TimeCutter' && remainingTime > 0) {
+        const newDeadline = Date.now() + (remainingTime * 1000) / 2; // 남은 시간의 반만큼 감소
+        setGameState(prev => ({
+          ...prev,
+          turnDeadline: newDeadline,
+          items: {
+            ...prev.items,
+            timeCutter: { ...prev.items.timeCutter, status: true },
+          },
+        }));
+      }
     }
-  }, [gameState]);
+  }, [socketGameState]);
 
   // socket으로 clear 전송
   useEffect(() => {
@@ -718,12 +692,8 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
           className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
         />
 
-        {activeItem === 'Toxic-Cover' &&
-          isToxicUsed &&
-          gameState.gameStatus === 'drawing' && <ToxicEffect />}
-        {activeItem === 'Growing-Bomb' &&
-          isBombUsed &&
-          gameState.gameStatus === 'drawing' && <BombEffect />}
+        {socketGameState?.items['ToxicCover']?.status && <ToxicEffect />}
+        {socketGameState?.items['GrowingBomb']?.status && <BombEffect />}
 
         {gameState.gameStatus === 'drawing' ? (
           ''
@@ -822,18 +792,19 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
           </div>
           {gameState.gameStatus === 'drawing' && (
             <ul className="flex flex-col">
-              {Object.entries(gameState.items).map(
-                ([key, item]) =>
-                  item.status && (
-                    <li key={key}>
-                      <img
-                        src={`/images/drawing/items/${key}.png`}
-                        alt={key}
-                        draggable={false}
-                      />
-                    </li>
-                  )
-              )}
+              {socketGameState &&
+                Object.entries(socketGameState.items).map(
+                  ([key, item]) =>
+                    item.status && (
+                      <li key={key}>
+                        <img
+                          src={`/images/drawing/items/${key}.png`}
+                          alt={key}
+                          draggable={false}
+                        />
+                      </li>
+                    )
+                )}
             </ul>
           )}
         </div>
@@ -842,14 +813,14 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
             <TimeBar
               duration={remainingTime}
               onComplete={() => console.log('Time Over!')}
-              isTimeCut={isTimeCut}
+              isTimeCut={socketGameState?.items['TimeCutter']?.status}
             />
           )}
           {gameState.gameStatus === 'choosing' && (
             <TimeBar
               duration={5}
               onComplete={() => console.log('Time Over!')}
-              isTimeCut={isTimeCut}
+              isTimeCut={false}
             />
           )}
         </div>
