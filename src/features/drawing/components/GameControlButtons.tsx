@@ -9,12 +9,13 @@ import useSocketStore from '../../socket/socketStore';
 
 const GameControlButtons = () => {
   const router = useRouter();
-  const { disconnectSocket } = useSocketStore();
+  const { disconnectSocket, socket, roomId } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onStartGame = () => {
-    console.log('Game started');
-    // 게임 시작 로직을 여기에 추가합니다.
+    if (socket && roomId) {
+      socket.emit('startGame', roomId);
+    }
   };
 
   const onExitGame = () => {
