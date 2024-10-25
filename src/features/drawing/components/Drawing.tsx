@@ -373,20 +373,21 @@ const Drawing: React.FC = () => {
   }, []);
 
   // 게임 상태에 따른 배경 이미지 업데이트
+  // TODO : case가 status인데, 추후 조건 변경 status = 'waiting', 'choosing', 'drawing' 3가지로 구분
   const updateBackgroundImage = () => {
     let imgPath = '';
     switch (gameState.gameStatus) {
       case 'breakTime':
-        imgPath = '/images/drawing/breakTime.webp';
+        imgPath = '/images/drawing/breakTime.png';
         break;
       case 'timeOver':
-        imgPath = '/images/drawing/timeOver.webp';
+        imgPath = '/images/drawing/timeOver.png';
         break;
       case 'success':
-        imgPath = '/images/drawing/success.webp';
+        imgPath = '/images/drawing/success.png';
         break;
       case 'waiting':
-        imgPath = '/images/drawing/waiting.webp';
+        imgPath = '/images/drawing/waiting.png';
         break;
       default:
         imgPath = '';
@@ -402,6 +403,7 @@ const Drawing: React.FC = () => {
   // 게임 상태에 따라 화면에 보여줄 메시지 업데이트
   useEffect(() => {
     if (gameState.gameStatus === 'timeOver') {
+      //gameState.gameStatus === 'choosing' && gameState.isWordSelected === false
       setComment("Time's up");
     } else if (gameState.gameStatus === 'breakTime') {
       setComment('Break Time');
@@ -682,7 +684,10 @@ const Drawing: React.FC = () => {
         gameState.currentWord && // TODO : 그림 그리는 사람만 보여지기
         gameState.gameStatus === 'drawing' && (
           <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
-            <KeywordPlate title={gameState.currentWord} isChoosing={false} />
+            <KeywordPlate
+              title={socketGameState?.currentWord}
+              isChoosing={false}
+            />
           </div>
         )}
 
@@ -739,7 +744,7 @@ const Drawing: React.FC = () => {
                   {comment}
                 </p>
                 <div className="flex space-x-4 mt-4">
-                  {gameState.totalWords.map((word, index) => (
+                  {socketGameState?.selectedWords.map((word, index) => (
                     <KeywordPlate key={index} title={word} isChoosing />
                   ))}
                 </div>
