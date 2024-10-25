@@ -131,8 +131,6 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
   useEffect(() => {
     const handleResize = () => {
       const viewportHeight = window.innerHeight;
-
-      // 리사이즈 전에 현재 캔버스 상태를 저장
       const savedCanvas = saveCanvasObjects();
 
       if (viewportHeight <= 1000) {
@@ -155,9 +153,11 @@ const Drawing: React.FC<DrawingProps> = ({ activeItem }) => {
       }, 0); // 지연 시간 제거
     };
 
+    handleResize();
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [canvasSize]);
+  }, []);
 
   useEffect(() => {
     if (canvasRef.current) {
