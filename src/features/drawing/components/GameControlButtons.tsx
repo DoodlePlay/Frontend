@@ -10,13 +10,15 @@ import { updateGameStatus } from '../../lobby/api/gameRoomsApi';
 
 const GameControlButtons = () => {
   const router = useRouter();
-  const { disconnectSocket, socket, roomId } = useSocketStore();
+  const { gameState, disconnectSocket, socket, roomId } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHiddenButton, setIsHiddenButton] = useState(false);
 
   const onStartGame = async () => {
     if (socket && roomId) {
       socket.emit('startGame', roomId);
       await updateGameStatus(roomId, 'playing');
+      setIsHiddenButton(true);
     }
   };
 
@@ -34,16 +36,19 @@ const GameControlButtons = () => {
     setIsModalOpen(false); // 모달을 닫습니다.
   };
 
-  //TODO: 방장(host)만 게임이 진행되기 전에만 start 버튼 보이도록
-
   return (
     <div className="w-full flex gap-x-[30px]">
-      <Button
-        text="START"
-        color="primary"
-        onClick={onStartGame}
-        className="h-[70px]"
-      />
+      {gameState?.host === socket?.id ? (
+        <Button
+          text="START"
+          color="primary"
+          onClick={onStartGame}
+          className={`h-[70px] ${isHiddenButton ? 'hidden' : ''}`}
+        />
+      ) : (
+        ''
+      )}
+
       <Button
         text="EXIT"
         color="secondary"
