@@ -323,17 +323,26 @@ const Drawing: React.FC = () => {
   // TODO : case가 status인데, 추후 조건 변경 status = 'waiting', 'choosing', 'drawing' 3가지로 구분
   const updateBackgroundImage = () => {
     let imgPath = '';
+    const currentTime = Date.now();
+
     switch (gameState?.gameStatus) {
       case 'waiting':
         imgPath = '/images/drawing/waiting.png';
         break;
       case 'choosing':
-        imgPath =
-          gameState?.currentDrawer !== socket?.id &&
-          '/images/drawing/breakTime.png';
+        if (
+          gameState?.selectionDeadline &&
+          currentTime >= gameState.selectionDeadline &&
+          !gameState.isWordSelected
+        ) {
+          imgPath = '/images/drawing/timeOver.png';
+        } else {
+          imgPath =
+            gameState?.currentDrawer !== socket?.id
+              ? '/images/drawing/breakTime.png'
+              : '';
+        }
         break;
-      case 'drawing':
-        imgPath = '/images/drawing/breakTime.png';
       default:
         imgPath = '';
     }
@@ -752,6 +761,7 @@ const Drawing: React.FC = () => {
               isTimeCut={false}
             />
           )}
+          <div>{gameState?.gameStatus}</div>
         </div>
       </div>
       <Modal
