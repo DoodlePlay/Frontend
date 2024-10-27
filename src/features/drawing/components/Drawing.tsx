@@ -13,52 +13,9 @@ import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
 
-type QuizState =
-  | 'breakTime'
-  | 'timeOver'
-  | 'success'
-  | 'waiting'
-  | 'choosing'
-  | 'drawing'
-  | 'create';
-
-const initialGameState = {
-  host: '',
-  gameStatus: 'create' as QuizState,
-  currentDrawer: '22202',
-  currentWord: '사자',
-  totalWords: ['사자', '호랑이' /* ... 추가적인 단어들 */],
-  selectedWords: [] as string[],
-  isWordSelected: false,
-  selectionDeadline: null as number | null,
-  maxRound: 3,
-  round: 3,
-  turn: 1,
-  turnDeadline: Date.now() + (3 / 2) * 60 * 1000,
-  correctAnswerCount: 0,
-  items: {
-    toxicCover: { user: null, status: false },
-    growingBomb: { user: null, status: false },
-    phantomReverse: { user: null, status: false },
-    laundryFlip: { user: null, status: false },
-    timeCutter: { user: null, status: false },
-  },
-  order: [] as string[],
-  participants: {} as Record<
-    string,
-    {
-      nickname: string;
-      score: number;
-      clickedAvatarIndex: string;
-      isVideoOn: boolean;
-      isFlipped: boolean;
-    }
-  >,
-};
-
 const Drawing: React.FC = () => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
-  const [gameState, setGameState] = useState(initialGameState);
+  // const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
   const [selectedTool, setSelectedTool] = useState<
     'pencil' | 'eraser' | 'square' | 'paint' | 'circle' | 'clear'
@@ -72,22 +29,8 @@ const Drawing: React.FC = () => {
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
 
-  // TODO: 61번쨰 줄의 gameState 개별관리 코드 없어지면 socketGameState 별칭 지우기
-  const {
-    socket,
-    roomId,
-    gameState: socketGameState,
-    updateGameState,
-  } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
-
-  const quizStates: QuizState[] = [
-    'drawing',
-    'breakTime',
-    'timeOver',
-    'success',
-    'waiting',
-    'choosing',
-  ];
+  // TODO: 61번쨰 줄의 gameState 개별관리 코드 없어지면 gameState 별칭 지우기
+  const { socket, roomId, gameState, updateGameState } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
 
   // 캔버스를 초기화하고, 선택된 도구에 맞게 브러시 설정
   useEffect(() => {
@@ -103,7 +46,7 @@ const Drawing: React.FC = () => {
     return () => {
       canvas.dispose();
     };
-  }, [canvasSize]);
+  }, [canvasSize, gameState?.gameStatus]);
 
   // 모든 객체 선택을 비활성화
   const disableObjectSelection = () => {
@@ -129,8 +72,6 @@ const Drawing: React.FC = () => {
   useEffect(() => {
     const handleResize = () => {
       const viewportHeight = window.innerHeight;
-
-      // 리사이즈 전에 현재 캔버스 상태를 저장
       const savedCanvas = saveCanvasObjects();
 
       if (viewportHeight <= 1000) {
@@ -153,9 +94,11 @@ const Drawing: React.FC = () => {
       }, 0); // 지연 시간 제거
     };
 
+    handleResize();
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [canvasSize]);
+  }, []);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -373,21 +316,20 @@ const Drawing: React.FC = () => {
   }, []);
 
   // 게임 상태에 따른 배경 이미지 업데이트
+  // TODO : case가 status인데, 추후 조건 변경 status = 'waiting', 'choosing', 'drawing' 3가지로 구분
   const updateBackgroundImage = () => {
     let imgPath = '';
-    switch (gameState.gameStatus) {
-      case 'breakTime':
-        imgPath = '/images/drawing/breakTime.webp';
-        break;
-      case 'timeOver':
-        imgPath = '/images/drawing/timeOver.webp';
-        break;
-      case 'success':
-        imgPath = '/images/drawing/success.webp';
-        break;
+    switch (gameState?.gameStatus) {
       case 'waiting':
-        imgPath = '/images/drawing/waiting.webp';
+        imgPath = '/images/drawing/waiting.png';
         break;
+      case 'choosing':
+        imgPath =
+          gameState?.currentDrawer !== socket?.id &&
+          '/images/drawing/breakTime.png';
+        break;
+      case 'drawing':
+        imgPath = '/images/drawing/breakTime.png';
       default:
         imgPath = '';
     }
@@ -397,40 +339,19 @@ const Drawing: React.FC = () => {
 
   useEffect(() => {
     updateBackgroundImage();
-  }, [gameState.gameStatus]);
+  }, [gameState]);
 
   // 게임 상태에 따라 화면에 보여줄 메시지 업데이트
   useEffect(() => {
-    if (gameState.gameStatus === 'timeOver') {
-      setComment("Time's up");
-    } else if (gameState.gameStatus === 'breakTime') {
-      setComment('Break Time');
-    } else if (gameState.gameStatus === 'choosing') {
+    if (
+      gameState?.gameStatus === 'choosing' &&
+      gameState?.currentDrawer === socket?.id
+    ) {
       setComment('Choose a word');
     } else {
-      setComment('');
+      setComment('Break Time');
     }
-  }, [gameState.gameStatus]);
-
-  // 게임 상태 변경
-  const onStateChange = () => {
-    const currentIndex = quizStates.indexOf(gameState.gameStatus);
-    const nextIndex = (currentIndex + 1) % quizStates.length;
-    const newTurnDeadline = Date.now() + (3 / 2) * 60 * 1000; // 현재 시간에서 1분30초 후
-
-    setGameState(prev => ({
-      ...prev,
-      gameStatus: quizStates[nextIndex],
-      turnDeadline: newTurnDeadline,
-    }));
-
-    canvasRef.current.clear();
-  };
-
-  // 현재 시간과 타임바 종료 시간 계산
-  const remainingTime = gameState.turnDeadline
-    ? Math.max(0, Math.floor((gameState.turnDeadline - Date.now()) / 1000))
-    : 0;
+  }, [gameState]);
 
   const onImageLoad = () => {
     setImageLoaded(true);
@@ -449,8 +370,8 @@ const Drawing: React.FC = () => {
   }, [updateGameState]);
 
   useEffect(() => {
-    if (socketGameState?.activeItem) {
-      const { activeItem } = socketGameState;
+    if (gameState?.activeItem) {
+      const { activeItem } = gameState;
 
       if (activeItem === 'LaundryFlip') {
         if (canvasRef.current) {
@@ -460,19 +381,9 @@ const Drawing: React.FC = () => {
           });
           canvas.renderAll();
         }
-      } else if (activeItem === 'TimeCutter' && remainingTime > 0) {
-        const newDeadline = Date.now() + (remainingTime * 1000) / 2; // 남은 시간의 반만큼 감소
-        setGameState(prev => ({
-          ...prev,
-          turnDeadline: newDeadline,
-          items: {
-            ...prev.items,
-            timeCutter: { ...prev.items.timeCutter, status: true },
-          },
-        }));
       }
     }
-  }, [socketGameState]);
+  }, [gameState]);
 
   // socket으로 clear 전송
   useEffect(() => {
@@ -665,7 +576,14 @@ const Drawing: React.FC = () => {
       canvas.off('mouse:up');
       socket.off('drawingData');
     };
-  }, [socket, roomId, selectedColor, selectedSize, selectedTool, quizStates]); // TODO: 상태 정의
+  }, [
+    socket,
+    roomId,
+    selectedColor,
+    selectedSize,
+    selectedTool,
+    gameState?.gameStatus,
+  ]); // TODO: 상태 정의
 
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
@@ -678,11 +596,11 @@ const Drawing: React.FC = () => {
         />
       </h1>
       {/* 정답 단어 KeywordPlate */}
-      {gameState.currentDrawer &&
-        gameState.currentWord && // TODO : 그림 그리는 사람만 보여지기
-        gameState.gameStatus === 'drawing' && (
+      {gameState?.currentDrawer === socket?.id &&
+        gameState?.currentWord && // TODO : 그림 그리는 사람만 보여지기
+        gameState?.gameStatus === 'drawing' && (
           <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
-            <KeywordPlate title={gameState.currentWord} isChoosing={false} />
+            <KeywordPlate title={gameState?.currentWord} isChoosing={false} />
           </div>
         )}
 
@@ -692,16 +610,16 @@ const Drawing: React.FC = () => {
           className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
         />
 
-        {socketGameState?.items['ToxicCover']?.status && <ToxicEffect />}
-        {socketGameState?.items['GrowingBomb']?.status && <BombEffect />}
+        {gameState?.items['ToxicCover']?.status && <ToxicEffect />}
+        {gameState?.items['GrowingBomb']?.status && <BombEffect />}
 
-        {gameState.gameStatus === 'drawing' ? (
+        {gameState?.gameStatus === 'drawing' ? (
           ''
         ) : (
           <div
             style={{
               background: `${
-                gameState.gameStatus === 'waiting' && imageLoaded
+                gameState?.gameStatus === 'waiting' && imageLoaded
                   ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
                   : ''
               }`,
@@ -718,7 +636,7 @@ const Drawing: React.FC = () => {
             />
             {imageLoaded && (
               <>
-                {gameState.gameStatus === 'waiting' ? (
+                {gameState?.gameStatus === 'waiting' ? (
                   <NamePlate
                     title="winner"
                     score={200}
@@ -733,17 +651,20 @@ const Drawing: React.FC = () => {
               </>
             )}
 
-            {gameState.gameStatus === 'choosing' && (
+            {gameState?.gameStatus === 'choosing' &&
+            gameState?.currentDrawer === socket?.id ? (
               <>
                 <p className="text-center font-cherry text-secondary-default text-6xl">
                   {comment}
                 </p>
                 <div className="flex space-x-4 mt-4">
-                  {gameState.totalWords.map((word, index) => (
+                  {gameState?.selectedWords.map((word, index) => (
                     <KeywordPlate key={index} title={word} isChoosing />
                   ))}
                 </div>
               </>
+            ) : (
+              <></>
             )}
           </div>
         )}
@@ -752,9 +673,8 @@ const Drawing: React.FC = () => {
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
           } flex justify-between absolute top-0 left-0 z-10 duration-700`}
         >
-          {gameState.currentDrawer &&
-            gameState.gameStatus === 'drawing' &&
-            gameState.currentDrawer && ( // TODO : 그림 그리는 사람만 보여지기
+          {gameState?.gameStatus === 'drawing' &&
+            gameState?.currentDrawer === socket?.id && ( // TODO : 그림 그리는 사람만 보여지기
               <>
                 <Toolbar
                   selectedTool={selectedTool}
@@ -790,10 +710,10 @@ const Drawing: React.FC = () => {
               draggable={false}
             />
           </div>
-          {gameState.gameStatus === 'drawing' && (
+          {gameState?.gameStatus === 'drawing' && (
             <ul className="flex flex-col">
-              {socketGameState &&
-                Object.entries(socketGameState.items).map(
+              {gameState &&
+                Object.entries(gameState?.items).map(
                   ([key, item]) =>
                     item.status && (
                       <li key={key}>
@@ -809,14 +729,14 @@ const Drawing: React.FC = () => {
           )}
         </div>
         <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          {gameState.gameStatus === 'drawing' && (
+          {gameState?.gameStatus === 'drawing' && (
             <TimeBar
-              duration={remainingTime}
+              duration={90}
               onComplete={() => console.log('Time Over!')}
-              isTimeCut={socketGameState?.items['TimeCutter']?.status}
+              isTimeCut={gameState?.items['TimeCutter']?.status}
             />
           )}
-          {gameState.gameStatus === 'choosing' && (
+          {gameState?.gameStatus === 'choosing' && (
             <TimeBar
               duration={5}
               onComplete={() => console.log('Time Over!')}
@@ -832,13 +752,6 @@ const Drawing: React.FC = () => {
       >
         <Settings />
       </Modal>
-      {/* 상태 변경 버튼 */}
-      <button
-        onClick={onStateChange}
-        className="fixed bottom-20 right-10 bg-blue-500 text-white p-2 rounded z-50"
-      >
-        Change State
-      </button>
     </div>
   );
 };
