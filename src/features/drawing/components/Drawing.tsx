@@ -758,7 +758,6 @@ const Drawing: React.FC = () => {
               isTimeCut={false}
             />
           )}
-          <div>{gameState?.turn}</div>
         </div>
       </div>
       <Modal
