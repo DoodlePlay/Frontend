@@ -12,12 +12,14 @@ interface ChatMessage {
   message: string;
   socketId?: string;
   isSystemMessage?: boolean;
+  isScoreMessage?: boolean;
 }
 
 const ChatBox: React.FC = () => {
   const router = useRouter();
   const { nickname } = useUserInfoStore();
-  const { socket, roomId, disconnectSocket } = useSocketStore();
+  const { socket, roomId, gameState, updateGameState, disconnectSocket } =
+    useSocketStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
@@ -87,6 +89,35 @@ const ChatBox: React.FC = () => {
           },
         ]);
       });
+
+      socket.on('roundProcess', (round: string) => {
+        setMessages(prevMessages => [
+          ...prevMessages,
+          {
+            nickname: 'System',
+            message: `━━━━━━━━━━◈━━━━━⭑ ${round} 라운드 ⭑━━━━━◈━━━━━━━━━━`,
+            isSystemMessage: true,
+          },
+        ]);
+      });
+
+      socket.on('privateMessage', (currentWord, adaptiveScore) => {
+        setMessages(prevMessages => [
+          ...prevMessages,
+          {
+            nickname,
+            message: `🏆${currentWord}🏆`,
+            socketId: socket.id, //isCurrentUser를 위한 socketId 비교
+          },
+        ]);
+      });
+
+      socket.on('correctAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('adaptiveScore', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
     }
 
     return () => {
@@ -94,6 +125,10 @@ const ChatBox: React.FC = () => {
         socket.off('newMessage');
         socket.off('userJoined');
         socket.off('userLeft');
+        socket.off('privateMessage');
+        socket.off('roundProcess');
+        socket.off('correctAnswer');
+        socket.off('adaptiveScore');
       }
     };
   }, [socket]);
@@ -128,6 +163,7 @@ const ChatBox: React.FC = () => {
             message={msg.message}
             isCurrentUser={msg.socketId === socket?.id}
             isSystemMessage={msg.isSystemMessage}
+            isScoreMessage={msg.isScoreMessage}
           />
         ))}
       </div>
