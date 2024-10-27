@@ -6,15 +6,18 @@ import { useState } from 'react';
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
+import { updateGameStatus } from '../../lobby/api/gameRoomsApi';
 
 const GameControlButtons = () => {
   const router = useRouter();
-  const { disconnectSocket } = useSocketStore();
+  const { disconnectSocket, socket, roomId } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const onStartGame = () => {
-    console.log('Game started');
-    // 게임 시작 로직을 여기에 추가합니다.
+  const onStartGame = async () => {
+    if (socket && roomId) {
+      socket.emit('startGame', roomId);
+      await updateGameStatus(roomId, 'playing');
+    }
   };
 
   const onExitGame = () => {
