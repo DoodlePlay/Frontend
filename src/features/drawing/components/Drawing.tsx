@@ -31,6 +31,10 @@ const Drawing: React.FC = () => {
 
   // TODO: 61번쨰 줄의 gameState 개별관리 코드 없어지면 gameState 별칭 지우기
   const { socket, roomId, gameState, updateGameState } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
+  // 현재 사용자가 그림을 그릴 수 있는 조건
+  const canDraw =
+    gameState?.currentDrawer === socket?.id &&
+    gameState?.gameStatus === 'drawing';
 
   // 캔버스를 초기화하고, 선택된 도구에 맞게 브러시 설정
   useEffect(() => {
