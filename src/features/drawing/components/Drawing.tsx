@@ -45,12 +45,13 @@ const Drawing: React.FC = () => {
       selection: false,
     });
     canvasRef.current = canvas;
-    updateCanvasBrush();
+    updateCanvasBrush(); // 그릴 수 있는 경우에만 브러시 업데이트
+    disableObjectSelection();
 
     return () => {
       canvas.dispose();
     };
-  }, [canvasSize, gameState?.gameStatus]);
+  }, [canvasSize, gameState?.gameStatus, canDraw]);
 
   // 모든 객체 선택을 비활성화
   const disableObjectSelection = () => {
@@ -62,7 +63,6 @@ const Drawing: React.FC = () => {
       });
     }
   };
-  disableObjectSelection();
 
   // 캔버스에 있는 모든 객체를 JSON 형식으로 저장하는 함수
   const saveCanvasObjects = () => {
@@ -92,7 +92,7 @@ const Drawing: React.FC = () => {
         if (canvasRef.current && savedCanvas) {
           canvasRef.current.loadFromJSON(savedCanvas, () => {
             canvasRef.current.renderAll();
-            disableObjectSelection(); // 리사이즈 후 객체 선택 방지
+            disableObjectSelection();
           });
         }
       }, 0); // 지연 시간 제거
@@ -117,7 +117,8 @@ const Drawing: React.FC = () => {
   useEffect(() => {
     removeCanvasEventListeners();
     updateCanvasBrush();
-  }, [selectedTool, selectedColor, selectedSize]);
+    disableObjectSelection();
+  }, [selectedTool, selectedColor, selectedSize, canDraw]);
 
   // 캔버스에 등록된 이벤트 제거
   const removeCanvasEventListeners = () => {
@@ -134,19 +135,18 @@ const Drawing: React.FC = () => {
     if (canvasRef.current) {
       const canvas = canvasRef.current;
 
-      canvas.isDrawingMode = false;
       canvas.selection = false;
       removeCanvasEventListeners();
-      disableObjectSelection(); // 객체 선택 비활성화
+      disableObjectSelection();
 
       if (selectedTool === 'pencil') {
-        canvas.isDrawingMode = true;
+        canvas.isDrawingMode = canDraw;
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.freeDrawingBrush.width = selectedSize;
         canvas.freeDrawingCursor = `url("/images/drawingCursor.png"), auto`;
       } else if (selectedTool === 'eraser') {
-        canvas.isDrawingMode = true;
+        canvas.isDrawingMode = canDraw;
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         canvas.freeDrawingBrush.color = '#FFFFFF';
         canvas.freeDrawingBrush.width = selectedSize * 2;
@@ -170,7 +170,7 @@ const Drawing: React.FC = () => {
   const activateDrawingMode = (shape: 'square' | 'circle') => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
-    let isDrawing = false;
+    let isDrawing = canDraw && false;
     let shapeObject: fabric.Object | null = null;
     let startX = 0,
       startY = 0;
@@ -387,7 +387,7 @@ const Drawing: React.FC = () => {
         }
       }
     }
-  }, [gameState]);
+  }, [gameState?.activeItem]);
 
   // socket으로 clear 전송
   useEffect(() => {
@@ -405,14 +405,14 @@ const Drawing: React.FC = () => {
   useEffect(() => {
     if (!socket || !roomId || !canvasRef.current) return;
     const canvas = canvasRef.current;
-    // 그림 그리는 중인지 여부를 추적하는 상태 변수 추가
 
     const sendDrawingData = (
       eventType: string,
-      x: number | null, // clear tool에 맞게 x, y는 null 가능
+      x: number | null,
       y: number | null,
       tool: string
     ) => {
+      if (!canDraw) return;
       socket.emit('drawing', roomId, {
         eventType,
         x,
@@ -587,7 +587,7 @@ const Drawing: React.FC = () => {
     selectedSize,
     selectedTool,
     gameState?.gameStatus,
-  ]); // TODO: 상태 정의
+  ]);
 
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
@@ -609,6 +609,11 @@ const Drawing: React.FC = () => {
         )}
 
       <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
+        <div
+          className={`${
+            canDraw ? 'hidden' : 'flex'
+          } absolute w-full h-full left-0 top-0 z-[11]`}
+        ></div>
         <canvas
           id="fabric-canvas"
           className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
