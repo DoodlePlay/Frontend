@@ -6,7 +6,6 @@ import { useState } from 'react';
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
-import { updateGameStatus } from '../../lobby/api/gameRoomsApi';
 
 const GameControlButtons = () => {
   const router = useRouter();
@@ -17,7 +16,6 @@ const GameControlButtons = () => {
   const onStartGame = async () => {
     if (socket && roomId) {
       socket.emit('startGame', roomId);
-      await updateGameStatus(roomId, 'playing');
       setIsHiddenButton(true);
     }
   };
