@@ -28,6 +28,7 @@ const Drawing: React.FC = () => {
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
+  const [isTimeOver, setIsTimeOver] = useState(false); // TimeOver 상태 추가
 
   // TODO: 61번쨰 줄의 gameState 개별관리 코드 없어지면 gameState 별칭 지우기
   const { socket, roomId, gameState, updateGameState } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
@@ -323,25 +324,19 @@ const Drawing: React.FC = () => {
   // TODO : case가 status인데, 추후 조건 변경 status = 'waiting', 'choosing', 'drawing' 3가지로 구분
   const updateBackgroundImage = () => {
     let imgPath = '';
-    const currentTime = Date.now();
 
     switch (gameState?.gameStatus) {
       case 'waiting':
         imgPath = '/images/drawing/waiting.png';
         break;
+      case 'timeOver':
+        imgPath = '/images/drawing/timeOver.png';
+        break;
       case 'choosing':
-        if (
-          gameState?.selectionDeadline &&
-          currentTime >= gameState.selectionDeadline &&
-          !gameState.isWordSelected
-        ) {
-          imgPath = '/images/drawing/timeOver.png';
-        } else {
-          imgPath =
-            gameState?.currentDrawer !== socket?.id
-              ? '/images/drawing/breakTime.png'
-              : '';
-        }
+        imgPath =
+          gameState?.currentDrawer !== socket?.id
+            ? '/images/drawing/breakTime.png'
+            : '';
         break;
       default:
         imgPath = '';
@@ -352,7 +347,7 @@ const Drawing: React.FC = () => {
 
   useEffect(() => {
     updateBackgroundImage();
-  }, [gameState]);
+  }, [gameState?.gameStatus]);
 
   // 게임 상태에 따라 화면에 보여줄 메시지 업데이트
   useEffect(() => {
@@ -361,8 +356,10 @@ const Drawing: React.FC = () => {
       gameState?.currentDrawer === socket?.id
     ) {
       setComment('Choose a word');
-    } else {
+    } else if (gameState?.gameStatus === 'choosing') {
       setComment('Break Time');
+    } else if (gameState?.gameStatus === 'timeOver') {
+      setComment("Time's up");
     }
   }, [gameState]);
 
@@ -761,7 +758,7 @@ const Drawing: React.FC = () => {
               isTimeCut={false}
             />
           )}
-          <div>{gameState?.gameStatus}</div>
+          <div>{gameState?.turn}</div>
         </div>
       </div>
       <Modal
