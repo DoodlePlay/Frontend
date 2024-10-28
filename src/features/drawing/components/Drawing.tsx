@@ -159,6 +159,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
       } else if (selectedTool === 'circle') {
         activateDrawingMode('circle');
       } else if (selectedTool === 'paint') {
+        canvas.isDrawingMode = false; // paint일 때는 그리기 모드를 비활성화
         activateFillMode();
       } else if (selectedTool === 'clear') {
         canvas.clear();
