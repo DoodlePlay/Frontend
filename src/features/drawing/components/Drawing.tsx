@@ -18,7 +18,6 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   isGameStatusModalOpen,
 }) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
-  // const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
   const [selectedTool, setSelectedTool] = useState<
     'pencil' | 'eraser' | 'square' | 'paint' | 'circle' | 'clear'
@@ -32,8 +31,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
 
-  // TODO: 61번쨰 줄의 gameState 개별관리 코드 없어지면 gameState 별칭 지우기
-  const { socket, roomId, gameState, updateGameState } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
+  const { socket, roomId, gameState, updateGameState } = useSocketStore();
   // 현재 사용자가 그림을 그릴 수 있는 조건
   const canDraw =
     gameState?.currentDrawer === socket?.id &&
@@ -324,7 +322,6 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   }, []);
 
   // 게임 상태에 따른 배경 이미지 업데이트
-  // TODO : case가 status인데, 추후 조건 변경 status = 'waiting', 'choosing', 'drawing' 3가지로 구분
   const updateBackgroundImage = () => {
     let imgPath = '';
 
