@@ -11,15 +11,12 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
   const router = useRouter();
   const { gameState, disconnectSocket, socket, roomId } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isHiddenButton, setIsHiddenButton] = useState(false);
 
   const onStartGame = () => {
     if (gameState?.order.length < 3) {
       setGameStatusModalOpen(true);
-      setIsHiddenButton(false);
     } else if (socket && roomId) {
       socket.emit('startGame', roomId);
-      setIsHiddenButton(true);
     }
   };
 
@@ -37,23 +34,17 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
     setIsModalOpen(false); // 모달을 닫습니다.
   };
 
-  // 게임이 waiting 상태로 돌아오면 버튼을 다시 보여줌
-  useEffect(() => {
-    if (gameState?.gameStatus === 'waiting') {
-      setIsHiddenButton(false);
-    }
-  }, [gameState?.gameStatus]);
-
   return (
     <div className="w-full flex gap-x-[30px]">
-      {gameState?.host === socket?.id && !isHiddenButton && (
-        <Button
-          text="START"
-          color="primary"
-          onClick={onStartGame}
-          className="h-[70px]"
-        />
-      )}
+      {gameState?.host === socket?.id &&
+        gameState?.gameStatus === 'waiting' && (
+          <Button
+            text="START"
+            color="primary"
+            onClick={onStartGame}
+            className="h-[70px]"
+          />
+        )}
       <Button
         text="EXIT"
         color="secondary"
