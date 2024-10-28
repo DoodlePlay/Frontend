@@ -12,8 +12,11 @@ import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
 import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
+import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 
-const Drawing: React.FC = () => {
+const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
+  isGameStatusModalOpen,
+}) => {
   const canvasRef = useRef<fabric.Canvas | null>(null);
   // const [gameState, setGameState] = useState(initialGameState);
   const [comment, setComment] = useState('');
@@ -593,181 +596,184 @@ const Drawing: React.FC = () => {
   ]);
 
   return (
-    <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
-      <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-[50%]">
-        <img
-          className="m-auto"
-          src="/images/logo.svg"
-          alt="Logo"
-          draggable={false}
-        />
-      </h1>
-      {/* 정답 단어 KeywordPlate */}
-      {gameState?.currentDrawer === socket?.id &&
-        gameState?.currentWord && // TODO : 그림 그리는 사람만 보여지기
-        gameState?.gameStatus === 'drawing' && (
-          <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
-            <KeywordPlate title={gameState?.currentWord} isChoosing={false} />
-          </div>
-        )}
+    <>
+      <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
+        <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-[50%]">
+          <img
+            className="m-auto"
+            src="/images/logo.svg"
+            alt="Logo"
+            draggable={false}
+          />
+        </h1>
+        {/* 정답 단어 KeywordPlate */}
+        {gameState?.currentDrawer === socket?.id &&
+          gameState?.currentWord && // TODO : 그림 그리는 사람만 보여지기
+          gameState?.gameStatus === 'drawing' && (
+            <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
+              <KeywordPlate title={gameState?.currentWord} isChoosing={false} />
+            </div>
+          )}
 
-      <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
-        <div
-          className={`${
-            canDraw ? 'hidden' : 'flex'
-          } absolute w-full h-full left-0 top-0 z-[11]`}
-        ></div>
-        <canvas
-          id="fabric-canvas"
-          className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
-        />
+        <div className="flex flex-col gap-y-[20px] max-w-[780px] w-full h-full relative overflow-hidden">
+          <div
+            className={`${
+              canDraw ? 'hidden' : 'flex'
+            } absolute w-full h-full left-0 top-0 z-[11]`}
+          ></div>
+          <canvas
+            id="fabric-canvas"
+            className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
+          />
 
-        {gameState?.items['ToxicCover']?.status && <ToxicEffect />}
-        {gameState?.items['GrowingBomb']?.status && <BombEffect />}
+          {gameState?.items['ToxicCover']?.status && <ToxicEffect />}
+          {gameState?.items['GrowingBomb']?.status && <BombEffect />}
 
-        {gameState?.gameStatus === 'drawing'
-          ? ''
-          : gameState?.turn > 0 &&
-            gameState?.round > 0 && (
-              <div
-                style={{
-                  background: `${
-                    gameState?.gameStatus === 'waiting' && imageLoaded
-                      ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
-                      : ''
-                  }`,
-                }}
-                className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
-              >
-                <img
-                  src={backgroundImage}
-                  onLoad={onImageLoad}
-                  className={`${
-                    comment === '' ? 'max-h-[80%]' : 'max-h-[60%]'
-                  } `}
-                  draggable={false}
-                  loading="lazy"
-                  style={{ visibility: imageLoaded ? 'visible' : 'hidden' }}
-                />
-                {imageLoaded && (
-                  <>
-                    {gameState?.gameStatus === 'waiting' ? (
-                      <NamePlate
-                        title="winner"
-                        score={200}
-                        isDrawingActive
-                        isWinner
-                      />
-                    ) : (
+          {gameState?.gameStatus === 'drawing'
+            ? ''
+            : gameState?.turn > 0 &&
+              gameState?.round > 0 && (
+                <div
+                  style={{
+                    background: `${
+                      gameState?.gameStatus === 'waiting' && imageLoaded
+                        ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
+                        : ''
+                    }`,
+                  }}
+                  className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
+                >
+                  <img
+                    src={backgroundImage}
+                    onLoad={onImageLoad}
+                    className={`${
+                      comment === '' ? 'max-h-[80%]' : 'max-h-[60%]'
+                    } `}
+                    draggable={false}
+                    loading="lazy"
+                    style={{ visibility: imageLoaded ? 'visible' : 'hidden' }}
+                  />
+                  {imageLoaded && (
+                    <>
+                      {gameState?.gameStatus === 'waiting' ? (
+                        <NamePlate
+                          title="winner"
+                          score={200}
+                          isDrawingActive
+                          isWinner
+                        />
+                      ) : (
+                        <p className="text-center font-cherry text-secondary-default text-6xl">
+                          {comment}
+                        </p>
+                      )}
+                    </>
+                  )}
+
+                  {gameState?.gameStatus === 'choosing' &&
+                  gameState?.currentDrawer === socket?.id ? (
+                    <>
                       <p className="text-center font-cherry text-secondary-default text-6xl">
                         {comment}
                       </p>
-                    )}
-                  </>
-                )}
-
-                {gameState?.gameStatus === 'choosing' &&
-                gameState?.currentDrawer === socket?.id ? (
-                  <>
-                    <p className="text-center font-cherry text-secondary-default text-6xl">
-                      {comment}
-                    </p>
-                    <div className="flex space-x-4 mt-4">
-                      {gameState?.selectedWords.map((word, index) => (
-                        <KeywordPlate key={index} title={word} isChoosing />
-                      ))}
-                    </div>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </div>
-            )}
-        <div
-          className={`${
-            isToolbar ? '' : '-translate-x-full -ml-[25px]'
-          } flex justify-between absolute top-0 left-0 z-10 duration-700`}
-        >
-          {gameState?.gameStatus === 'drawing' &&
-            gameState?.currentDrawer === socket?.id && ( // TODO : 그림 그리는 사람만 보여지기
-              <>
-                <Toolbar
-                  selectedTool={selectedTool}
-                  setSelectedTool={setSelectedTool}
-                  selectedColor={selectedColor}
-                  setSelectedColor={setSelectedColor}
-                  selectedSize={selectedSize}
-                  setSelectedSize={setSelectedSize}
-                />
-                <div
-                  className={`${
-                    isToolbar ? 'ml-3' : 'rotate-[900deg] ml-[30px]'
-                  }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2  cursor-pointer duration-700`}
-                  onClick={() => setIsToolbar(!isToolbar)}
-                >
-                  <img
-                    src="/images/drawing/toolbarController.svg"
-                    alt="toolbar-controller"
-                    draggable={false}
-                  />
+                      <div className="flex space-x-4 mt-4">
+                        {gameState?.selectedWords.map((word, index) => (
+                          <KeywordPlate key={index} title={word} isChoosing />
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </div>
-              </>
-            )}
-        </div>
-        <div className="absolute top-0 right-0 z-40 max-w-[70px] flex flex-wrap gap-[10px]">
+              )}
           <div
-            className="w-full cursor-pointer"
-            onClick={() => setIsSettingsModalOpen(true)}
+            className={`${
+              isToolbar ? '' : '-translate-x-full -ml-[25px]'
+            } flex justify-between absolute top-0 left-0 z-10 duration-700`}
           >
-            <img
-              src="/images/drawing/settingIcon.png"
-              alt="setting"
-              draggable={false}
-            />
+            {gameState?.gameStatus === 'drawing' &&
+              gameState?.currentDrawer === socket?.id && ( // TODO : 그림 그리는 사람만 보여지기
+                <>
+                  <Toolbar
+                    selectedTool={selectedTool}
+                    setSelectedTool={setSelectedTool}
+                    selectedColor={selectedColor}
+                    setSelectedColor={setSelectedColor}
+                    selectedSize={selectedSize}
+                    setSelectedSize={setSelectedSize}
+                  />
+                  <div
+                    className={`${
+                      isToolbar ? 'ml-3' : 'rotate-[900deg] ml-[30px]'
+                    }  absolute w-[30px] h-[30px] left-full top-1/2 -translate-y-1/2  cursor-pointer duration-700`}
+                    onClick={() => setIsToolbar(!isToolbar)}
+                  >
+                    <img
+                      src="/images/drawing/toolbarController.svg"
+                      alt="toolbar-controller"
+                      draggable={false}
+                    />
+                  </div>
+                </>
+              )}
           </div>
-          {gameState?.gameStatus === 'drawing' && (
-            <ul className="flex flex-col">
-              {gameState &&
-                Object.entries(gameState?.items).map(
-                  ([key, item]) =>
-                    item.status && (
-                      <li key={key}>
-                        <img
-                          src={`/images/drawing/items/${key}.png`}
-                          alt={key}
-                          draggable={false}
-                        />
-                      </li>
-                    )
-                )}
-            </ul>
-          )}
+          <div className="absolute top-0 right-0 z-40 max-w-[70px] flex flex-wrap gap-[10px]">
+            <div
+              className="w-full cursor-pointer"
+              onClick={() => setIsSettingsModalOpen(true)}
+            >
+              <img
+                src="/images/drawing/settingIcon.png"
+                alt="setting"
+                draggable={false}
+              />
+            </div>
+            {gameState?.gameStatus === 'drawing' && (
+              <ul className="flex flex-col">
+                {gameState &&
+                  Object.entries(gameState?.items).map(
+                    ([key, item]) =>
+                      item.status && (
+                        <li key={key}>
+                          <img
+                            src={`/images/drawing/items/${key}.png`}
+                            alt={key}
+                            draggable={false}
+                          />
+                        </li>
+                      )
+                  )}
+              </ul>
+            )}
+          </div>
+          <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
+            {gameState?.gameStatus === 'drawing' && (
+              <TimeBar
+                duration={90}
+                onComplete={() => console.log('Time Over!')}
+                isTimeCut={gameState?.items['TimeCutter']?.status}
+              />
+            )}
+            {gameState?.gameStatus === 'choosing' && (
+              <TimeBar
+                duration={5}
+                onComplete={() => console.log('Time Over!')}
+                isTimeCut={false}
+              />
+            )}
+          </div>
         </div>
-        <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
-          {gameState?.gameStatus === 'drawing' && (
-            <TimeBar
-              duration={90}
-              onComplete={() => console.log('Time Over!')}
-              isTimeCut={gameState?.items['TimeCutter']?.status}
-            />
-          )}
-          {gameState?.gameStatus === 'choosing' && (
-            <TimeBar
-              duration={5}
-              onComplete={() => console.log('Time Over!')}
-              isTimeCut={false}
-            />
-          )}
-        </div>
+        <Modal
+          isOpen={isSettingsModalOpen}
+          title="Setting"
+          onClose={() => setIsSettingsModalOpen(false)}
+        >
+          <Settings />
+        </Modal>
       </div>
-      <Modal
-        isOpen={isSettingsModalOpen}
-        title="Setting"
-        onClose={() => setIsSettingsModalOpen(false)}
-      >
-        <Settings />
-      </Modal>
-    </div>
+      <GameStatusModal isOpen={isGameStatusModalOpen} errorType={'player'} />
+    </>
   );
 };
 
