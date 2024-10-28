@@ -28,7 +28,6 @@ const Drawing: React.FC = () => {
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
-  const [isTimeOver, setIsTimeOver] = useState(false); // TimeOver 상태 추가
 
   // TODO: 61번쨰 줄의 gameState 개별관리 코드 없어지면 gameState 별칭 지우기
   const { socket, roomId, gameState, updateGameState } = useSocketStore(); // 소켓 스토어에서 소켓과 roomId를 가져옴
@@ -437,9 +436,7 @@ const Drawing: React.FC = () => {
       const pointer = canvas.getPointer(event.e);
       isDrawing = true;
 
-      if (selectedTool === 'clear') {
-        setSelectedTool('clear'); // clear 후 자동으로 pencil 도구로 변경
-      } else if (selectedTool === 'pencil' || selectedTool === 'eraser') {
+      if (selectedTool === 'pencil' || selectedTool === 'eraser') {
         sendDrawingData('start', pointer.x, pointer.y, selectedTool);
       }
     });
@@ -628,61 +625,64 @@ const Drawing: React.FC = () => {
         {gameState?.items['ToxicCover']?.status && <ToxicEffect />}
         {gameState?.items['GrowingBomb']?.status && <BombEffect />}
 
-        {gameState?.gameStatus === 'drawing' ? (
-          ''
-        ) : (
-          <div
-            style={{
-              background: `${
-                gameState?.gameStatus === 'waiting' && imageLoaded
-                  ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
-                  : ''
-              }`,
-            }}
-            className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
-          >
-            <img
-              src={backgroundImage}
-              onLoad={onImageLoad}
-              className={`${comment === '' ? 'max-h-[80%]' : 'max-h-[60%]'} `}
-              draggable={false}
-              loading="lazy"
-              style={{ visibility: imageLoaded ? 'visible' : 'hidden' }}
-            />
-            {imageLoaded && (
-              <>
-                {gameState?.gameStatus === 'waiting' ? (
-                  <NamePlate
-                    title="winner"
-                    score={200}
-                    isDrawingActive
-                    isWinner
-                  />
-                ) : (
-                  <p className="text-center font-cherry text-secondary-default text-6xl">
-                    {comment}
-                  </p>
+        {gameState?.gameStatus === 'drawing'
+          ? ''
+          : gameState?.turn > 0 &&
+            gameState?.round > 0 && (
+              <div
+                style={{
+                  background: `${
+                    gameState?.gameStatus === 'waiting' && imageLoaded
+                      ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
+                      : ''
+                  }`,
+                }}
+                className="h-full flex flex-col justify-center items-center absolute top-0 left-0 right-0 m-auto z-20"
+              >
+                <img
+                  src={backgroundImage}
+                  onLoad={onImageLoad}
+                  className={`${
+                    comment === '' ? 'max-h-[80%]' : 'max-h-[60%]'
+                  } `}
+                  draggable={false}
+                  loading="lazy"
+                  style={{ visibility: imageLoaded ? 'visible' : 'hidden' }}
+                />
+                {imageLoaded && (
+                  <>
+                    {gameState?.gameStatus === 'waiting' ? (
+                      <NamePlate
+                        title="winner"
+                        score={200}
+                        isDrawingActive
+                        isWinner
+                      />
+                    ) : (
+                      <p className="text-center font-cherry text-secondary-default text-6xl">
+                        {comment}
+                      </p>
+                    )}
+                  </>
                 )}
-              </>
-            )}
 
-            {gameState?.gameStatus === 'choosing' &&
-            gameState?.currentDrawer === socket?.id ? (
-              <>
-                <p className="text-center font-cherry text-secondary-default text-6xl">
-                  {comment}
-                </p>
-                <div className="flex space-x-4 mt-4">
-                  {gameState?.selectedWords.map((word, index) => (
-                    <KeywordPlate key={index} title={word} isChoosing />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <></>
+                {gameState?.gameStatus === 'choosing' &&
+                gameState?.currentDrawer === socket?.id ? (
+                  <>
+                    <p className="text-center font-cherry text-secondary-default text-6xl">
+                      {comment}
+                    </p>
+                    <div className="flex space-x-4 mt-4">
+                      {gameState?.selectedWords.map((word, index) => (
+                        <KeywordPlate key={index} title={word} isChoosing />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </div>
             )}
-          </div>
-        )}
         <div
           className={`${
             isToolbar ? '' : '-translate-x-full -ml-[25px]'
