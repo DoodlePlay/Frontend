@@ -83,11 +83,3 @@ export const joinRoom = async (roomId: string): Promise<void> => {
     currentPlayers: increment(1),
   });
 };
-
-export const updateGameStatus = async (
-  roomId: string,
-  status: 'waiting' | 'playing'
-) => {
-  const roomRef = doc(db, 'GameRooms', roomId);
-  await updateDoc(roomRef, { gameStatus: status });
-};

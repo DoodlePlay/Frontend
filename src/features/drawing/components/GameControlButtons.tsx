@@ -1,22 +1,22 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
-import { updateGameStatus } from '../../lobby/api/gameRoomsApi';
 
-const GameControlButtons = () => {
+const GameControlButtons = ({ setGameStatusModalOpen }) => {
   const router = useRouter();
-  const { disconnectSocket, socket, roomId } = useSocketStore();
+  const { gameState, disconnectSocket, socket, roomId } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const onStartGame = async () => {
-    if (socket && roomId) {
+  const onStartGame = () => {
+    if (gameState?.order.length < 3) {
+      setGameStatusModalOpen(true);
+    } else if (socket && roomId) {
       socket.emit('startGame', roomId);
-      await updateGameStatus(roomId, 'playing');
     }
   };
 
@@ -34,16 +34,17 @@ const GameControlButtons = () => {
     setIsModalOpen(false); // 모달을 닫습니다.
   };
 
-  //TODO: 방장(host)만 게임이 진행되기 전에만 start 버튼 보이도록
-
   return (
     <div className="w-full flex gap-x-[30px]">
-      <Button
-        text="START"
-        color="primary"
-        onClick={onStartGame}
-        className="h-[70px]"
-      />
+      {gameState?.host === socket?.id &&
+        gameState?.gameStatus === 'waiting' && (
+          <Button
+            text="START"
+            color="primary"
+            onClick={onStartGame}
+            className="h-[70px]"
+          />
+        )}
       <Button
         text="EXIT"
         color="secondary"

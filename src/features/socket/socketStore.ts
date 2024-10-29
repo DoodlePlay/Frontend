@@ -11,12 +11,13 @@ interface Participant {
 
 interface GameState {
   host: string;
-  gameStatus: 'waiting' | 'choosing' | 'drawing';
+  gameStatus: 'waiting' | 'choosing' | 'drawing' | 'timeOver';
   currentDrawer: string | null;
   currentWord: string | null;
   totalWords: string[];
   selectedWords: string[];
   isWordSelected: boolean;
+  topic: string;
   selectionDeadline: number | null;
   maxRound: number;
   round: number;
