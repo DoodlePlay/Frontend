@@ -25,7 +25,6 @@ interface GameState {
   turnDeadline: number | null;
   correctAnswerCount: number;
   isItemsEnabled: boolean;
-  activeItem: string;
   items: Record<string, { user: string | null; status: boolean }>;
   order: string[];
   participants: Record<string, Participant>;
@@ -63,6 +62,7 @@ const useSocketStore = create<SocketStore>((set, get) => ({
     }
 
     socket.on('gameStateUpdate', (gameState: GameState) => {
+      console.log(gameState.round, gameState.turn);
       set({ gameState });
     });
 

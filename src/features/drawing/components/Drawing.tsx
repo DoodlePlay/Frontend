@@ -385,20 +385,16 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   }, [socket]);
 
   useEffect(() => {
-    if (gameState?.activeItem) {
-      const { activeItem } = gameState;
-
-      if (activeItem === 'laundryFlip') {
-        if (canvasRef.current) {
-          const canvas = canvasRef.current;
-          canvas.getObjects().forEach(obj => {
-            obj.set('flipY', !obj.flipY); // 현재 상태 반전
-          });
-          canvas.renderAll();
-        }
+    if (gameState?.items.laundryFlip.status) {
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        canvas.getObjects().forEach(obj => {
+          obj.set('flipY', !obj.flipY); // 현재 상태 반전
+        });
+        canvas.renderAll();
       }
     }
-  }, [gameState?.activeItem]);
+  }, [gameState?.items.laundryFlip.status]);
 
   // socket으로 clear 전송
   useEffect(() => {
