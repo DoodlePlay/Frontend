@@ -39,6 +39,7 @@ const ItemBox: React.FC = () => {
 
   const onHandleItemClick = (itemId: string) => {
     if (
+      gameState.gameStatus === 'drawing' &&
       !itemUsageState[itemId as keyof typeof itemUsageState] &&
       !gameState.items[itemId as keyof typeof itemUsageState].status &&
       !isAnyItemUsedThisRound
@@ -70,16 +71,19 @@ const ItemBox: React.FC = () => {
           <div
             key={item.id}
             className="relative max-w-[70px] max-h-[70px] bg-white border-[3px] border-black rounded-[5px] z-30 cursor-pointer"
-            onMouseEnter={() => setHoveredItem(item.id)}
-            onMouseLeave={() => setHoveredItem(null)}
-            onClick={() => onHandleItemClick(item.id)}
           >
-            <img
-              src={item.image}
-              alt={item.id}
-              className="w-full h-full object-contain"
-              draggable={false}
-            />
+            <div
+              onMouseEnter={() => setHoveredItem(item.id)}
+              onMouseLeave={() => setHoveredItem(null)}
+              onClick={() => onHandleItemClick(item.id)}
+            >
+              <img
+                src={item.image}
+                alt={item.id}
+                className="w-full h-full object-contain"
+                draggable={false}
+              />
+            </div>
 
             {(gameState.items[item.id as keyof typeof itemUsageState].status ||
               isAnyItemUsedThisRound) && (
