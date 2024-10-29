@@ -379,6 +379,23 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     };
   }, [updateGameState]);
 
+  // 소켓을 통해 서버에서 clearCanvas 이벤트를 수신하고 캔버스를 초기화
+  useEffect(() => {
+    if (socket) {
+      socket.on('clearCanvas', () => {
+        if (canvasRef.current) {
+          canvasRef.current.clear(); // 캔버스 초기화
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('clearCanvas');
+      }
+    };
+  }, [socket]);
+
   useEffect(() => {
     if (gameState?.activeItem) {
       const { activeItem } = gameState;
