@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface TimerBarProps {
   duration: number;
@@ -45,10 +46,16 @@ const TimerBar: React.FC<TimerBarProps> = ({
   return (
     <div className="flex items-center gap-x-[15px]">
       <div className="ml-[15px]">
-        <img
+        <motion.img
           src="/images/drawing/hourglass.svg"
           alt="hourglass"
           draggable={false}
+          animate={{ rotate: 180 }}
+          transition={{
+            repeat: Infinity,
+            ease: 'easeInOut',
+            duration: 2,
+          }}
           style={{
             width: '30px',
             height: '30px',
