@@ -623,7 +623,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
         </h1>
         {/* 정답 단어 KeywordPlate */}
         {gameState?.currentDrawer === socket?.id &&
-          gameState?.currentWord && // TODO : 그림 그리는 사람만 보여지기
+          gameState?.currentWord &&
           gameState?.gameStatus === 'drawing' && (
             <div className="max-w-[40%] absolute top-[40px] left-0 right-0 m-auto text-center z-[20] opacity-[0.9]">
               <KeywordPlate title={gameState?.currentWord} isChoosing={false} />
@@ -708,7 +708,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
             } flex justify-between absolute top-0 left-0 z-10 duration-700`}
           >
             {gameState?.gameStatus === 'drawing' &&
-              gameState?.currentDrawer === socket?.id && ( // TODO : 그림 그리는 사람만 보여지기
+              gameState?.currentDrawer === socket?.id && (
                 <>
                   <Toolbar
                     selectedTool={selectedTool}
