@@ -5,7 +5,7 @@ import * as fabric from 'fabric';
 
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
-import ToxicEffect from './ToxicEffect';
+import ToxicEffect, { Position } from './ToxicEffect';
 import BombEffect from './BombEffect';
 import NamePlate from '../../../components/NamePlate/NamePlate';
 import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
@@ -30,6 +30,9 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
+  const [toxicEffectPositions, setToxicEffectPositions] = useState<Position[]>(
+    []
+  );
 
   const { socket, roomId, gameState } = useSocketStore();
   // 현재 사용자가 그림을 그릴 수 있는 조건
@@ -396,6 +399,18 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     }
   }, [gameState?.items.laundryFlip.status]);
 
+  useEffect(() => {
+    if (socket) {
+      socket.on('toxicEffectPositions', (positions: Position[]) => {
+        setToxicEffectPositions(positions);
+      });
+
+      return () => {
+        socket.off('toxicEffectPositions');
+      };
+    }
+  }, [socket]);
+
   // socket으로 clear 전송
   useEffect(() => {
     if (selectedTool === 'clear') {
@@ -625,7 +640,9 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
             className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
           />
 
-          {gameState?.items['toxicCover']?.status && <ToxicEffect />}
+          {gameState?.items['toxicCover']?.status && (
+            <ToxicEffect toxicEffectPositions={toxicEffectPositions} />
+          )}
           {gameState?.items['growingBomb']?.status && <BombEffect />}
 
           {gameState?.gameStatus === 'drawing'
