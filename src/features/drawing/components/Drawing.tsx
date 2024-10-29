@@ -31,7 +31,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
 
-  const { socket, roomId, gameState, updateGameState } = useSocketStore();
+  const { socket, roomId, gameState } = useSocketStore();
   // 현재 사용자가 그림을 그릴 수 있는 조건
   const canDraw =
     gameState?.currentDrawer === socket?.id &&
@@ -366,18 +366,6 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   const onImageLoad = () => {
     setImageLoaded(true);
   };
-
-  useEffect(() => {
-    if (socket) {
-      socket.on('itemUsedUpdate', updatedGameState => {
-        updateGameState(updatedGameState);
-      });
-    }
-
-    return () => {
-      if (socket) socket.off('itemUsedUpdate');
-    };
-  }, [updateGameState]);
 
   // 소켓을 통해 서버에서 clearCanvas 이벤트를 수신하고 캔버스를 초기화
   useEffect(() => {
