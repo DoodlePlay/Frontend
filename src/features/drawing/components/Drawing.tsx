@@ -388,7 +388,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     if (gameState?.activeItem) {
       const { activeItem } = gameState;
 
-      if (activeItem === 'LaundryFlip') {
+      if (activeItem === 'laundryFlip') {
         if (canvasRef.current) {
           const canvas = canvasRef.current;
           canvas.getObjects().forEach(obj => {
@@ -629,8 +629,8 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
             className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
           />
 
-          {gameState?.items['ToxicCover']?.status && <ToxicEffect />}
-          {gameState?.items['GrowingBomb']?.status && <BombEffect />}
+          {gameState?.items['toxicCover']?.status && <ToxicEffect />}
+          {gameState?.items['growingBomb']?.status && <BombEffect />}
 
           {gameState?.gameStatus === 'drawing'
             ? ''
@@ -755,7 +755,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
               <TimeBar
                 duration={90}
                 onComplete={() => console.log('Time Over!')}
-                isTimeCut={gameState?.items['TimeCutter']?.status}
+                isTimeCut={gameState?.items['timeCutter']?.status}
               />
             )}
             {gameState?.gameStatus === 'choosing' && (

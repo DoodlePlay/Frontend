@@ -6,27 +6,27 @@ import useSocketStore from '../../socket/socketStore';
 
 const items = [
   {
-    id: 'ToxicCover',
+    id: 'toxicCover',
     image: '/images/drawing/items/toxicCover.png',
     description: '군데군데 독극물을 뿌린다.',
   },
   {
-    id: 'GrowingBomb',
+    id: 'growingBomb',
     image: '/images/drawing/items/growingBomb.png',
     description: '5초간 폭발이 발생한다.',
   },
   {
-    id: 'PhantomReverse',
+    id: 'phantomReverse',
     image: '/images/drawing/items/phantomReverse.png',
     description: '글자를 거꾸로 입력한다.',
   },
   {
-    id: 'LaundryFlip',
+    id: 'laundryFlip',
     image: '/images/drawing/items/laundryFlip.png',
     description: '그림을 뒤집는다.',
   },
   {
-    id: 'TimeCutter',
+    id: 'timeCutter',
     image: '/images/drawing/items/timeCutter.png',
     description: '시간의 반을 먹어치운다.',
   },
