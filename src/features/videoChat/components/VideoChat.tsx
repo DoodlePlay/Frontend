@@ -5,23 +5,12 @@ import PlayingVideoChat from './PlayingVideoChat';
 import WaitingVideoChat from './WaitingVideoChat';
 
 const VideoChat = () => {
-  const { socket, gameState } = useSocketStore();
+  const { gameState } = useSocketStore();
   const [isPlaying, setIsPlaying] = useState(false);
+
   useEffect(() => {
-    if (socket) {
-      socket.on('gameStateUpdate', () => {
-        setIsPlaying(true);
-      });
-      return () => {
-        socket.off('gameStateUpdate');
-      };
-    }
-  }, [socket]);
-  useEffect(() => {
-    if (gameState.turn === 0) {
-      setIsPlaying(false);
-    } else {
-      setIsPlaying(true);
+    if (gameState && typeof gameState.turn === 'number') {
+      setIsPlaying(gameState.turn !== 0);
     }
   }, [gameState]);
 
