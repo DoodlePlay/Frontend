@@ -30,6 +30,10 @@ const ChatBox: React.FC = () => {
         message: inputValue,
       };
 
+      if (gameState?.items.phantomReverse.status) {
+        newMessage.message = newMessage.message.split('').reverse().join('');
+      }
+
       socket.emit('sendMessage', roomId, newMessage);
 
       setInputValue('');
@@ -42,6 +46,10 @@ const ChatBox: React.FC = () => {
         nickname,
         message: inputValue,
       };
+
+      if (gameState?.items.phantomReverse.status) {
+        newMessage.message = newMessage.message.split('').reverse().join('');
+      }
 
       socket.emit('sendMessage', roomId, newMessage);
 
@@ -63,10 +71,6 @@ const ChatBox: React.FC = () => {
   useEffect(() => {
     if (socket) {
       socket.on('newMessage', (message: ChatMessage) => {
-        if (gameState?.items.phantomReverse.status) {
-          message.message = message.message.split('').reverse().join('');
-        }
-
         setMessages(prevMessages => [...prevMessages, message]);
       });
 
