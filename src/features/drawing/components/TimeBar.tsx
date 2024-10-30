@@ -1,54 +1,38 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 interface TimerBarProps {
-  duration: number;
-  onComplete: () => void;
+  deadline: number;
   isTimeCut: boolean;
 }
 
-const MIN_DURATION = 1;
-
-const TimerBar: React.FC<TimerBarProps> = ({
-  duration,
-  onComplete,
-  isTimeCut,
-}) => {
-  const [remainingDuration, setRemainingDuration] = useState(duration);
-  const [isCutActive, setIsCutActive] = useState(isTimeCut);
+const TimerBar: React.FC<TimerBarProps> = ({ deadline, isTimeCut }) => {
+  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
-    // Time-Cutter 사용 시
-    if (isTimeCut && !isCutActive) {
-      const newDuration = Math.max(remainingDuration / 2, MIN_DURATION);
-      setRemainingDuration(newDuration);
-      setIsCutActive(true);
+    const calculateDuration = () => {
+      const currentTime = Date.now();
+      const remainingTime = Math.max(deadline - currentTime, 0);
 
-      const timer = setTimeout(() => {
-        onComplete();
-      }, newDuration * 1000);
+      setDuration(remainingTime / 1000);
+    };
 
-      return () => clearTimeout(timer);
-    }
-
-    // Time-Cutter가 트리거되지 않은 기본 타이머
-    const timer = setTimeout(() => {
-      onComplete();
-    }, remainingDuration * 1000);
-
-    return () => clearTimeout(timer);
-  }, [isTimeCut, onComplete, remainingDuration]);
-
-  // TODO
-  // TimeBar를 현재 시간 부터 5분으로 아이템을 사용하면 다른 부분에서 시간이 계속 바뀌면서 다른 버튼에도 영향을 가는 것으로 추측
-  // 현재 시간이 아닌 게임이 진행 시작 시간을 기준으로 작업하는게 좋아 보임.
+    calculateDuration();
+  }, [deadline]);
 
   return (
     <div className="flex items-center gap-x-[15px]">
       <div className="ml-[15px]">
-        <img
+        <motion.img
           src="/images/drawing/hourglass.svg"
           alt="hourglass"
           draggable={false}
+          animate={{ rotate: 180 }}
+          transition={{
+            repeat: Infinity,
+            ease: 'easeInOut',
+            duration: 2,
+          }}
           style={{
             width: '30px',
             height: '30px',
@@ -56,26 +40,16 @@ const TimerBar: React.FC<TimerBarProps> = ({
         />
       </div>
       <div className="w-full bg-disabled h-3 rounded-full overflow-hidden relative">
-        <div
+        <motion.div
+          key={duration}
           className={`absolute top-0 left-0 h-full ${
             isTimeCut ? 'bg-fuschia' : 'bg-secondary-default'
           }`}
-          style={{
-            width: '100%',
-            animation: `shrink ${remainingDuration}s linear forwards`,
-          }}
+          initial={{ width: '100%' }}
+          animate={{ width: '0%' }}
+          transition={{ duration, ease: 'linear' }}
         />
       </div>
-      <style jsx>{`
-        @keyframes shrink {
-          from {
-            width: 100%;
-          }
-          to {
-            width: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 };

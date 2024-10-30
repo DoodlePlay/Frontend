@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';

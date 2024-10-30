@@ -17,7 +17,7 @@ interface ChatMessage {
 const ChatBox: React.FC = () => {
   const router = useRouter();
   const { nickname } = useUserInfoStore();
-  const { socket, roomId, disconnectSocket } = useSocketStore();
+  const { socket, roomId, disconnectSocket, gameState } = useSocketStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
@@ -29,6 +29,10 @@ const ChatBox: React.FC = () => {
         nickname,
         message: inputValue,
       };
+
+      if (gameState?.items.phantomReverse.status) {
+        newMessage.message = newMessage.message.split('').reverse().join('');
+      }
 
       socket.emit('sendMessage', roomId, newMessage);
 
@@ -42,6 +46,10 @@ const ChatBox: React.FC = () => {
         nickname,
         message: inputValue,
       };
+
+      if (gameState?.items.phantomReverse.status) {
+        newMessage.message = newMessage.message.split('').reverse().join('');
+      }
 
       socket.emit('sendMessage', roomId, newMessage);
 
@@ -96,7 +104,7 @@ const ChatBox: React.FC = () => {
         socket.off('userLeft');
       }
     };
-  }, [socket]);
+  }, [socket, gameState]);
 
   const handleDisconnect = () => {
     disconnectSocket();

@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
 interface ItemUsageState {
-  ToxicCover: number | null;
-  GrowingBomb: number | null;
-  PhantomReverse: number | null;
-  LaundryFlip: number | null;
-  TimeCutter: number | null;
+  toxicCover: number | null;
+  growingBomb: number | null;
+  phantomReverse: number | null;
+  laundryFlip: number | null;
+  timeCutter: number | null;
 }
 
 interface ItemStore {
@@ -16,11 +16,11 @@ interface ItemStore {
 
 const useItemStore = create<ItemStore>(set => ({
   itemUsageState: {
-    ToxicCover: null,
-    GrowingBomb: null,
-    PhantomReverse: null,
-    LaundryFlip: null,
-    TimeCutter: null,
+    toxicCover: null,
+    growingBomb: null,
+    phantomReverse: null,
+    laundryFlip: null,
+    timeCutter: null,
   },
   setItemUsed: (itemId, round) =>
     set(state => ({
@@ -32,11 +32,11 @@ const useItemStore = create<ItemStore>(set => ({
   resetItemUsageState: () =>
     set({
       itemUsageState: {
-        ToxicCover: null,
-        GrowingBomb: null,
-        PhantomReverse: null,
-        LaundryFlip: null,
-        TimeCutter: null,
+        toxicCover: null,
+        growingBomb: null,
+        phantomReverse: null,
+        laundryFlip: null,
+        timeCutter: null,
       },
     }),
 }));
