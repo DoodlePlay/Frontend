@@ -50,7 +50,7 @@ const PlayingVideoChat = () => {
     setCorrectIds(prevIds => [...prevIds, userId]);
     setTimeout(() => {
       setCorrectIds(prevIds => prevIds.filter(id => id !== userId));
-    }, 2000);
+    }, 1000);
   };
   const handleMargin = length => {
     return Math.min(100 - length * 0.55, 100);
@@ -69,10 +69,12 @@ const PlayingVideoChat = () => {
     });
 
     return () => {
-      socket.off('playScoreAnimation', userId => {
+      socket.off('playScoreAnimation', (userId, score) => {
+        setScore(score);
         onPlusScore(userId);
       });
-      socket.off('playDrawerScoreAnimation', userId => {
+      socket.off('playDrawerScoreAnimation', (userId, score) => {
+        setDrawerScore(score);
         onPlusScore(userId);
       });
     };
@@ -169,11 +171,7 @@ const PlayingVideoChat = () => {
                   : ''
               }`}
             >
-              {index === 0
-                ? drawerScore > 0
-                  ? `+ ${drawerScore}`
-                  : drawerScore
-                : `+ ${score}`}
+              {index === 0 ? `+ ${drawerScore}` : `+ ${score}`}
             </div>
           </div>
         ) : null
