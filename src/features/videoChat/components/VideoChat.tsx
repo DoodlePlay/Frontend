@@ -9,9 +9,9 @@ const VideoChat = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    if (gameState && typeof gameState.turn === 'number') {
-      setIsPlaying(gameState.turn !== 0);
-    }
+    if (gameState && gameState.gameStatus !== 'waiting') {
+      setIsPlaying(true);
+    } else setIsPlaying(false);
   }, [gameState]);
 
   return (
