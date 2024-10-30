@@ -8,6 +8,7 @@ interface ChatBubbleProps {
   isPrivateCorrectMessage?: boolean;
   isCorrectMessage?: boolean;
   isRoundMessage?: boolean;
+  isAnnounceAnswer?: boolean;
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
@@ -18,6 +19,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   isPrivateCorrectMessage = false,
   isCorrectMessage = false,
   isRoundMessage = false,
+  isAnnounceAnswer = false,
 }) => {
   if (isSystemMessage) {
     return (
@@ -36,6 +38,13 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   if (isCorrectMessage) {
     return (
       <div className="text-center text-sm text-black my-[2px]">{message}</div>
+    );
+  }
+  if (isAnnounceAnswer) {
+    return (
+      <div className="text-center text-base text-fuschia my-[2px]">
+        {message}
+      </div>
     );
   }
 

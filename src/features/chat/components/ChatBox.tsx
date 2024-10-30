@@ -15,6 +15,7 @@ interface ChatMessage {
   isPrivateCorrectMessage?: boolean;
   isCorrectMessage?: boolean;
   isRoundMessage?: boolean;
+  isAnnounceAnswer?: boolean;
 }
 
 const ChatBox: React.FC = () => {
@@ -97,8 +98,7 @@ const ChatBox: React.FC = () => {
           ...prevMessages,
           {
             nickname: 'System',
-            // message: `━━━━━━━━━━━━⭑⬩⬥✦✧ ${round} 라운드 ✧✦⬥⬩⭑━━━━━━━━━━━━`,
-            message: `━━━━━━━━━━━━━━━━━━ ⬩ ${round} 라운드 ⬩ ━━━━━━━━━━━━━━━━━━`,
+            message: `━━━━━━━━━━━━━━━━━━ ${round} 라운드 ━━━━━━━━━━━━━━━━━━`,
             isRoundMessage: true,
           },
         ]);
@@ -121,8 +121,10 @@ const ChatBox: React.FC = () => {
       socket.on('adaptiveScore', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);
       });
-
       socket.on('correctAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('announceAnswer', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);
       });
       socket.on('cheating', (message: ChatMessage) => {
@@ -141,6 +143,7 @@ const ChatBox: React.FC = () => {
         socket.off('adaptiveScore');
         socket.off('closeAnswer');
         socket.off('cheating');
+        socket.off('announceAnswer');
       }
     };
   }, [socket]);
@@ -178,6 +181,7 @@ const ChatBox: React.FC = () => {
             isPrivateCorrectMessage={msg.isPrivateCorrectMessage}
             isCorrectMessage={msg.isCorrectMessage}
             isRoundMessage={msg.isRoundMessage}
+            isAnnounceAnswer={msg.isAnnounceAnswer}
           />
         ))}
       </div>
