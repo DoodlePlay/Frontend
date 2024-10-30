@@ -5,7 +5,7 @@ import * as fabric from 'fabric';
 
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
-import ToxicEffect from './ToxicEffect';
+import ToxicEffect, { Position } from './ToxicEffect';
 import BombEffect from './BombEffect';
 import NamePlate from '../../../components/NamePlate/NamePlate';
 import KeywordPlate from '../../../components/KeywordPlate/KeywordPlate';
@@ -13,6 +13,7 @@ import Settings from '../../../components/Settings/Settings';
 import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
 import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
+import useItemStore from '../store/useItemStore';
 
 const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   isGameStatusModalOpen,
@@ -33,8 +34,13 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   const [isCorrect, setIsCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [winner, setWinner] = useState('');
+  const [toxicEffectPositions, setToxicEffectPositions] = useState<Position[]>(
+    []
+  );
 
-  const { socket, roomId, gameState, updateGameState } = useSocketStore();
+  const { socket, roomId, gameState } = useSocketStore();
+  const { resetItemUsageState } = useItemStore();
+
   // 현재 사용자가 그림을 그릴 수 있는 조건
   const canDraw =
     gameState?.currentDrawer === socket?.id &&
@@ -349,6 +355,8 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   };
 
   useEffect(() => {
+    if (gameState?.gameStatus === 'waiting') resetItemUsageState();
+
     updateBackgroundImage();
   }, [gameState?.gameStatus]);
 
@@ -384,18 +392,6 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     setImageLoaded(true);
   };
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('itemUsedUpdate', updatedGameState => {
-        updateGameState(updatedGameState);
-      });
-    }
-
-    return () => {
-      if (socket) socket.off('itemUsedUpdate');
-    };
-  }, [updateGameState]);
-
   // 소켓을 통해 서버에서 clearCanvas 이벤트를 수신하고 캔버스를 초기화
   useEffect(() => {
     if (socket) {
@@ -414,20 +410,28 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   }, [socket]);
 
   useEffect(() => {
-    if (gameState?.activeItem) {
-      const { activeItem } = gameState;
-
-      if (activeItem === 'LaundryFlip') {
-        if (canvasRef.current) {
-          const canvas = canvasRef.current;
-          canvas.getObjects().forEach(obj => {
-            obj.set('flipY', !obj.flipY); // 현재 상태 반전
-          });
-          canvas.renderAll();
-        }
+    if (gameState?.items.laundryFlip.status) {
+      if (canvasRef.current) {
+        const canvas = canvasRef.current;
+        canvas.getObjects().forEach(obj => {
+          obj.set('flipY', !obj.flipY); // 현재 상태 반전
+        });
+        canvas.renderAll();
       }
     }
-  }, [gameState?.activeItem]);
+  }, [gameState?.items.laundryFlip.status]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('toxicEffectPositions', (positions: Position[]) => {
+        setToxicEffectPositions(positions);
+      });
+
+      return () => {
+        socket.off('toxicEffectPositions');
+      };
+    }
+  }, [socket]);
 
   // socket으로 clear 전송
   useEffect(() => {
@@ -676,17 +680,10 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
             className={`rounded-[10px] absolute w-full h-full left-0 top-0 z-10`} // ${isFlipped ? 'transform scale-y-[-1]' : ''}
           />
 
-          {gameState?.items['ToxicCover']?.status && <ToxicEffect />}
-          {gameState?.items['GrowingBomb']?.status && <BombEffect />}
-          {isCorrect && (
-            <div className="h-full bg-white flex justify-center items-center absolute top-0 left-0 right-0 m-auto z-20">
-              <img
-                className="max-h-[90%]"
-                src="/images/drawing/success.png"
-                alt="success"
-              />
-            </div>
+          {gameState?.items['toxicCover']?.status && (
+            <ToxicEffect toxicEffectPositions={toxicEffectPositions} />
           )}
+          {gameState?.items['growingBomb']?.status && <BombEffect />}
 
           {gameState?.gameStatus === 'drawing'
             ? ''
@@ -809,15 +806,13 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
           <div className="w-full max-w-[740px] absolute left-0 right-0 bottom-[20px] m-auto z-20">
             {gameState?.gameStatus === 'drawing' && (
               <TimeBar
-                duration={90}
-                onComplete={() => console.log('Time Over!')}
-                isTimeCut={gameState?.items['TimeCutter']?.status}
+                deadline={gameState?.turnDeadline}
+                isTimeCut={gameState?.items['timeCutter']?.status}
               />
             )}
             {gameState?.gameStatus === 'choosing' && (
               <TimeBar
-                duration={5}
-                onComplete={() => console.log('Time Over!')}
+                deadline={gameState?.selectionDeadline}
                 isTimeCut={false}
               />
             )}

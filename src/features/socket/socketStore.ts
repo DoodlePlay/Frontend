@@ -25,7 +25,6 @@ interface GameState {
   turnDeadline: number | null;
   correctAnswerCount: number;
   isItemsEnabled: boolean;
-  activeItem: string;
   items: Record<string, { user: string | null; status: boolean }>;
   order: string[];
   participants: Record<string, Participant>;
@@ -42,7 +41,6 @@ interface SocketStore {
     roomInfo?: { rounds: number; topic: string; isItemsEnabled: boolean }
   ) => void;
   disconnectSocket: () => void;
-  updateGameState: (updatedGameState: GameState) => void;
 }
 
 const useSocketStore = create<SocketStore>((set, get) => ({
@@ -78,10 +76,6 @@ const useSocketStore = create<SocketStore>((set, get) => ({
       socket.disconnect();
       set({ socket: null, roomId: null, gameState: null });
     }
-  },
-
-  updateGameState: updatedGameState => {
-    set({ gameState: updatedGameState });
   },
 }));
 
