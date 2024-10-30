@@ -30,6 +30,9 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [score, setScore] = useState(0);
+  const [winner, setWinner] = useState('');
 
   const { socket, roomId, gameState, updateGameState } = useSocketStore();
   // 현재 사용자가 그림을 그릴 수 있는 조건
@@ -349,6 +352,20 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     updateBackgroundImage();
   }, [gameState?.gameStatus]);
 
+  //가장 점수가 높은 사람을 반환시키는 함수
+  const returnWinner = (participants: Object) => {
+    return Object.values(participants).reduce((highest, participant) => {
+      return !highest || participant.score > highest.score
+        ? participant
+        : highest;
+    }, null);
+  };
+  useEffect(() => {
+    if (!gameState) return;
+    setWinner(returnWinner(gameState.participants).nickname);
+    setScore(returnWinner(gameState.participants).score);
+  }, [gameState]);
+
   // 게임 상태에 따라 화면에 보여줄 메시지 업데이트
   useEffect(() => {
     if (
@@ -614,9 +631,9 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   useEffect(() => {
     if (socket) {
       const loadSuccessImage = () => {
-        setBackgroundImage('/images/drawing/success.png');
+        setIsCorrect(true);
         setTimeout(() => {
-          setBackgroundImage('');
+          setIsCorrect(false);
         }, 2000);
       };
 
@@ -661,6 +678,15 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
 
           {gameState?.items['ToxicCover']?.status && <ToxicEffect />}
           {gameState?.items['GrowingBomb']?.status && <BombEffect />}
+          {isCorrect && (
+            <div className="h-full bg-white flex justify-center items-center absolute top-0 left-0 right-0 m-auto z-20">
+              <img
+                className="max-h-[90%]"
+                src="/images/drawing/success.png"
+                alt="success"
+              />
+            </div>
+          )}
 
           {gameState?.gameStatus === 'drawing'
             ? ''
@@ -690,8 +716,8 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
                     <>
                       {gameState?.gameStatus === 'waiting' ? (
                         <NamePlate
-                          title="winner"
-                          score={200}
+                          title={winner}
+                          score={score}
                           isDrawingActive
                           isWinner
                         />
