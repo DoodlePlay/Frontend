@@ -8,7 +8,7 @@ import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
 import RefreshButton from './RefreshButton';
 import SearchBar from './SearchBar';
-import GameStatusModal from './GameStatusModal';
+import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 import RoomCard from './RoomCard';
 import { Room, getRoomById, getRooms, joinRoom } from '../api/gameRoomsApi';
 import useUserInfoStore from '../../profile/store/userInfoStore';
