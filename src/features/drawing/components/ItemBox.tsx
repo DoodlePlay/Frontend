@@ -49,7 +49,6 @@ const ItemBox: React.FC = () => {
       if (socket) socket.emit('itemUsed', roomId, itemId);
     }
   };
-  // Todo: 총 라운드가 끝나면 아이템 상태 초기화
 
   const isAnyItemUsedThisRound = Object.values(itemUsageState).some(
     item => item !== null && item === gameState.round
@@ -86,7 +85,9 @@ const ItemBox: React.FC = () => {
             </div>
 
             {(gameState.items[item.id as keyof typeof itemUsageState].status ||
-              isAnyItemUsedThisRound) && (
+              isAnyItemUsedThisRound ||
+              itemUsageState[item.id as keyof typeof itemUsageState] !==
+                null) && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/60">
                 {itemUsageState[item.id as keyof typeof itemUsageState] !==
                   null && (
