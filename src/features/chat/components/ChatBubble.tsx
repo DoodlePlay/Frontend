@@ -5,7 +5,9 @@ interface ChatBubbleProps {
   message: string;
   isCurrentUser: boolean;
   isSystemMessage?: boolean;
-  isScoreMessage?: boolean;
+  isPrivateCorrectMessage?: boolean;
+  isCorrectMessage?: boolean;
+  isRoundMessage?: boolean;
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
@@ -13,7 +15,9 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   nickname,
   isCurrentUser,
   isSystemMessage = false,
-  isScoreMessage = false,
+  isPrivateCorrectMessage = false,
+  isCorrectMessage = false,
+  isRoundMessage = false,
 }) => {
   if (isSystemMessage) {
     return (
@@ -22,15 +26,27 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
       </div>
     );
   }
+  if (isRoundMessage) {
+    return (
+      <div className="text-center text-sm text-bold text-black my-2">
+        {message}
+      </div>
+    );
+  }
+  if (isCorrectMessage) {
+    return (
+      <div className="text-center text-sm text-black my-[2px]">{message}</div>
+    );
+  }
 
-  if (isScoreMessage) {
+  if (isPrivateCorrectMessage) {
     return (
       <div
         className={`flex items-start ${
           isCurrentUser ? 'flex-row-reverse' : ''
         }`}
       >
-        <div className="text-red-600 text-sm font-bold">{message}</div>
+        <div className="text-fuschia text-sm font-bold">{message}</div>
       </div>
     );
   }

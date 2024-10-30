@@ -12,7 +12,9 @@ interface ChatMessage {
   message: string;
   socketId?: string;
   isSystemMessage?: boolean;
-  isScoreMessage?: boolean;
+  isPrivateCorrectMessage?: boolean;
+  isCorrectMessage?: boolean;
+  isRoundMessage?: boolean;
 }
 
 const ChatBox: React.FC = () => {
@@ -95,27 +97,35 @@ const ChatBox: React.FC = () => {
           ...prevMessages,
           {
             nickname: 'System',
-            message: `━━━━━━━━━━◈━━━━━⭑ ${round} 라운드 ⭑━━━━━◈━━━━━━━━━━`,
-            isSystemMessage: true,
+            // message: `━━━━━━━━━━━━⭑⬩⬥✦✧ ${round} 라운드 ✧✦⬥⬩⭑━━━━━━━━━━━━`,
+            message: `━━━━━━━━━━━━━━━━━━ ⬩ ${round} 라운드 ⬩ ━━━━━━━━━━━━━━━━━━`,
+            isRoundMessage: true,
           },
         ]);
       });
 
-      socket.on('privateMessage', (currentWord, adaptiveScore) => {
+      socket.on('privateMessage', currentWord => {
         setMessages(prevMessages => [
           ...prevMessages,
           {
             nickname,
-            message: `🏆${currentWord}🏆`,
+            message: `✔️  ${currentWord}`,
             socketId: socket.id, //isCurrentUser를 위한 socketId 비교
           },
         ]);
       });
 
-      socket.on('correctAnswer', (message: ChatMessage) => {
+      socket.on('closeAnswer', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);
       });
       socket.on('adaptiveScore', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+
+      socket.on('correctAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('cheating', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);
       });
     }
@@ -129,6 +139,8 @@ const ChatBox: React.FC = () => {
         socket.off('roundProcess');
         socket.off('correctAnswer');
         socket.off('adaptiveScore');
+        socket.off('closeAnswer');
+        socket.off('cheating');
       }
     };
   }, [socket]);
@@ -163,7 +175,9 @@ const ChatBox: React.FC = () => {
             message={msg.message}
             isCurrentUser={msg.socketId === socket?.id}
             isSystemMessage={msg.isSystemMessage}
-            isScoreMessage={msg.isScoreMessage}
+            isPrivateCorrectMessage={msg.isPrivateCorrectMessage}
+            isCorrectMessage={msg.isCorrectMessage}
+            isRoundMessage={msg.isRoundMessage}
           />
         ))}
       </div>

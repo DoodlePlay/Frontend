@@ -585,6 +585,24 @@ const Drawing: React.FC = () => {
     gameState?.gameStatus,
   ]); // TODO: 상태 정의
 
+  //정답을 맞추면 맞춘 사람에게만 이미지 2초간 보여주기
+  useEffect(() => {
+    if (socket) {
+      const loadSuccessImage = () => {
+        setBackgroundImage('/images/drawing/success.png');
+        setTimeout(() => {
+          setBackgroundImage('');
+        }, 2000);
+      };
+
+      socket.on('privateMessage', loadSuccessImage);
+
+      return () => {
+        socket.off('privateMessage', loadSuccessImage);
+      };
+    }
+  }, [socket]);
+
   return (
     <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
       <h1 className="absolute left-0 right-0 top-0 -translate-y-1/2 m-auto z-[39] max-w-[50%]">
