@@ -318,7 +318,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
       '/images/drawing/breakTime.png',
       '/images/drawing/timeOver.png',
       '/images/drawing/success.png',
-      '/images/drawing/waiting.png',
+      '/images/drawing/gameOver.png',
     ];
     images.forEach(src => {
       const img = new Image();
@@ -335,8 +335,8 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     let imgPath = '';
 
     switch (gameState?.gameStatus) {
-      case 'waiting':
-        imgPath = '/images/drawing/waiting.png';
+      case 'gameOver':
+        imgPath = '/images/drawing/gameOver.png';
         break;
       case 'timeOver':
         imgPath = '/images/drawing/timeOver.png';
@@ -355,7 +355,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   };
 
   useEffect(() => {
-    if (gameState?.gameStatus === 'waiting') resetItemUsageState();
+    if (gameState?.gameStatus === 'gameOver') resetItemUsageState();
 
     updateBackgroundImage();
   }, [gameState?.gameStatus]);
@@ -687,12 +687,13 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
 
           {gameState?.gameStatus === 'drawing'
             ? ''
-            : gameState?.turn > 0 &&
+            : gameState?.gameStatus !== 'waiting' &&
+              gameState?.turn > 0 &&
               gameState?.round > 0 && (
                 <div
                   style={{
                     background: `${
-                      gameState?.gameStatus === 'waiting' && imageLoaded
+                      gameState?.gameStatus === 'gameOver' && imageLoaded
                         ? 'linear-gradient(180deg, rgba(34,139,34,1) 0%, rgba(187,230,187,1) 30%, rgba(220,215,96,1) 60%, rgba(255,199,0,1) 100%)'
                         : ''
                     }`,
@@ -711,7 +712,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
                   />
                   {imageLoaded && (
                     <>
-                      {gameState?.gameStatus === 'waiting' ? (
+                      {gameState?.gameStatus === 'gameOver' ? (
                         <NamePlate
                           title={winner}
                           score={score}

@@ -11,7 +11,7 @@ interface Participant {
 
 interface GameState {
   host: string;
-  gameStatus: 'waiting' | 'choosing' | 'drawing' | 'timeOver';
+  gameStatus: 'waiting' | 'choosing' | 'drawing' | 'timeOver' | 'gameOver';
   currentDrawer: string | null;
   currentWord: string | null;
   totalWords: string[];
