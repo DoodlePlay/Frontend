@@ -31,6 +31,9 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
 
   const [imageLoaded, setImageLoaded] = useState(false); // 이미지 로딩 상태 추가
   const [backgroundImage, setBackgroundImage] = useState(''); // 배경 이미지 경로 상태
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [score, setScore] = useState(0);
+  const [winner, setWinner] = useState('');
   const [toxicEffectPositions, setToxicEffectPositions] = useState<Position[]>(
     []
   );
@@ -357,6 +360,20 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     updateBackgroundImage();
   }, [gameState?.gameStatus]);
 
+  //가장 점수가 높은 사람을 반환시키는 함수
+  const returnWinner = (participants: Object) => {
+    return Object.values(participants).reduce((highest, participant) => {
+      return !highest || participant.score > highest.score
+        ? participant
+        : highest;
+    }, null);
+  };
+  useEffect(() => {
+    if (!gameState) return;
+    setWinner(returnWinner(gameState.participants).nickname);
+    setScore(returnWinner(gameState.participants).score);
+  }, [gameState]);
+
   // 게임 상태에 따라 화면에 보여줄 메시지 업데이트
   useEffect(() => {
     if (
@@ -614,6 +631,24 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     gameState?.gameStatus,
   ]);
 
+  //정답을 맞추면 맞춘 사람에게만 이미지 2초간 보여주기
+  useEffect(() => {
+    if (socket) {
+      const loadSuccessImage = () => {
+        setIsCorrect(true);
+        setTimeout(() => {
+          setIsCorrect(false);
+        }, 2000);
+      };
+
+      socket.on('privateMessage', loadSuccessImage);
+
+      return () => {
+        socket.off('privateMessage', loadSuccessImage);
+      };
+    }
+  }, [socket]);
+
   return (
     <>
       <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
@@ -678,8 +713,8 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
                     <>
                       {gameState?.gameStatus === 'waiting' ? (
                         <NamePlate
-                          title="winner"
-                          score={200}
+                          title={winner}
+                          score={score}
                           isDrawingActive
                           isWinner
                         />

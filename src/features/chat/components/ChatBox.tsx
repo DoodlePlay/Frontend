@@ -12,6 +12,10 @@ interface ChatMessage {
   message: string;
   socketId?: string;
   isSystemMessage?: boolean;
+  isPrivateCorrectMessage?: boolean;
+  isCorrectMessage?: boolean;
+  isRoundMessage?: boolean;
+  isAnnounceAnswer?: boolean;
 }
 
 const ChatBox: React.FC = () => {
@@ -95,6 +99,28 @@ const ChatBox: React.FC = () => {
           },
         ]);
       });
+
+      socket.on('roundProcess', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('privateMessage', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('closeAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('adaptiveScore', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('correctAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('announceAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('cheating', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
     }
 
     return () => {
@@ -102,6 +128,13 @@ const ChatBox: React.FC = () => {
         socket.off('newMessage');
         socket.off('userJoined');
         socket.off('userLeft');
+        socket.off('privateMessage');
+        socket.off('roundProcess');
+        socket.off('correctAnswer');
+        socket.off('adaptiveScore');
+        socket.off('closeAnswer');
+        socket.off('cheating');
+        socket.off('announceAnswer');
       }
     };
   }, [socket, gameState]);
@@ -136,6 +169,10 @@ const ChatBox: React.FC = () => {
             message={msg.message}
             isCurrentUser={msg.socketId === socket?.id}
             isSystemMessage={msg.isSystemMessage}
+            isPrivateCorrectMessage={msg.isPrivateCorrectMessage}
+            isCorrectMessage={msg.isCorrectMessage}
+            isRoundMessage={msg.isRoundMessage}
+            isAnnounceAnswer={msg.isAnnounceAnswer}
           />
         ))}
       </div>

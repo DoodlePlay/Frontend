@@ -43,10 +43,10 @@ const GamePage = () => {
             <ChatBox />
           </div>
           <div className="flex flex-col right w-full max-w-[420px] gap-y-[20px]">
-            <div className="w-full border-[4px] border-black rounded-[10px]">
+            <div className="w-full rounded-[10px] mb-[10px]">
               <VideoChat />
             </div>
-            <div className="flex flex-col w-full gap-y-[20px]">
+            <div className="flex flex-col w-full gap-y-[20px] mb-[2px]">
               {gameState?.isItemsEnabled ? (
                 <ItemBox />
               ) : (

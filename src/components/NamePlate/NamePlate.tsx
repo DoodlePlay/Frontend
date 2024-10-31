@@ -8,6 +8,7 @@ interface NamePlateProps {
   isDrawingActive?: boolean;
   score?: number; // 점수가 있는 경우, 옵션으로 표시
   isWinner?: boolean;
+  isWaiting?: boolean;
 }
 
 const NamePlate: React.FC<NamePlateProps> = ({
@@ -15,6 +16,7 @@ const NamePlate: React.FC<NamePlateProps> = ({
   score,
   isDrawingActive,
   isWinner,
+  isWaiting,
 }) => {
   const length = Resize();
 
@@ -27,6 +29,8 @@ const NamePlate: React.FC<NamePlateProps> = ({
               width: `${isWinner ? '200px' : `${length * 2}px`}`,
               height: `${length * 0.6}px`,
             }
+          : isWaiting
+          ? { width: `${length * 1.45}px`, height: `${length * 0.6}px` }
           : { width: `${length}px`, height: `${length * 0.7}px` }
       }
     >
@@ -42,6 +46,8 @@ const NamePlate: React.FC<NamePlateProps> = ({
                 width: `${isWinner ? '200px' : `${length * 2}px`}`,
                 height: `${length * 0.45}px`,
               }
+            : isWaiting
+            ? { width: `${length * 1.45}px`, height: `${length * 0.49}px` }
             : {
                 width: `${length}px`,
                 height: `${length * 0.56}px`,

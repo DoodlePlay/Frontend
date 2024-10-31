@@ -9,13 +9,14 @@ interface AvatarProps {
   isVideoOn?: boolean;
   isClicked?: boolean;
   isMyCharacter?: boolean;
-  size?: 'small' | 'medium' | 'large';
+  size?: 'small' | 'waiting' | 'medium' | 'large';
   src: string;
   className?: string;
 }
 
 const sizeClasses = {
   small: 'w-[100px] h-[100px]',
+  waiting: 'w-[145px] h-[145px]',
   medium: 'w-[160px] h-[160px]',
   large: 'w-[190px] h-[190px]',
 };
@@ -103,6 +104,8 @@ const Avatar = ({
         //뷰포트의 크기가 1000px보다 작을 때 아바타의 w, h를 동적으로 조젋
         size === 'small'
           ? { width: `${length}px`, height: `${length}px` }
+          : size === 'waiting'
+          ? { width: `${length * 1.4}px`, height: `${length * 1.4}px` }
           : size === 'medium'
           ? { width: `160px`, height: `160px` }
           : { width: `${Math.min(length * 2)}px`, height: `${length * 2}px` }
