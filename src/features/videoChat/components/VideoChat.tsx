@@ -1,5 +1,7 @@
 'use client';
+
 import { useEffect, useState } from 'react';
+
 import useSocketStore from '../../socket/socketStore';
 import PlayingVideoChat from './PlayingVideoChat';
 import WaitingVideoChat from './WaitingVideoChat';
