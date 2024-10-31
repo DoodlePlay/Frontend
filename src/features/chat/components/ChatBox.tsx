@@ -100,28 +100,12 @@ const ChatBox: React.FC = () => {
         ]);
       });
 
-      socket.on('roundProcess', (round: string) => {
-        setMessages(prevMessages => [
-          ...prevMessages,
-          {
-            nickname: 'System',
-            message: `━━━━━━━━━━━━━━━━━━ ${round} 라운드 ━━━━━━━━━━━━━━━━━━`,
-            isRoundMessage: true,
-          },
-        ]);
+      socket.on('roundProcess', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
       });
-
-      socket.on('privateMessage', currentWord => {
-        setMessages(prevMessages => [
-          ...prevMessages,
-          {
-            nickname,
-            message: `✔️  ${currentWord}`,
-            socketId: socket.id, //isCurrentUser를 위한 socketId 비교
-          },
-        ]);
+      socket.on('privateMessage', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
       });
-
       socket.on('closeAnswer', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);
       });
