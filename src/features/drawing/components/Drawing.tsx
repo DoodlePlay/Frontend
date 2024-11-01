@@ -330,6 +330,10 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     preloadImages();
   }, []);
 
+  const onImageLoad = () => {
+    setImageLoaded(true);
+  };
+
   // 게임 상태에 따른 배경 이미지 업데이트
   const updateBackgroundImage = () => {
     let imgPath = '';
@@ -358,7 +362,8 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     if (gameState?.gameStatus === 'gameOver') resetItemUsageState();
 
     updateBackgroundImage();
-  }, [gameState?.gameStatus]);
+    onImageLoad();
+  }, [gameState?.gameStatus, gameState?.currentDrawer]);
 
   //가장 점수가 높은 사람을 반환시키는 함수
   const returnWinner = (participants: Object) => {
@@ -386,11 +391,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     } else if (gameState?.gameStatus === 'timeOver') {
       setComment("Time's up");
     }
-  }, [gameState]);
-
-  const onImageLoad = () => {
-    setImageLoaded(true);
-  };
+  }, [gameState?.gameStatus, gameState?.currentDrawer]);
 
   // 소켓을 통해 서버에서 clearCanvas 이벤트를 수신하고 캔버스를 초기화
   useEffect(() => {
@@ -729,16 +730,11 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
 
                   {gameState?.gameStatus === 'choosing' &&
                   gameState?.currentDrawer === socket?.id ? (
-                    <>
-                      <p className="text-center font-cherry text-secondary-default text-6xl">
-                        {comment}
-                      </p>
-                      <div className="flex space-x-4 mt-4">
-                        {gameState?.selectedWords.map((word, index) => (
-                          <KeywordPlate key={index} title={word} isChoosing />
-                        ))}
-                      </div>
-                    </>
+                    <div className="flex space-x-4 mt-4">
+                      {gameState?.selectedWords.map((word, index) => (
+                        <KeywordPlate key={index} title={word} isChoosing />
+                      ))}
+                    </div>
                   ) : (
                     <></>
                   )}
