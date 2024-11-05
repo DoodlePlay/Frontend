@@ -11,12 +11,13 @@ interface Participant {
 
 interface GameState {
   host: string;
-  gameStatus: 'waiting' | 'choosing' | 'drawing';
+  gameStatus: 'waiting' | 'choosing' | 'drawing' | 'timeOver' | 'gameOver';
   currentDrawer: string | null;
   currentWord: string | null;
   totalWords: string[];
   selectedWords: string[];
   isWordSelected: boolean;
+  topic: string;
   selectionDeadline: number | null;
   maxRound: number;
   round: number;
@@ -49,7 +50,7 @@ const useSocketStore = create<SocketStore>((set, get) => ({
 
   connectSocket: (roomId, userInfo, mode, roomInfo) => {
     // AWS EC2에서 실행 중인 Socket.IO 서버에 연결
-    // const socket = io('http://43.202.211.27:4000');
+    const socket = io('https://dev.doodleplay.xyz');
 
     // 로컬 호스트 사용 (로컬 개발시)
     const socket = io('http://localhost:4000');

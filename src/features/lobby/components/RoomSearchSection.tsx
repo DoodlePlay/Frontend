@@ -8,25 +8,19 @@ import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
 import RefreshButton from './RefreshButton';
 import SearchBar from './SearchBar';
-import GameStatusModal from './GameStatusModal';
+import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 import RoomCard from './RoomCard';
 import { Room, getRoomById, getRooms, joinRoom } from '../api/gameRoomsApi';
 import useUserInfoStore from '../../profile/store/userInfoStore';
 import useSocketStore from '../../socket/socketStore';
 
-interface RoomSearchSectionProps {
-  rooms: Room[];
-}
-
-const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
-  rooms: initialRooms,
-}) => {
+const RoomSearchSection: React.FC = () => {
   const router = useRouter();
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const { nickname, clickedAvatarIndex, isVideoOn, isFlipped } =
     useUserInfoStore();
   const { connectSocket } = useSocketStore();
-  const [rooms, setRooms] = useState(initialRooms);
+  const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [selectedRoomPassword, setSelectedRoomPassword] = useState<
     string | null
@@ -160,6 +154,13 @@ const RoomSearchSection: React.FC<RoomSearchSectionProps> = ({
       passwordInputRef.current.focus();
     }
   }, [isPasswordModalOpen]);
+
+  useEffect(() => {
+    onRefreshRoomList();
+
+    const intervalId = setInterval(onRefreshRoomList, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div className="flex flex-col gap-10 w-[720px]">

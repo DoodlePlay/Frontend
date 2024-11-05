@@ -1,55 +1,58 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 import SpeechBubble from '../../../components/SpeechBubble/SpeechBubble';
+import useItemStore from '../store/useItemStore';
+import useSocketStore from '../../socket/socketStore';
 
 const items = [
   {
-    id: 'Toxic-Cover',
+    id: 'toxicCover',
     image: '/images/drawing/items/toxicCover.png',
-    isActive: true,
     description: '군데군데 독극물을 뿌린다.',
   },
   {
-    id: 'Growing-Bomb',
+    id: 'growingBomb',
     image: '/images/drawing/items/growingBomb.png',
-    isActive: true,
     description: '5초간 폭발이 발생한다.',
   },
   {
-    id: 'Phantom-Reverse',
+    id: 'phantomReverse',
     image: '/images/drawing/items/phantomReverse.png',
-    isActive: true,
     description: '글자를 거꾸로 입력한다.',
   },
   {
-    id: 'Laundry-Flip',
+    id: 'laundryFlip',
     image: '/images/drawing/items/laundryFlip.png',
-    isActive: true,
     description: '그림을 뒤집는다.',
   },
   {
-    id: 'Time-Cutter',
+    id: 'timeCutter',
     image: '/images/drawing/items/timeCutter.png',
-    isActive: true,
     description: '시간의 반을 먹어치운다.',
   },
 ];
 
-const ItemBox = ({
-  onItemClick,
-}: {
-  onItemClick: (itemId: string) => void;
-}) => {
+const ItemBox: React.FC = () => {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [usedItems, setUsedItems] = useState<string[]>([]); // 사용된 아이템 목록
+  const { socket, roomId, gameState } = useSocketStore();
+  const { itemUsageState, setItemUsed } = useItemStore();
 
   const onHandleItemClick = (itemId: string) => {
-    if (!usedItems.includes(itemId)) {
-      setUsedItems([...usedItems, itemId]);
-      onItemClick(itemId); // 클릭된 아이템 ID를 부모 컴포넌트로 전달
+    if (
+      gameState.gameStatus === 'drawing' &&
+      !itemUsageState[itemId as keyof typeof itemUsageState] &&
+      !gameState.items[itemId as keyof typeof itemUsageState].status &&
+      !isAnyItemUsedThisRound
+    ) {
+      setItemUsed(itemId as keyof typeof itemUsageState, gameState.round);
+
+      if (socket) socket.emit('itemUsed', roomId, itemId);
     }
   };
-  // Todo: 총 라운드가 끝나면 아이템 상태 초기화
+
+  const isAnyItemUsedThisRound = Object.values(itemUsageState).some(
+    item => item !== null && item === gameState.round
+  );
 
   return (
     <div className="relative flex flex-col items-center justify-center bg-primary-default p-4 rounded-lg border-black border-[4px] drop-shadow-drawing z-20">
@@ -67,32 +70,36 @@ const ItemBox = ({
           <div
             key={item.id}
             className="relative max-w-[70px] max-h-[70px] bg-white border-[3px] border-black rounded-[5px] z-30 cursor-pointer"
-            onMouseEnter={() => setHoveredItem(item.id)}
-            onMouseLeave={() => setHoveredItem(null)}
-            onClick={() => onHandleItemClick(item.id)}
           >
-            <img
-              src={item.image}
-              alt={item.id}
-              className="w-full h-full object-contain"
-              draggable={false}
-            />
-            {!item.isActive || usedItems.includes(item.id) ? (
-              <div
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  background: usedItems.includes(item.id)
-                    ? 'rgba(0, 0, 0, 0.6)'
-                    : 'rgba(0, 0, 0, 0.2)',
-                }}
-              >
-                <img
-                  src="/images/drawing/inactiveCross.png"
-                  alt="inactive"
-                  draggable={false}
-                />
+            <div
+              onMouseEnter={() => setHoveredItem(item.id)}
+              onMouseLeave={() => setHoveredItem(null)}
+              onClick={() => onHandleItemClick(item.id)}
+            >
+              <img
+                src={item.image}
+                alt={item.id}
+                className="w-full h-full object-contain"
+                draggable={false}
+              />
+            </div>
+
+            {(gameState.items[item.id as keyof typeof itemUsageState].status ||
+              isAnyItemUsedThisRound ||
+              itemUsageState[item.id as keyof typeof itemUsageState] !==
+                null) && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                {itemUsageState[item.id as keyof typeof itemUsageState] !==
+                  null && (
+                  <img
+                    src="/images/drawing/inactiveCross.png"
+                    alt="inactive"
+                    draggable={false}
+                  />
+                )}
               </div>
-            ) : null}
+            )}
+
             {hoveredItem === item.id && (
               <SpeechBubble isAvatarSelected={false} title={item.id}>
                 {item.description}

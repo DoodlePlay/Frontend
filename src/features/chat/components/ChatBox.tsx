@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import ChatBubble from './ChatBubble';
 import useUserInfoStore from '../../profile/store/userInfoStore';
@@ -9,42 +10,52 @@ import useSocketStore from '../../socket/socketStore';
 interface ChatMessage {
   nickname: string;
   message: string;
+  socketId?: string;
   isSystemMessage?: boolean;
+  isPrivateCorrectMessage?: boolean;
+  isCorrectMessage?: boolean;
+  isRoundMessage?: boolean;
+  isAnnounceAnswer?: boolean;
 }
 
 const ChatBox: React.FC = () => {
+  const router = useRouter();
   const { nickname } = useUserInfoStore();
-  const { socket, roomId } = useSocketStore();
+  const { socket, roomId, disconnectSocket, gameState } = useSocketStore();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && inputValue.trim()) {
+    if (event.key === 'Enter' && inputValue.trim() && socket) {
       const newMessage: ChatMessage = {
         nickname,
         message: inputValue,
       };
 
-      if (socket) {
-        socket.emit('sendMessage', roomId, newMessage);
+      if (gameState?.items.phantomReverse.status) {
+        newMessage.message = newMessage.message.split('').reverse().join('');
       }
+
+      socket.emit('sendMessage', roomId, newMessage);
 
       setInputValue('');
     }
   };
 
   const onSendMessage = () => {
-    if (inputValue.trim()) {
+    if (inputValue.trim() && socket) {
       const newMessage: ChatMessage = {
         nickname,
         message: inputValue,
       };
 
-      if (socket) {
-        socket.emit('sendMessage', roomId, newMessage);
+      if (gameState?.items.phantomReverse.status) {
+        newMessage.message = newMessage.message.split('').reverse().join('');
       }
+
+      socket.emit('sendMessage', roomId, newMessage);
 
       setInputValue('');
     }
@@ -88,6 +99,28 @@ const ChatBox: React.FC = () => {
           },
         ]);
       });
+
+      socket.on('roundProcess', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('privateMessage', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('closeAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('adaptiveScore', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('correctAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('announceAnswer', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
+      socket.on('cheating', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
     }
 
     return () => {
@@ -95,9 +128,33 @@ const ChatBox: React.FC = () => {
         socket.off('newMessage');
         socket.off('userJoined');
         socket.off('userLeft');
+        socket.off('privateMessage');
+        socket.off('roundProcess');
+        socket.off('correctAnswer');
+        socket.off('adaptiveScore');
+        socket.off('closeAnswer');
+        socket.off('cheating');
+        socket.off('announceAnswer');
       }
     };
-  }, [socket]);
+  }, [socket, gameState]);
+
+  const handleDisconnect = () => {
+    disconnectSocket();
+    router.replace('/room');
+  };
+
+  useEffect(() => {
+    history.pushState(null, '', '');
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('popstate', handleDisconnect);
+
+    return () => {
+      window.removeEventListener('popstate', handleDisconnect);
+    };
+  }, []);
 
   return (
     <div className="relative flex flex-col h-[240px] p-5 bg-neutral-100 border-[3px] border-black rounded-[10px] shadow-board">
@@ -110,8 +167,12 @@ const ChatBox: React.FC = () => {
             key={idx + 1}
             nickname={msg.nickname}
             message={msg.message}
-            isCurrentUser={msg.nickname === nickname}
+            isCurrentUser={msg.socketId === socket?.id}
             isSystemMessage={msg.isSystemMessage}
+            isPrivateCorrectMessage={msg.isPrivateCorrectMessage}
+            isCorrectMessage={msg.isCorrectMessage}
+            isRoundMessage={msg.isRoundMessage}
+            isAnnounceAnswer={msg.isAnnounceAnswer}
           />
         ))}
       </div>

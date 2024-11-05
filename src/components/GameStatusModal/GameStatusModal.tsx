@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface GameStatusModalProps {
   isOpen: boolean;
-  errorType: 'full' | 'playing' | null;
+  errorType: 'full' | 'playing' | 'player' | null;
 }
 
 const GameStatusModal: React.FC<GameStatusModalProps> = ({
@@ -47,6 +47,16 @@ const GameStatusModal: React.FC<GameStatusModalProps> = ({
               <h2 className="text-2xl font-bold text-fuschia">Room Full 😢</h2>
               <p className="mt-[10px]">
                 방 정원이 다 찼습니다. 다른 방을 선택해주세요.
+              </p>
+            </>
+          )}
+          {errorType === 'player' && (
+            <>
+              <h2 className="text-2xl font-bold text-fuschia">
+                Not Enough Players 😢
+              </h2>
+              <p className="mt-[10px]">
+                게임을 진행하기 위한 플레이어가 부족합니다.
               </p>
             </>
           )}
