@@ -37,7 +37,8 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
   return (
     <div className="w-full flex gap-x-[30px]">
       {gameState?.host === socket?.id &&
-        gameState?.gameStatus === 'waiting' && (
+        (gameState?.gameStatus === 'gameOver' ||
+          gameState?.gameStatus === 'waiting') && (
           <Button
             text="START"
             color="primary"
