@@ -34,15 +34,16 @@ const RtcAvatar = ({
   const { isFlipped } = useUserInfoStore();
 
   useEffect(() => {
-    // stream이 있을 때 비디오 요소에 stream 설정
-    if (stream && videoRef.current) {
+    // 새 stream이 할당될 때만 srcObject를 업데이트
+    if (stream && videoRef.current && videoRef.current.srcObject !== stream) {
       videoRef.current.srcObject = stream;
-      // 약간의 지연을 두고 재생 시도
-      setTimeout(() => {
-        videoRef.current
-          .play()
-          .catch(err => console.error('Error playing video:', err));
-      }, 100); // 100ms 지연
+
+      // 비디오 재생 시도
+      videoRef.current.play().catch(err => {
+        if (err.name !== 'AbortError') {
+          console.error('Error playing video:', err);
+        }
+      });
     }
   }, [stream]);
 

@@ -11,7 +11,6 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
   const router = useRouter();
   const { gameState, disconnectSocket, socket, roomId } = useSocketStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { socket, roomId } = useSocketStore();
 
   const onStartGame = () => {
     if (gameState?.order.length < 3) {

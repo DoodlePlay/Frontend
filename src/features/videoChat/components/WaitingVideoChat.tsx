@@ -1,12 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Avatar from '../../../components/Avatar/Avatar';
 import NamePlate from '../../../components/NamePlate/NamePlate';
 import { Avatars } from '../../profile/components/Nickname';
-import { useEffect, useState } from 'react';
 import useUserInfoStore from '../../profile/store/userInfoStore';
 import useSocketStore from '../../socket/socketStore';
+import RtcAvatar from './RtcAvatar';
 
-const WaitingVideoChat = () => {
+interface WaitingVideoChatProps {
+  localStream: MediaStream | null;
+  remoteStreams: { [userId: string]: MediaStream };
+}
+
+const WaitingVideoChat: React.FC<WaitingVideoChatProps> = ({
+  localStream,
+  remoteStreams,
+}) => {
+  const [order, setOrder] = useState([]);
   const { nickname } = useUserInfoStore();
   const { gameState } = useSocketStore();
 
@@ -18,30 +27,31 @@ const WaitingVideoChat = () => {
 
   return (
     <div className="grid grid-cols-2 grid-rows-3 gap-y-[10px]">
-      {order.map(
-        (userId, index) =>
-          gameState?.participants[userId] ? ( // 유저가 존재하는 경우에만 렌더링
-            <div key={index} className="flex justify-center">
-              <div key={index}>
-                <Avatar
-                  src={
-                    Avatars[gameState.participants[userId].clickedAvatarIndex]
-                      .src
-                  }
-                  size={'waiting'}
-                  isMyCharacter={
-                    gameState.participants[userId].nickname === nickname
-                  }
-                />
-                <NamePlate
-                  title={gameState.participants[userId].nickname}
-                  score={gameState.participants[userId].score}
-                  isWaiting
-                />
-              </div>
+      {order.map(userId => {
+        const participant = gameState?.participants[userId];
+        if (!participant) return null;
+
+        const isLocalUser = participant.nickname === nickname;
+        const stream = isLocalUser ? localStream : remoteStreams[userId];
+
+        return (
+          <div key={userId} className="flex justify-center">
+            <div>
+              <RtcAvatar
+                src={Avatars[participant.clickedAvatarIndex].src}
+                size="waiting"
+                isMyCharacter={isLocalUser}
+                stream={stream || null}
+              />
+              <NamePlate
+                title={participant.nickname}
+                score={participant.score}
+                isWaiting
+              />
             </div>
-          ) : null // 존재하지 않으면 null로 반환
-      )}
+          </div>
+        );
+      })}
     </div>
   );
 };
