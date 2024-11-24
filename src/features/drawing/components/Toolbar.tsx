@@ -1,4 +1,5 @@
 import React from 'react';
+import playSound from '../../../utils/helpers/playSound';
 
 // 색상 목록 상수 정의
 const COLORS = [
@@ -78,7 +79,10 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
             selectedSize === option ? 'bg-secondary-default' : 'bg-black'
           }`}
           style={{ width: `${option * 2}px `, height: `${option * 2}px` }}
-          onClick={() => setSelectedSize(option)}
+          onClick={() => {
+            setSelectedSize(option);
+            playSound('/sounds/selectPop.mp3');
+          }}
         />
       ))}
     </div>
@@ -111,7 +115,10 @@ const ToolSelector: React.FC<ToolSelectorProps> = ({
           key={tool}
           icon={tool}
           selected={selectedTool === tool}
-          onClick={() => setSelectedTool(tool)}
+          onClick={() => {
+            setSelectedTool(tool);
+            playSound('/sounds/selectPop.mp3');
+          }}
         />
       ))}
     </div>
@@ -174,7 +181,10 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
           key={color}
           color={color}
           selected={selectedColor === color}
-          onClick={() => setSelectedColor(color)}
+          onClick={() => {
+            setSelectedColor(color);
+            playSound('/sounds/selectPop.mp3');
+          }}
         />
       ))}
     </div>

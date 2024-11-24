@@ -14,6 +14,7 @@ import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
 import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 import useItemStore from '../store/useItemStore';
+import playSound from '../../../utils/helpers/playSound';
 
 const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   isGameStatusModalOpen,
@@ -774,7 +775,10 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
           <div className="absolute top-0 right-0 z-40 max-w-[70px] flex flex-wrap gap-[10px]">
             <div
               className="w-full cursor-pointer"
-              onClick={() => setIsSettingsModalOpen(true)}
+              onClick={() => {
+                setIsSettingsModalOpen(true);
+                playSound('/sounds/selectPop.mp3');
+              }}
             >
               <img
                 src="/images/drawing/settingIcon.png"
@@ -818,7 +822,10 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
         <Modal
           isOpen={isSettingsModalOpen}
           title="Setting"
-          onClose={() => setIsSettingsModalOpen(false)}
+          onClose={() => {
+            setIsSettingsModalOpen(false);
+            playSound('/sounds/selectPop.mp3');
+          }}
         >
           <Settings />
         </Modal>
