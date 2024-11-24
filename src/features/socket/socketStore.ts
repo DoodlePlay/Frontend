@@ -1,5 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { create } from 'zustand';
+import playSound from '../../utils/helpers/playSound';
 
 interface Participant {
   nickname: string;
@@ -63,6 +64,9 @@ const useSocketStore = create<SocketStore>((set, get) => ({
 
     socket.on('gameStateUpdate', (gameState: GameState) => {
       set({ gameState });
+      if (gameState.gameStatus === 'choosing') {
+        playSound('/sounds/fiveSecondSound.mp3');
+      }
     });
 
     set({ socket });
