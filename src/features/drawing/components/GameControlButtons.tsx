@@ -18,7 +18,6 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
       playSound('/sounds/negativeBeeps.mp3');
       setGameStatusModalOpen(true);
     } else if (socket && roomId) {
-      playSound('/sounds/gameStart.mp3');
       socket.emit('startGame', roomId);
     }
   };
