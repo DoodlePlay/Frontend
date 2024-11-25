@@ -154,7 +154,10 @@ const Nickname = () => {
               <div
                 key={avatar.id}
                 className="cursor-pointer"
-                onClick={() => onAvatarClick(index)}
+                onClick={() => {
+                  onAvatarClick(index);
+                  playSound('/sounds/avatarClickSound.mp3');
+                }}
               >
                 <Avatar
                   src={avatar.src}
