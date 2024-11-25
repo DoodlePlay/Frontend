@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import playSound from '../../../utils/helpers/playSound';
+
 interface RefreshButtonProps {
   onClick: () => Promise<void>;
 }
@@ -8,6 +10,8 @@ const RefreshButton: React.FC<RefreshButtonProps> = ({ onClick }) => {
   const [isLoading, setLoading] = useState(false);
 
   const onClickRefresh = async () => {
+    playSound('/sounds/refreshButtonClick.wav', 0.2);
+
     setLoading(true);
 
     const minimumLoadingTime = 1000;

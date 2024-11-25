@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
+import { motion } from 'framer-motion';
 
 import Button from '../../../components/Button/Button';
 import Modal from '../../../components/Modal/Modal';
@@ -13,6 +14,7 @@ import RoomCard from './RoomCard';
 import { Room, getRoomById, getRooms, joinRoom } from '../api/gameRoomsApi';
 import useUserInfoStore from '../../profile/store/userInfoStore';
 import useSocketStore from '../../socket/socketStore';
+import playSound from '../../../utils/helpers/playSound';
 
 const RoomSearchSection: React.FC = () => {
   const router = useRouter();
@@ -53,14 +55,18 @@ const RoomSearchSection: React.FC = () => {
       if (room.gameStatus === 'playing') {
         setGameStatusErrorType('playing');
         setGameStatusModalOpen(true);
+        playSound('/sounds/errorMessageSound.wav', 0.2);
         return;
       }
 
       if (room.currentPlayers >= room.maxPlayers) {
         setGameStatusErrorType('full');
         setGameStatusModalOpen(true);
+        playSound('/sounds/errorMessageSound.wav', 0.2);
         return;
       }
+
+      playSound('/sounds/roomClick.wav', 0.2);
 
       if (!room.isPublic) {
         setSelectedRoom(room.id);
@@ -111,6 +117,8 @@ const RoomSearchSection: React.FC = () => {
           selectedRoomPassword
         );
         if (isPasswordValid) {
+          playSound('/sounds/roomClick.wav', 0.2);
+
           await joinRoom(selectedRoom);
 
           const userInfo = {
@@ -125,6 +133,7 @@ const RoomSearchSection: React.FC = () => {
 
           onClosePasswordModal();
         } else {
+          playSound('/sounds/errorMessageSound.wav', 0.2);
           setPasswordError('비밀번호가 일치하지 않습니다.');
         }
       }
@@ -212,9 +221,17 @@ const RoomSearchSection: React.FC = () => {
             />
             <Button text="Enter" color="primary" onClick={onSubmitPassword} />
           </div>
-          <div className=" text-fuschia font-semibold mt-3">
-            {passwordError && <p className="pl-[2px]">{passwordError}</p>}
-          </div>
+
+          {passwordError ? (
+            <motion.div
+              className="text-fuschia font-semibold mt-3"
+              initial={{ x: 0 }}
+              animate={{ x: [-10, 10, -10, 10, 0] }}
+              transition={{ duration: 0.2 }}
+            >
+              <p className="pl-[2px]">{passwordError}</p>{' '}
+            </motion.div>
+          ) : null}
         </div>
       </Modal>
 

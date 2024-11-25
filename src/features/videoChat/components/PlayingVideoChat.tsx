@@ -64,7 +64,7 @@ const PlayingVideoChat = () => {
     socket.on('playScoreAnimation', (userId, score) => {
       setScore(score);
       onPlusScore(userId);
-      playSound('/sounds/correctSound.mp3');
+      playSound('/sounds/correctSound.mp3', 1.0);
     });
     socket.on('playDrawerScoreAnimation', (userId, score) => {
       setDrawerScore(score);

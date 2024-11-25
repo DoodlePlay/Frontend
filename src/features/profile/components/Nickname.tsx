@@ -76,7 +76,7 @@ const Nickname = () => {
   };
 
   const onSubmit = (data: FormData) => {
-    playSound('/sounds/enterLobbySound.mp3');
+    playSound('/sounds/enterLobbySound.mp3', 1.0);
     setNickname(data.nickname);
     router.push('/room');
   };
@@ -87,7 +87,7 @@ const Nickname = () => {
       <button
         className="absolute top-[85px] right-[160px] z-10"
         onClick={() => {
-          playSound('/sounds/avatarSelectButtonSound.mp3');
+          playSound('/sounds/avatarSelectButtonSound.mp3', 1.0);
           setIsOpen(!isOpen);
         }}
       >
@@ -156,7 +156,7 @@ const Nickname = () => {
                 className="cursor-pointer"
                 onClick={() => {
                   onAvatarClick(index);
-                  playSound('/sounds/avatarClickSound.mp3');
+                  playSound('/sounds/avatarClickSound.mp3', 1.0);
                 }}
               >
                 <Avatar
