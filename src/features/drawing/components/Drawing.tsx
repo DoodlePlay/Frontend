@@ -639,13 +639,13 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
         setIsCorrect(true);
         setTimeout(() => {
           setIsCorrect(false);
-        }, 2000);
+        }, 1000);
       };
 
-      socket.on('privateMessage', loadSuccessImage);
+      socket.on('success', loadSuccessImage);
 
       return () => {
-        socket.off('privateMessage', loadSuccessImage);
+        socket.off('success', loadSuccessImage);
       };
     }
   }, [socket]);
@@ -685,7 +685,15 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
             <ToxicEffect toxicEffectPositions={toxicEffectPositions} />
           )}
           {gameState?.items['growingBomb']?.status && <BombEffect />}
-
+          {isCorrect && (
+            <div className="h-full bg-white flex justify-center items-center absolute top-0 left-0 right-0 m-auto z-20">
+              <img
+                className="max-h-[90%]"
+                src="/images/drawing/success.png"
+                alt="success"
+              />
+            </div>
+          )}
           {gameState?.gameStatus === 'drawing'
             ? ''
             : gameState?.gameStatus !== 'waiting' &&

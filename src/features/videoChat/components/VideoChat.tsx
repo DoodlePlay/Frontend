@@ -11,7 +11,11 @@ const VideoChat = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    if (gameState && gameState.gameStatus !== 'waiting') {
+    if (!gameState) return;
+    if (
+      gameState.gameStatus !== 'waiting' &&
+      gameState.gameStatus !== 'gameOver'
+    ) {
       setIsPlaying(true);
     } else setIsPlaying(false);
   }, [gameState]);

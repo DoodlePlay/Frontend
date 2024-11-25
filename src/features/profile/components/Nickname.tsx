@@ -76,7 +76,7 @@ const Nickname = () => {
   };
 
   const onSubmit = (data: FormData) => {
-    playSound('/sounds/sampleButtonClick.mp3');
+    playSound('/sounds/enterLobbySound.mp3');
     setNickname(data.nickname);
     router.push('/room');
   };
@@ -86,7 +86,10 @@ const Nickname = () => {
       <h1 className="font-bold text-[32px] mb-[13px]">닉네임 설정</h1>
       <button
         className="absolute top-[85px] right-[160px] z-10"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          playSound('/sounds/avatarSelectButtonSound.mp3');
+          setIsOpen(!isOpen);
+        }}
       >
         <img
           src="/images/editButton.svg"
@@ -151,7 +154,10 @@ const Nickname = () => {
               <div
                 key={avatar.id}
                 className="cursor-pointer"
-                onClick={() => onAvatarClick(index)}
+                onClick={() => {
+                  onAvatarClick(index);
+                  playSound('/sounds/avatarClickSound.mp3');
+                }}
               >
                 <Avatar
                   src={avatar.src}
