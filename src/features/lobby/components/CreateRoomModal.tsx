@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import bcrypt from 'bcryptjs';
+import { motion } from 'framer-motion';
 
 import Modal from '../../../components/Modal/Modal';
 import Button from '../../../components/Button/Button';
@@ -49,7 +50,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const isItemsEnabled = watch('isItemsEnabled');
 
   const onSubmit = async (data: RoomFormValues) => {
-    playSound('/sounds/roomClick.wav');
+    playSound('/sounds/roomClick.wav', 0.2);
 
     let hashedPassword = null;
     if (data.isPublic === 'false' && data.password) {
@@ -92,12 +93,16 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   };
 
   const handleSoundEffect = () => {
-    playSound('/sounds/roomModalClick.mp3');
+    playSound('/sounds/roomModalClick.mp3', 0.3);
+  };
+
+  const onInvalid = () => {
+    playSound('/sounds/errorMessageSound.wav', 0.2);
   };
 
   useEffect(() => {
     if (isOpen) {
-      playSound('/sounds/roomModalClick.mp3');
+      playSound('/sounds/roomModalClick.mp3', 0.3);
     }
   }, [isPublic, isItemsEnabled, isOpen]);
 
@@ -109,11 +114,17 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
   return (
     <Modal isOpen={isOpen} title="방 만들기" onClose={onClose}>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form
+        onSubmit={handleSubmit(onSubmit, onInvalid)}
+        className="flex flex-col gap-5"
+      >
         <div className="flex items-center gap-5 h-11">
           <label className="w-14 text-lg font-bold">방제목</label>
           <input
-            {...register('roomTitle', { required: '방제목을 입력하세요.' })}
+            {...register('roomTitle', {
+              required: '방제목을 입력하세요.',
+              validate: value => value.trim() !== '' || '방제목을 입력하세요.',
+            })}
             type="text"
             placeholder="방제목을 입력하세요."
             className="w-[280px] border-2 border-black py-[10px] px-5 rounded-md focus:outline-none"
@@ -325,12 +336,18 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           text="Create"
           color="primary"
           className="h-[60px]"
-          onClick={handleSubmit(onSubmit)}
         />
 
-        <div className=" text-fuschia text-center font-semibold">
-          <p>{errors.roomTitle?.message || errors.password?.message}</p>
-        </div>
+        {errors.roomTitle?.message || errors.password?.message ? (
+          <motion.div
+            className="text-fuschia text-center font-semibold"
+            initial={{ x: 0 }}
+            animate={{ x: [-10, 10, -10, 10, 0] }}
+            transition={{ duration: 0.2 }}
+          >
+            <p>{errors.roomTitle?.message || errors.password?.message}</p>
+          </motion.div>
+        ) : null}
       </form>
     </Modal>
   );

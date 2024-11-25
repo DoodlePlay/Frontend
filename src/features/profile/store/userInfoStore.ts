@@ -23,17 +23,17 @@ const useUserInfoStore = create<userInfoState>(set => ({
   isVideoOn: false,
   toggleVideo: () => {
     set(state => ({ isVideoOn: !state.isVideoOn })); // 상태 업데이트
-    playSound('/sounds/toggleButtonSound.mp3'); // 사운드 재생
+    playSound('/sounds/toggleButtonSound.mp3', 1.0); // 사운드 재생
   },
   isSoundOn: true,
   toggleSound: () => {
     set(state => ({ isSoundOn: !state.isSoundOn }));
-    playSound('/sounds/toggleButtonSound.mp3');
+    playSound('/sounds/toggleButtonSound.mp3', 1.0);
   },
   isFlipped: false,
   toggleFlip: () => {
     set(state => ({ isFlipped: !state.isFlipped }));
-    playSound('/sounds/toggleButtonSound.mp3');
+    playSound('/sounds/toggleButtonSound.mp3', 1.0);
   },
 }));
 

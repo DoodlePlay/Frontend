@@ -1,6 +1,6 @@
 import useUserInfoStore from '../../features/profile/store/userInfoStore';
 
-const playSound = (src, volume = 1.0) => {
+const playSound = (src: string, volume: number) => {
   const sound = new Audio(src);
   sound.preload = 'auto'; // 소리 미리 로드, 선택 사항
 

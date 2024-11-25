@@ -10,7 +10,7 @@ const CreateRoomButton: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const onOpenModal = () => {
-    playSound('/sounds/roomClick.wav');
+    playSound('/sounds/roomClick.wav', 0.2);
     setModalOpen(true);
   };
 
