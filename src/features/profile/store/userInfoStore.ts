@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import playSound from '../../../utils/helpers/playSound';
 
 interface userInfoState {
