@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import ChatBubble from './ChatBubble';
 import useUserInfoStore from '../../profile/store/userInfoStore';
 import useSocketStore from '../../socket/socketStore';
-import playSound from '../../../utils/helpers/playSound';
 
 interface ChatMessage {
   nickname: string;
@@ -112,7 +111,6 @@ const ChatBox: React.FC = () => {
       });
       socket.on('adaptiveScore', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);
-        playSound('/sounds/correctSound.mp3');
       });
       socket.on('correctAnswer', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);

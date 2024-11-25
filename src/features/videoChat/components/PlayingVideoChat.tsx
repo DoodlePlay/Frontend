@@ -7,6 +7,7 @@ import { Avatars } from '../../profile/components/Nickname';
 import NamePlate from '../../../components/NamePlate/NamePlate';
 import useUserInfoStore from '../../profile/store/userInfoStore';
 import useSocketStore from '../../socket/socketStore';
+import playSound from '../../../utils/helpers/playSound';
 
 const PlayingVideoChat = () => {
   const [sortedOrder, setSortedOrder] = useState([]);
@@ -62,6 +63,7 @@ const PlayingVideoChat = () => {
     socket.on('playScoreAnimation', (userId, score) => {
       setScore(score);
       onPlusScore(userId);
+      playSound('/sounds/correctSound.mp3');
     });
     socket.on('playDrawerScoreAnimation', (userId, score) => {
       setDrawerScore(score);
