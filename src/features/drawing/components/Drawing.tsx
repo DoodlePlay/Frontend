@@ -832,7 +832,6 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
           title="Setting"
           onClose={() => {
             setIsSettingsModalOpen(false);
-            playSound('/sounds/selectPop.mp3');
           }}
         >
           <Settings />
