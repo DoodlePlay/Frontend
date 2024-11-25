@@ -1,5 +1,7 @@
 import React from 'react';
 
+import playSound from '../../utils/helpers/playSound';
+
 interface ModalProps {
   isOpen: boolean;
   title: string;
@@ -11,6 +13,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, title, children, onClose }) => {
   if (!isOpen) return null;
 
   const onClickBackground = (e: React.MouseEvent) => {
+    playSound('/sounds/modalCancel.wav');
     onClose();
   };
 
@@ -29,7 +32,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, title, children, onClose }) => {
       >
         <div className="flex justify-between">
           <h2 className="text-2xl font-semibold">{title}</h2>
-          <button onClick={onClose} aria-label="Close modal">
+          <button
+            onClick={() => {
+              playSound('/sounds/modalCancel.wav');
+              onClose();
+            }}
+            aria-label="Close modal"
+          >
             <img
               src="/images/closeModal.svg"
               alt="close icon"

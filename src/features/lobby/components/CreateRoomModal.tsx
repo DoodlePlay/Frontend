@@ -8,6 +8,7 @@ import Button from '../../../components/Button/Button';
 import { createRoom } from '../api/gameRoomsApi';
 import useSocketStore from '../../socket/socketStore';
 import useUserInfoStore from '../../profile/store/userInfoStore';
+import playSound from '../../../utils/helpers/playSound';
 
 interface RoomFormValues {
   roomTitle: string;
@@ -48,6 +49,8 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   const isItemsEnabled = watch('isItemsEnabled');
 
   const onSubmit = async (data: RoomFormValues) => {
+    playSound('/sounds/roomClick.wav');
+
     let hashedPassword = null;
     if (data.isPublic === 'false' && data.password) {
       const salt = bcrypt.genSaltSync(10);
@@ -87,6 +90,16 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       console.error('Error creating room:', error);
     }
   };
+
+  const handleSoundEffect = () => {
+    playSound('/sounds/roomModalClick.mp3');
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      playSound('/sounds/roomModalClick.mp3');
+    }
+  }, [isPublic, isItemsEnabled, isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -193,6 +206,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <select
               {...register('maxPlayers', { required: true })}
               className="appearance-none w-full border-2 border-black py-[10px] px-5 rounded-md focus:outline-none"
+              onChange={handleSoundEffect}
             >
               <option value={3}>3</option>
               <option value={4}>4</option>
@@ -215,6 +229,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <select
               {...register('rounds', { required: true })}
               className="appearance-none w-full border-2 border-black py-[10px] px-5 rounded-md focus:outline-none"
+              onChange={handleSoundEffect}
             >
               <option value={3}>3</option>
               <option value={4}>4</option>
@@ -236,6 +251,7 @@ const CreateRoomModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             <select
               {...register('topic', { required: true })}
               className="appearance-none w-full border-2 border-black py-[10px] px-5 rounded-md focus:outline-none"
+              onChange={handleSoundEffect}
             >
               <option value={'동물'}>동물</option>
               <option value={'사물'}>사물</option>
