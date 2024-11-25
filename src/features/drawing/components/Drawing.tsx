@@ -414,6 +414,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   useEffect(() => {
     if (gameState?.items.laundryFlip.status) {
       if (canvasRef.current) {
+        playSound('/sounds/reverseEffect.mp3');
         const canvas = canvasRef.current;
         canvas.getObjects().forEach(obj => {
           obj.set('flipY', !obj.flipY); // 현재 상태 반전
@@ -650,6 +651,27 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
       };
     }
   }, [socket]);
+
+  const itemSoundMap = {
+    toxicCover: '/sounds/toxicEffect.mp3',
+    growingBomb: '/sounds/bombEffect.mp3',
+    phantomReverse: '/sounds/reverseEffect.mp3',
+    laundryFlip: '/sounds/laundryEffect.mp3',
+    timeCutter: '/sounds/timeCutterEffect.mp3',
+  };
+
+  useEffect(() => {
+    if (!gameState?.items) return;
+
+    Object.entries(gameState.items).forEach(([itemName, itemState]) => {
+      if (itemState.status) {
+        const soundPath = itemSoundMap[itemName];
+        if (soundPath) {
+          playSound(soundPath); // 해당 아이템의 효과음 재생
+        }
+      }
+    });
+  }, [gameState?.items]);
 
   return (
     <>
