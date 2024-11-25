@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import Avatar from '../../../components/Avatar/Avatar';
 import { Avatars } from '../../profile/components/Nickname';
 import NamePlate from '../../../components/NamePlate/NamePlate';
 import useUserInfoStore from '../../profile/store/userInfoStore';
 import useSocketStore from '../../socket/socketStore';
+import playSound from '../../../utils/helpers/playSound';
 
 const PlayingVideoChat = () => {
   const [sortedOrder, setSortedOrder] = useState([]);
@@ -62,6 +64,7 @@ const PlayingVideoChat = () => {
     socket.on('playScoreAnimation', (userId, score) => {
       setScore(score);
       onPlusScore(userId);
+      playSound('/sounds/correctSound.mp3');
     });
     socket.on('playDrawerScoreAnimation', (userId, score) => {
       setDrawerScore(score);
@@ -157,22 +160,44 @@ const PlayingVideoChat = () => {
               score={gameState.participants[userId].score}
               isDrawingActive={index === 0}
             />
-            <div
-              className={`absolute font-cherry font-bold text-primary-400 transition-transform duration-500 ease-in-out
-              ${index === 0 ? 'top-[140px] text-4xl' : 'top-[70px] text-2xl'} ${
-                correctIds.includes(userId)
-                  ? 'opacity-100 visible'
-                  : 'opacity-0 invisible'
-              } ${
-                correctIds.includes(userId)
-                  ? index === 0
-                    ? 'translate-y-[-70px]'
-                    : 'translate-y-[-35px]'
-                  : ''
-              }`}
-            >
-              {index === 0 ? `+ ${drawerScore}` : `+ ${score}`}
-            </div>
+            <AnimatePresence>
+              {correctIds.includes(userId) && (
+                <motion.div
+                  key={userId}
+                  className="absolute font-cherry font-bold text-primary-400"
+                  initial={{
+                    opacity: 0,
+                    y: 50,
+                    scale: 0.8,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    transition: {
+                      duration: 0.6,
+                      type: 'spring',
+                      stiffness: 100,
+                    },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    y: -50,
+                    scale: 0.8,
+                    transition: {
+                      duration: 0.4,
+                      ease: 'easeOut',
+                    },
+                  }}
+                  style={{
+                    top: index === 0 ? '50px' : '25px',
+                    fontSize: index === 0 ? '4rem' : '2rem',
+                  }}
+                >
+                  {index === 0 ? `+ ${drawerScore}` : `+ ${score}`}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         ) : null
       )}

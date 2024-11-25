@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import playSound from '../../../utils/helpers/playSound';
+
 interface userInfoState {
   nickname: string;
   setNickname: (newNickname: string) => void;
@@ -19,11 +21,20 @@ const useUserInfoStore = create<userInfoState>(set => ({
   clickedAvatarIndex: 0,
   onAvatarClick: index => set({ clickedAvatarIndex: index }),
   isVideoOn: false,
-  toggleVideo: () => set(state => ({ isVideoOn: !state.isVideoOn })),
+  toggleVideo: () => {
+    set(state => ({ isVideoOn: !state.isVideoOn })); // 상태 업데이트
+    playSound('/sounds/toggleButtonSound.mp3'); // 사운드 재생
+  },
   isSoundOn: true,
-  toggleSound: () => set(state => ({ isSoundOn: !state.isSoundOn })),
+  toggleSound: () => {
+    set(state => ({ isSoundOn: !state.isSoundOn }));
+    playSound('/sounds/toggleButtonSound.mp3');
+  },
   isFlipped: false,
-  toggleFlip: () => set(state => ({ isFlipped: !state.isFlipped })),
+  toggleFlip: () => {
+    set(state => ({ isFlipped: !state.isFlipped }));
+    playSound('/sounds/toggleButtonSound.mp3');
+  },
 }));
 
 export default useUserInfoStore;
