@@ -15,7 +15,7 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
 
   const onStartGame = () => {
     if (gameState?.order.length < 3) {
-      playSound('/sounds/negativeBeeps.mp3');
+      playSound('/sounds/negativeBeeps.mp3', 1.0);
       setGameStatusModalOpen(true);
     } else if (socket && roomId) {
       socket.emit('startGame', roomId);
@@ -23,19 +23,19 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
   };
 
   const onExitGame = () => {
-    playSound('/sounds/selectPop.mp3');
+    playSound('/sounds/selectPop.mp3', 1.0);
     setIsModalOpen(true); // 모달을 엽니다.
   };
 
   const confirmExit = () => {
-    playSound('/sounds/selectPop.mp3');
+    playSound('/sounds/selectPop.mp3', 1.0);
     disconnectSocket();
     router.replace('/room'); // /room 페이지로 이동하면서 히스토리 스택을 대체합니다.
     setIsModalOpen(false);
   };
 
   const closeModal = () => {
-    playSound('/sounds/selectPop.mp3');
+    playSound('/sounds/selectPop.mp3', 1.0);
     setIsModalOpen(false); // 모달을 닫습니다.
   };
 

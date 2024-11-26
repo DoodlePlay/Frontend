@@ -414,7 +414,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   useEffect(() => {
     if (gameState?.items.laundryFlip.status) {
       if (canvasRef.current) {
-        playSound('/sounds/reverseEffect.mp3');
+        playSound('/sounds/reverseEffect.mp3', 1.0);
         const canvas = canvasRef.current;
         canvas.getObjects().forEach(obj => {
           obj.set('flipY', !obj.flipY); // 현재 상태 반전
@@ -661,23 +661,26 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   };
 
   useEffect(() => {
-    if (gameState?.gameStatus === 'choosing') {
-      playSound('/sounds/fiveSecondSound.mp3');
-    } else {
-      stopCurrentSound();
-    }
-
     if (!gameState?.items) return;
 
     Object.entries(gameState.items).forEach(([itemName, itemState]) => {
       if (itemState.status) {
         const soundPath = itemSoundMap[itemName];
+
         if (soundPath) {
-          playSound(soundPath); // 해당 아이템의 효과음 재생
+          playSound(soundPath, 1.0);
         }
       }
     });
   }, [gameState?.items]);
+
+  useEffect(() => {
+    if (gameState?.gameStatus === 'choosing') {
+      playSound('/sounds/fiveSecondSound.mp3', 1.0);
+    } else {
+      stopCurrentSound();
+    }
+  }, [gameState?.gameStatus]);
 
   return (
     <>
@@ -813,7 +816,7 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
               className="w-full cursor-pointer"
               onClick={() => {
                 setIsSettingsModalOpen(true);
-                playSound('/sounds/selectPop.mp3');
+                playSound('/sounds/selectPop.mp3', 1.0);
               }}
             >
               <img

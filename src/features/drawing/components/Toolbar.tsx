@@ -81,7 +81,7 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({
           style={{ width: `${option * 2}px `, height: `${option * 2}px` }}
           onClick={() => {
             setSelectedSize(option);
-            playSound('/sounds/selectPop.mp3');
+            playSound('/sounds/selectPop.mp3', 1.0);
           }}
         />
       ))}
@@ -117,7 +117,7 @@ const ToolSelector: React.FC<ToolSelectorProps> = ({
           selected={selectedTool === tool}
           onClick={() => {
             setSelectedTool(tool);
-            playSound('/sounds/selectPop.mp3');
+            playSound('/sounds/selectPop.mp3', 1.0);
           }}
         />
       ))}
@@ -183,7 +183,7 @@ const ColorSelector: React.FC<ColorSelectorProps> = ({
           selected={selectedColor === color}
           onClick={() => {
             setSelectedColor(color);
-            playSound('/sounds/selectPop.mp3');
+            playSound('/sounds/selectPop.mp3', 1.0);
           }}
         />
       ))}

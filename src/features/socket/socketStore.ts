@@ -1,6 +1,5 @@
 import { io, Socket } from 'socket.io-client';
 import { create } from 'zustand';
-import playSound, { stopCurrentSound } from '../../utils/helpers/playSound';
 
 interface Participant {
   nickname: string;
