@@ -51,10 +51,10 @@ const useSocketStore = create<SocketStore>((set, get) => ({
 
   connectSocket: (roomId, userInfo, mode, roomInfo) => {
     // AWS EC2에서 실행 중인 Socket.IO 서버에 연결
-    const socket = io('https://dev.doodleplay.xyz');
+    // const socket = io('https://dev.doodleplay.xyz');
 
     // 로컬 호스트 사용 (로컬 개발시)
-    // const socket = io('http://localhost:4000');
+    const socket = io('http://localhost:4000');
 
     if (mode === 'createRoom') {
       socket.emit('createRoom', roomId, userInfo, roomInfo);
@@ -64,12 +64,6 @@ const useSocketStore = create<SocketStore>((set, get) => ({
 
     socket.on('gameStateUpdate', (gameState: GameState) => {
       set({ gameState });
-
-      if (gameState.gameStatus === 'choosing') {
-        playSound('/sounds/fiveSecondSound.mp3');
-      } else {
-        stopCurrentSound();
-      }
     });
 
     set({ socket });

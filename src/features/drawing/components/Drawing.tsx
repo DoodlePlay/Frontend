@@ -14,7 +14,7 @@ import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
 import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 import useItemStore from '../store/useItemStore';
-import playSound from '../../../utils/helpers/playSound';
+import playSound, { stopCurrentSound } from '../../../utils/helpers/playSound';
 
 const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   isGameStatusModalOpen,
@@ -661,6 +661,12 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   };
 
   useEffect(() => {
+    if (gameState?.gameStatus === 'choosing') {
+      playSound('/sounds/fiveSecondSound.mp3');
+    } else {
+      stopCurrentSound();
+    }
+
     if (!gameState?.items) return;
 
     Object.entries(gameState.items).forEach(([itemName, itemState]) => {
