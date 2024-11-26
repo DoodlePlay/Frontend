@@ -15,6 +15,7 @@ import useSocketStore from '../../socket/socketStore';
 import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 import useItemStore from '../store/useItemStore';
 import playSound, { stopCurrentSound } from '../../../utils/helpers/playSound';
+import { motion } from 'framer-motion';
 
 const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   isGameStatusModalOpen,
@@ -848,11 +849,19 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
                 playSound('/sounds/selectPop.mp3', 1.0);
               }}
             >
-              <img
-                src="/images/drawing/settingIcon.png"
-                alt="setting"
-                draggable={false}
-              />
+              <motion.div
+                initial={{ rotateX: 0 }}
+                whileHover={{
+                  rotate: [0, 360],
+                  transition: { duration: 0.2 },
+                }}
+              >
+                <img
+                  src="/images/drawing/settingIcon.png"
+                  alt="setting"
+                  draggable={false}
+                />
+              </motion.div>
             </div>
             {gameState?.gameStatus === 'drawing' && (
               <ul className="flex flex-col">
