@@ -660,19 +660,48 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     timeCutter: '/sounds/timeCutterEffect.mp3',
   };
 
+  const [timeCutterActive, setTimeCutterActive] = useState(false); // 타임커터 상태 관리
+  const [lastPlayedItem, setLastPlayedItem] = useState(null); // 마지막으로 재생된 아이템
+
   useEffect(() => {
     if (!gameState?.items) return;
 
+    let latestItem = null;
+
     Object.entries(gameState.items).forEach(([itemName, itemState]) => {
       if (itemState.status) {
-        const soundPath = itemSoundMap[itemName];
+        if (itemName === 'timeCutter') {
+          // 타임커터가 활성화된 경우 별도 상태로 관리
+          if (!timeCutterActive) {
+            setTimeCutterActive(true);
+            const soundPath = itemSoundMap[itemName];
+            if (soundPath) {
+              playSound(soundPath, 1.0);
 
-        if (soundPath) {
-          playSound(soundPath, 1.0);
+              // 타임커터가 종료될 때 상태를 초기화
+              const remainingTime = Math.max(
+                gameState.turnDeadline - Date.now(),
+                0
+              );
+              setTimeout(() => setTimeCutterActive(false), remainingTime);
+            }
+          }
+        } else {
+          // 타임커터가 아닌 아이템만 최신 아이템으로 설정
+          latestItem = itemName;
         }
       }
     });
-  }, [gameState?.items]);
+
+    // 최신 아이템이 있고, 마지막으로 재생된 아이템이 아니라면 효과음 재생
+    if (latestItem && latestItem !== lastPlayedItem) {
+      const soundPath = itemSoundMap[latestItem];
+      if (soundPath) {
+        playSound(soundPath, 1.0);
+        setLastPlayedItem(latestItem); // 마지막으로 재생된 아이템 갱신
+      }
+    }
+  }, [gameState?.items, timeCutterActive, lastPlayedItem]);
 
   useEffect(() => {
     if (gameState?.gameStatus === 'choosing') {

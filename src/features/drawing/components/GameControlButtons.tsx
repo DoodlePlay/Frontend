@@ -35,7 +35,7 @@ const GameControlButtons = ({ setGameStatusModalOpen }) => {
   };
 
   const closeModal = () => {
-    playSound('/sounds/selectPop.mp3', 1.0);
+    playSound('/sounds/modalCancel.wav', 0.2);
     setIsModalOpen(false); // 모달을 닫습니다.
   };
 
