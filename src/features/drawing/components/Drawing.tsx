@@ -415,7 +415,6 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   useEffect(() => {
     if (gameState?.items.laundryFlip.status) {
       if (canvasRef.current) {
-        playSound('/sounds/reverseEffect.mp3', 1.0);
         const canvas = canvasRef.current;
         canvas.getObjects().forEach(obj => {
           obj.set('flipY', !obj.flipY); // 현재 상태 반전
