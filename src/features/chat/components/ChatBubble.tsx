@@ -9,6 +9,7 @@ interface ChatBubbleProps {
   isCorrectMessage?: boolean;
   isRoundMessage?: boolean;
   isAnnounceAnswer?: boolean;
+  isItemMessage?: boolean;
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({
@@ -20,6 +21,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
   isCorrectMessage = false,
   isRoundMessage = false,
   isAnnounceAnswer = false,
+  isItemMessage = false,
 }) => {
   if (isSystemMessage) {
     return (
@@ -28,6 +30,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
       </div>
     );
   }
+
   if (isRoundMessage) {
     return (
       <div className="text-center text-sm text-bold text-black my-2">
@@ -35,11 +38,13 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
       </div>
     );
   }
+
   if (isCorrectMessage) {
     return (
       <div className="text-center text-sm text-black my-[2px]">{message}</div>
     );
   }
+
   if (isAnnounceAnswer) {
     return (
       <div className="text-center text-base text-fuschia my-[2px]">
@@ -56,6 +61,14 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({
         }`}
       >
         <div className="text-fuschia text-sm font-bold">{message}</div>
+      </div>
+    );
+  }
+
+  if (isItemMessage) {
+    return (
+      <div className="text-center text-base font-cherry text-secondary-default my-[2px]">
+        {message}
       </div>
     );
   }

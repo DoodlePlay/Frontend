@@ -16,6 +16,7 @@ interface ChatMessage {
   isCorrectMessage?: boolean;
   isRoundMessage?: boolean;
   isAnnounceAnswer?: boolean;
+  isItemMessage?: boolean;
 }
 
 const ChatBox: React.FC = () => {
@@ -121,6 +122,9 @@ const ChatBox: React.FC = () => {
       socket.on('cheating', (message: ChatMessage) => {
         setMessages(prevMessages => [...prevMessages, message]);
       });
+      socket.on('itemMessage', (message: ChatMessage) => {
+        setMessages(prevMessages => [...prevMessages, message]);
+      });
     }
 
     return () => {
@@ -135,6 +139,7 @@ const ChatBox: React.FC = () => {
         socket.off('closeAnswer');
         socket.off('cheating');
         socket.off('announceAnswer');
+        socket.off('itemMessage');
       }
     };
   }, [socket, gameState]);
@@ -173,6 +178,7 @@ const ChatBox: React.FC = () => {
             isCorrectMessage={msg.isCorrectMessage}
             isRoundMessage={msg.isRoundMessage}
             isAnnounceAnswer={msg.isAnnounceAnswer}
+            isItemMessage={msg.isItemMessage}
           />
         ))}
       </div>

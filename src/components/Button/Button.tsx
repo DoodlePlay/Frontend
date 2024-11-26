@@ -7,7 +7,7 @@ type ButtonColor = 'primary' | 'secondary' | 'neutral';
 interface ButtonProps {
   text: string;
   color: ButtonColor;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
   className?: string;
 }
 
