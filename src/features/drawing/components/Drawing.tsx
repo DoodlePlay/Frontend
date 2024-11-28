@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import * as fabric from 'fabric';
+import { motion } from 'framer-motion';
 
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
@@ -14,6 +15,7 @@ import Modal from '../../../components/Modal/Modal';
 import useSocketStore from '../../socket/socketStore';
 import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 import useItemStore from '../store/useItemStore';
+import playSound, { stopCurrentSound } from '../../../utils/helpers/playSound';
 
 const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   isGameStatusModalOpen,
@@ -650,6 +652,65 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
     }
   }, [socket]);
 
+  const itemSoundMap = {
+    toxicCover: '/sounds/toxicEffect.mp3',
+    growingBomb: '/sounds/bombEffect.mp3',
+    phantomReverse: '/sounds/reverseEffect.mp3',
+    laundryFlip: '/sounds/laundryEffect.mp3',
+    timeCutter: '/sounds/timeCutterEffect.mp3',
+  };
+
+  const [timeCutterActive, setTimeCutterActive] = useState(false); // 타임커터 상태 관리
+  const [lastPlayedItem, setLastPlayedItem] = useState(null); // 마지막으로 재생된 아이템
+
+  useEffect(() => {
+    if (!gameState?.items) return;
+
+    let latestItem = null;
+
+    Object.entries(gameState.items).forEach(([itemName, itemState]) => {
+      if (itemState.status) {
+        if (itemName === 'timeCutter') {
+          // 타임커터가 활성화된 경우 별도 상태로 관리
+          if (!timeCutterActive) {
+            setTimeCutterActive(true);
+            const soundPath = itemSoundMap[itemName];
+            if (soundPath) {
+              playSound(soundPath, 1.0);
+
+              // 타임커터가 종료될 때 상태를 초기화
+              const remainingTime = Math.max(
+                gameState.turnDeadline - Date.now(),
+                0
+              );
+              setTimeout(() => setTimeCutterActive(false), remainingTime);
+            }
+          }
+        } else {
+          // 타임커터가 아닌 아이템만 최신 아이템으로 설정
+          latestItem = itemName;
+        }
+      }
+    });
+
+    // 최신 아이템이 있고, 마지막으로 재생된 아이템이 아니라면 효과음 재생
+    if (latestItem && latestItem !== lastPlayedItem) {
+      const soundPath = itemSoundMap[latestItem];
+      if (soundPath) {
+        playSound(soundPath, 1.0);
+        setLastPlayedItem(latestItem); // 마지막으로 재생된 아이템 갱신
+      }
+    }
+  }, [gameState?.items, timeCutterActive, lastPlayedItem]);
+
+  useEffect(() => {
+    if (gameState?.gameStatus === 'choosing') {
+      playSound('/sounds/fiveSecondSound.mp3', 1.0);
+    } else {
+      stopCurrentSound();
+    }
+  }, [gameState?.gameStatus]);
+
   return (
     <>
       <div className="relative rounded-[10px] p-[20px] border-[4px] border-black drop-shadow-drawing bg-white">
@@ -782,13 +843,24 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
           <div className="absolute top-0 right-0 z-40 max-w-[70px] flex flex-wrap gap-[10px]">
             <div
               className="w-full cursor-pointer"
-              onClick={() => setIsSettingsModalOpen(true)}
+              onClick={() => {
+                setIsSettingsModalOpen(true);
+                playSound('/sounds/selectPop.mp3', 1.0);
+              }}
             >
-              <img
-                src="/images/drawing/settingIcon.png"
-                alt="setting"
-                draggable={false}
-              />
+              <motion.div
+                initial={{ rotateX: 0 }}
+                whileHover={{
+                  rotate: [0, 360],
+                  transition: { duration: 0.2 },
+                }}
+              >
+                <img
+                  src="/images/drawing/settingIcon.png"
+                  alt="setting"
+                  draggable={false}
+                />
+              </motion.div>
             </div>
             {gameState?.gameStatus === 'drawing' && (
               <ul className="flex flex-col">
@@ -826,7 +898,9 @@ const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
         <Modal
           isOpen={isSettingsModalOpen}
           title="Setting"
-          onClose={() => setIsSettingsModalOpen(false)}
+          onClose={() => {
+            setIsSettingsModalOpen(false);
+          }}
         >
           <Settings />
         </Modal>
