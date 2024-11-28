@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import playSound from '../../../utils/helpers/playSound';
 
 const BombEffect: React.FC = () => {
   const [isVisible, setIsVisible] = useState(true);

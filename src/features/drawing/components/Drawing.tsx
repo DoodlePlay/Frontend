@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import * as fabric from 'fabric';
+import { motion } from 'framer-motion';
 
 import TimeBar from './TimeBar';
 import Toolbar from './Toolbar';
@@ -15,7 +16,6 @@ import useSocketStore from '../../socket/socketStore';
 import GameStatusModal from '../../../components/GameStatusModal/GameStatusModal';
 import useItemStore from '../store/useItemStore';
 import playSound, { stopCurrentSound } from '../../../utils/helpers/playSound';
-import { motion } from 'framer-motion';
 
 const Drawing: React.FC<{ isGameStatusModalOpen: boolean }> = ({
   isGameStatusModalOpen,

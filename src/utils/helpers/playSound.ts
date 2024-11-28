@@ -6,7 +6,6 @@ const playSound = (src: string, volume: number) => {
   // 기존 효과음을 중지
   if (currentSound) {
     currentSound.pause();
-    currentSound.currentTime = 0;
   }
 
   const sound = new Audio(src);
@@ -27,7 +26,6 @@ const playSound = (src: string, volume: number) => {
 export const stopCurrentSound = () => {
   if (currentSound) {
     currentSound.pause();
-    currentSound.currentTime = 0;
     currentSound = null; // 초기화
   }
 };

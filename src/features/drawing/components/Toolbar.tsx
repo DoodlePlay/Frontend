@@ -1,4 +1,5 @@
 import React from 'react';
+
 import playSound from '../../../utils/helpers/playSound';
 
 // 색상 목록 상수 정의
